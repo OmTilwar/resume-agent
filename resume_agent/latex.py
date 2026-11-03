@@ -35,6 +35,37 @@ def highlight(latex: str) -> str:
     return r"\textbf{\textcolor{NavyBlue}{" + latex + "}}"
 
 
+# A metric token: optional ~ < > +, number, optional unit. Same "not part of an
+# identifier" rule as knowledge.numbers; a trailing '-' (2-member, 128-dim) is
+# a descriptor, not a metric.
+_METRIC = re.compile(
+    r"(?<![A-Za-z0-9@.\-_/=^+])"
+    r"([~<>+]?(?:\d{1,3}(?:,\d{3})+|\d+(?:\.\d+)?)"
+    r"(?:\s?(?:%|x|ms|s|M|K|B|dB|MB|pts|Hz|kHz))?\+?)"
+    r"(?![A-Za-z0-9\-])"
+)
+_YEARLIKE = re.compile(r"^(19|20)\d{2}$")
+
+
+def escape_and_highlight(text: str, max_highlights: int = 4) -> str:
+    """Escape plain text and wrap up to `max_highlights` metrics in NavyBlue bold."""
+    cands = [m for m in _METRIC.finditer(text) if not _YEARLIKE.match(m.group(1))]
+
+    def strength(m: re.Match) -> int:
+        t = m.group(1)
+        return 2 if re.search(r"[%.,~<>+]|[A-Za-z]", t) or int(re.sub(r"\D", "", t) or 0) > 20 else 1
+
+    keep = sorted(sorted(cands, key=lambda m: -strength(m))[:max_highlights], key=lambda m: m.start())
+    out: list[str] = []
+    pos = 0
+    for m in keep:
+        out.append(escape(text[pos:m.start(1)]))
+        out.append(highlight(escape(m.group(1))))
+        pos = m.end(1)
+    out.append(escape(text[pos:]))
+    return "".join(out)
+
+
 def env() -> jinja2.Environment:
     # LaTeX-safe delimiters: (( var )), ((* block *)), ((# comment #))
     return jinja2.Environment(

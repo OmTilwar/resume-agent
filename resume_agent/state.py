@@ -1,0 +1,119 @@
+"""Graph state + the structured schemas LLM nodes must return."""
+from __future__ import annotations
+
+from typing import Literal, Optional, TypedDict
+
+from pydantic import BaseModel, Field
+
+
+# ---- inputs ---------------------------------------------------------------
+
+class JobPosting(BaseModel):
+    company: str
+    role: str
+    text: str
+    url: Optional[str] = None
+    source: str = "manual"          # manual | pdf | (later) apify:linkedin, greenhouse, ...
+    location: Optional[str] = None
+
+
+# ---- LLM outputs ----------------------------------------------------------
+
+class Keyword(BaseModel):
+    term: str = Field(description="Exact wording from the JD")
+    importance: Literal["must", "nice"]
+
+
+class JDAnalysis(BaseModel):
+    archetype: str = Field(description="Best-matching archetype id from the provided list")
+    secondary_archetype: Optional[str] = Field(None, description="Second archetype id if the JD mixes types")
+    top_keywords: list[Keyword] = Field(description="Top 10 keywords/skills, most important first, exact JD wording")
+    domain: str = Field(description="Business domain, e.g. fintech, healthcare, e-commerce")
+    responsibilities: list[str] = Field(default_factory=list, description="3-6 short phrases")
+
+
+class DraftBullet(BaseModel):
+    text: str = Field(description="Plain text bullet (no LaTeX, no markdown)")
+    fact_ids: list[str] = Field(description="IDs of every fact this bullet's claims and numbers come from")
+
+
+class ProjectDraft(BaseModel):
+    title_index: int = Field(description="Index into the provided title options")
+    stack: list[str] = Field(description="4-5 technologies from the project's stack, JD-matching first")
+    bullets: list[DraftBullet]
+
+
+class ExperienceDraft(BaseModel):
+    title: str = Field(description="Exactly one of the allowed titles")
+    bullets: list[DraftBullet]
+
+
+class SkillLine(BaseModel):
+    category: str = Field(description="Category name mirroring the JD, e.g. 'LLMs & AI Agents'")
+    entries: list[str] = Field(description="8-14 items copied exactly from the inventory")
+
+
+class SkillsDraft(BaseModel):
+    lines: list[SkillLine]
+    coursework: list[str] = Field(description="4-5 course names copied exactly from the list")
+
+
+# ---- assembled pieces -----------------------------------------------------
+
+class FinalBullet(BaseModel):
+    text: str
+    fact_ids: list[str]
+    origin: Literal["llm", "bank"]
+
+
+class ProjectBlock(BaseModel):
+    project_id: str
+    name: str
+    subtitle: str
+    stack: list[str]
+    github: str
+    bullets: list[FinalBullet]
+
+
+class ExperienceBlock(BaseModel):
+    title: str
+    bullets: list[FinalBullet]
+
+
+class ProjectScore(BaseModel):
+    project_id: str
+    score: int
+    must_hits: list[str]
+    nice_hits: list[str]
+    reasons: list[str]
+
+
+class Report(BaseModel):
+    keyword_coverage: dict[str, list[str]]
+    honest_gaps: list[str]
+    interview_questions: list[str]
+    replaced_bullets: list[str]
+    pages: Optional[int]
+    tex_path: str
+    pdf_path: Optional[str]
+
+
+class ResumeState(TypedDict, total=False):
+    job: JobPosting
+    slug: str
+    out_dir: str
+    analysis: JDAnalysis
+    scores: list[ProjectScore]
+    selected: list[str]
+    exp_groups: list[str]
+    projects: list[ProjectBlock]
+    experience: ExperienceBlock
+    skills: list[SkillLine]
+    coursework: list[str]
+    achievements: list[str]
+    violations: list[str]
+    tex: str
+    tex_path: str
+    pdf_path: Optional[str]
+    pages: Optional[int]
+    report: Report

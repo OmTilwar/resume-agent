@@ -9,12 +9,21 @@ It automates the workflow in [`MASTER_RESUME_KIT.md`](../../MASTER_RESUME_KIT.md
 | Phase | What | Status |
 |---|---|---|
 | 0 | Knowledge base as data + truth guards + template | ✅ done |
-| 1 | Linear LangGraph MVP (ingest → analyze → select → write → assemble → compile) | next |
-| 2 | Validators + self-correction loop | — |
+| 1 | Linear LangGraph MVP (ingest → analyze → select → write → assemble → compile → report) | ✅ done (offline-tested; needs a live run) |
+| 2 | Validators + self-correction loop | next |
 | 3 | Human-in-the-loop interrupts + SQLite checkpointer + application tracker | — |
 | 4 | Cover-letter subgraph | — |
 | 5 | Eval on the golden set (`../../resumes/`) + tracing | — |
 | 6 | Streamlit UI, batch mode | — |
+
+## Run
+
+```bash
+python -m resume_agent run --jd "../../JD ML and Data Science Intern- KA.pdf" --company KA --role "ML & Data Science Intern"
+# -> out/<slug>/<slug>.tex, .pdf, report.md   (add --save-to-kit to copy the .tex into Resume_Builder/resumes/)
+```
+
+Any model bullet that fails a truth check is replaced by a verified bank bullet and listed in `report.md`.
 
 ## Design rule
 
@@ -75,7 +84,7 @@ A bullet passes `check_bullet` only if:
 pip install -e ".[dev]"          # Phase 0
 pip install -e ".[agent,dev]"    # Phase 1+ (langgraph, langchain-openai, pypdf)
 cp .env.example .env             # add OPENROUTER_API_KEY
-python -m pytest                 # 68 tests; compile test needs pdflatex (MiKTeX)
+python -m pytest                 # 88 tests; compile test needs pdflatex (MiKTeX)
 python scripts/list_free_models.py --check
 ```
 
