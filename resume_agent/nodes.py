@@ -147,9 +147,12 @@ def write_projects(state: ResumeState, config: RunnableConfig) -> ResumeState:
         draft: ProjectDraft = _call(config, "writer", ProjectDraft,
                                     prompts.project_messages(pid, state["analysis"], ctx, kb, n))
         facts = {f.id: f for f in kb.allowed_facts(pid, ctx)}
-        kept, bad = _vet(draft.bullets, pid, facts, ctx, kb, p)
-        problems += bad
-        bullets = _fill_from_bank(kept, kb.allowed_bullets(pid, ctx), n, n_max)
+        _, bad = _vet(draft.bullets, pid, facts, ctx, kb, p)
+        problems += [f"first draft: {x}" for x in bad]
+        # Phase 2: keep the model's bullets even if flawed — validate/fix repairs them,
+        # fallback swaps in bank bullets only if repair fails.
+        drafted = [FinalBullet(text=d.text.strip(), fact_ids=d.fact_ids, origin="llm") for d in draft.bullets[:n]]
+        bullets = _fill_from_bank(drafted, kb.allowed_bullets(pid, ctx), n, n_max)
 
         idx = draft.title_index if 0 <= draft.title_index < len(p.titles) else 0
         title = p.titles[idx]
@@ -165,7 +168,9 @@ def write_experience(state: ResumeState, config: RunnableConfig) -> ResumeState:
     draft: ExperienceDraft = _call(config, "writer", ExperienceDraft,
                                    prompts.experience_messages(state["exp_groups"], state["analysis"], kb))
     facts = {f.id: f for f in exp.facts}
-    kept, bad = _vet(draft.bullets, "experience", facts, ctx, kb)
+    _, bad = _vet(draft.bullets, "experience", facts, ctx, kb)
+    kept = [FinalBullet(text=d.text.strip(), fact_ids=d.fact_ids, origin="llm") for d in draft.bullets[:3]]
+    bad = [f"first draft: {x}" for x in bad]
     bank = [b for g in exp.groups if g.id in state["exp_groups"] for b in g.bullets] + \
            [b for g in exp.groups if g.id not in state["exp_groups"] for b in g.bullets]
     bullets = _fill_from_bank(kept, bank, 3, 4)
@@ -181,6 +186,7 @@ def write_skills(state: ResumeState, config: RunnableConfig) -> ResumeState:
     by_name = {s.name.lower(): s for s in kb.skills}
     by_name.update({s.display.lower(): s for s in kb.skills})
     lines, problems = [], []
+    seen: set[str] = set()   # an entry appears on one line only
     for line in draft.lines[:5]:
         entries = []
         for e in line.entries:
@@ -188,8 +194,11 @@ def write_skills(state: ResumeState, config: RunnableConfig) -> ResumeState:
             if s is None:
                 problems.append(f"skills: dropped {e!r} (not in inventory)")
                 continue
+            if s.name.lower() in seen:
+                continue
+            seen.add(s.name.lower())
             entries.append(s.display)  # re-attaches '(Familiar)' if the model stripped it
-        entries = list(dict.fromkeys(entries))[:14]
+        entries = entries[:14]
         if len(entries) >= 4:
             lines.append(SkillLine(category=line.category.strip(), entries=entries))
     if len(lines) < 4:  # fallback: inventory order
@@ -200,36 +209,46 @@ def write_skills(state: ResumeState, config: RunnableConfig) -> ResumeState:
             if all(l.category != cat for l in lines):
                 lines.append(SkillLine(category=cat, entries=[s.display for s in items[:12]]))
 
-    allowed_courses = {c.lower(): c for c in kb.profile.coursework + kb.profile.coursework_shorthand}
-    courses = [allowed_courses[c.lower()] for c in draft.coursework if c.lower() in allowed_courses]
-    courses = list(dict.fromkeys(courses))[:5] or kb.profile.coursework[:5]
+    prof = kb.profile
+    allowed_courses = {c.lower(): c for c in prof.coursework + prof.coursework_shorthand}
+    courses, keys = [], set()
+    for c in draft.coursework:
+        name = allowed_courses.get(c.strip().lower())
+        if name and prof.course_key(name) not in keys:   # "Machine Learning" == "Fundamentals of ML"
+            keys.add(prof.course_key(name))
+            courses.append(name)
+    courses = courses[:5] or prof.coursework[:5]
     return {"skills": lines, "coursework": courses,
             "violations": list(state.get("violations", [])) + problems}
 
 
 def pick_achievements(state: ResumeState, kb: KnowledgeBase) -> list[str]:
-    """Kit §8: publication + hackathons always; then Amazon (if not a project) / GroundingDINO / eYRC."""
+    """Kit §8, ranked: publication, hackathons, then the best extras. Callers slice to fit the page."""
     selected = set(state["selected"])
     a = state["analysis"]
     text = " ".join([k.term for k in a.top_keywords] + [a.archetype, a.domain]).lower()
     by_id = {x.id: x for x in kb.achievements}
-    out = [by_id["ieee_publication"].latex, by_id["hackathon_wins"].latex]
-    gd = by_id["groundingdino_pr"]
+    gd, eyrc = by_id["groundingdino_pr"], by_id["eyrc"]
     wants_gd = a.archetype in {"ml_infra", "ml_cv_engineer", "applied_scientist"} or any(t in text for t in gd.include_for)
+    extras = []
     if "amazon_er" not in selected:
-        out.append(by_id["amazon_ml_challenge"].latex)
-    elif wants_gd:
-        out.append(gd.latex)
+        extras.append(by_id["amazon_ml_challenge"])
+    if a.archetype in {"robotics_cpp", "vio_slam"}:
+        extras += [eyrc, gd]
     else:
-        out.append(by_id["eyrc"].latex)
-    if a.archetype in {"robotics_cpp", "vio_slam"} and by_id["eyrc"].latex not in out:
-        out[-1] = by_id["eyrc"].latex
+        extras += [gd, eyrc] if wants_gd else [eyrc, gd]
+    ranked = [by_id["ieee_publication"], by_id["hackathon_wins"], *extras]
+    seen, out = set(), []
+    for x in ranked:
+        if x.id not in seen:
+            seen.add(x.id)
+            out.append(x.latex)
     return out
 
 
 def assemble(state: ResumeState, config: RunnableConfig) -> ResumeState:
     kb = get_kb()
-    achievements = pick_achievements(state, kb)
+    achievements = pick_achievements(state, kb)[: state.get("max_achievements", 3)]
     exp = state["experience"]
     tex = env().get_template("resume.tex.j2").render(
         profile=kb.profile,
@@ -309,7 +328,23 @@ def render_report(state: ResumeState, rep: Report) -> str:
              *[f"- {k}: {', '.join(v) if v else '—'}" for k, v in rep.keyword_coverage.items()], "",
              "## Honest gaps", *([f"- {g}" for g in rep.honest_gaps] or ["- none"]), "",
              "## Interview prep", *[f"- {q}" for q in rep.interview_questions], "",
-             "## Pipeline notes",
-             *([f"- {r}" for r in rep.replaced_bullets] or ["- all bullets written by the model passed checks"]),
-             *[f"- rejected: {v}" for v in state.get("violations", [])]]
+             *_quality_section(state, rep)]
     return "\n".join(lines) + "\n"
+
+
+def _quality_section(state: ResumeState, rep: Report) -> list[str]:
+    L = state.get("layout")
+    open_issues = state.get("issues", [])
+    out = ["## Quality checks",
+           f"- Content fix rounds: {state.get('fix_round', 0)} · judge-approved bullets: {len(state.get('approved', []))}",
+           f"- Layout: {L.pages} page(s), {L.free_lines} blank line(s) at bottom, "
+           f"orphans: {', '.join(L.orphans) or 'none'} · layout rounds: {state.get('layout_round', 0)}"
+           if L else "- Layout: not measured (no PDF)"]
+    out += [f"- {r}" for r in rep.replaced_bullets] or ["- every bullet on the page is model-written and passed all checks"]
+    out += ["", "## Still open (review before sending)"]
+    out += [f"- {i}" for i in open_issues] or ["- nothing"]
+    if L and L.pages > 1:
+        out.append("- **page overflow could not be fixed automatically — trim by hand (kit §11)**")
+    out += ["", "## Pipeline log", *[f"- {n}" for n in state.get("notes", [])],
+            *[f"- {v}" for v in state.get("violations", [])]]
+    return out

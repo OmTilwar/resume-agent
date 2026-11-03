@@ -104,6 +104,16 @@ def experience_messages(groups: list[str], analysis: JDAnalysis, kb: KnowledgeBa
     ]
 
 
+def fix_messages(items: list[dict]) -> list:
+    """items: {id, text, problems, facts, reference_bullets, project_rules, target_chars}"""
+    return [
+        _sys("You repair resume bullets that failed review. Fix every listed problem and keep everything that was "
+             "fine. Keep the bullet's meaning and its strongest metric.\n" + WRITING_RULES
+             + "\nReturn one fixed bullet per id, with the fact_ids it uses."),
+        HumanMessage(content=json.dumps(items, ensure_ascii=False, indent=1)),
+    ]
+
+
 def skills_messages(analysis: JDAnalysis, project_ids: list[str], kb: KnowledgeBase) -> list:
     inventory = {cat: [s.display for s in items] for cat, items in kb.skills_by_category().items()}
     stacks = {pid: kb.get_project(pid).stack for pid in project_ids}

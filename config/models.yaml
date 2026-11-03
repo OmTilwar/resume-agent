@@ -36,6 +36,13 @@ roles:
     structured: function_calling
     temperature: 0.1
 
+  # Faithfulness judge: reads each bullet against its cited facts' claims.
+  judge:
+    model: "nvidia/nemotron-3-ultra-550b-a55b:free"   # reasoning model; strict reading
+    fallbacks: ["nvidia/nemotron-3.5-super-vl:free", "thinkingmachines/inkling:free"]
+    structured: function_calling
+    temperature: 0.0
+
   # Cheap/fast: keyword -> tag matching, skill picking, small classifications.
   fast:
     model: "nvidia/nemotron-3.5-lightning:free"       # 30B MoE (3B active), high throughput

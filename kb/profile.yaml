@@ -37,6 +37,15 @@ coursework_shorthand:
   - "OOP"
   - "Digital Signal Processing"
   - "Computer Networks"
+# shorthand -> official name: the same course; never list both on one page
+coursework_aliases:
+  "Data Structures & Algorithms": "Data Structures"
+  "DBMS": "Database Management Systems"
+  "Probability & Statistics": "Numerical Methods and Probability Theory"
+  "Machine Learning": "Fundamentals of Machine Learning"
+  "OOP": "Object-Oriented Programming"
+  "Digital Signal Processing": "DSP and Applications"
+  "Computer Networks": "Communication Network"
 # Kit §8 — optional tagline (costs one line)
 taglines:
   - 'ML Engineer $\cdot$ Retrieval \& Ranking at 10M Scale $\cdot$ Amazon ML Challenge Top-1000 $\cdot$ IEEE Published'

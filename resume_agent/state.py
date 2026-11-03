@@ -28,7 +28,7 @@ class JDAnalysis(BaseModel):
     archetype: str = Field(description="Best-matching archetype id from the provided list")
     secondary_archetype: Optional[str] = Field(None, description="Second archetype id if the JD mixes types")
     top_keywords: list[Keyword] = Field(description="Top 10 keywords/skills, most important first, exact JD wording")
-    domain: str = Field(description="Business domain, e.g. fintech, healthcare, e-commerce")
+    domain: str = Field(description="Company's business domain in 1-3 plain words, e.g. 'fintech', 'healthcare', 'e-commerce' — not the role")
     responsibilities: list[str] = Field(default_factory=list, description="3-6 short phrases")
 
 
@@ -56,6 +56,16 @@ class SkillLine(BaseModel):
 class SkillsDraft(BaseModel):
     lines: list[SkillLine]
     coursework: list[str] = Field(description="4-5 course names copied exactly from the list")
+
+
+class FixedBullet(BaseModel):
+    id: str
+    text: str = Field(description="The repaired bullet, plain text")
+    fact_ids: list[str]
+
+
+class FixBatch(BaseModel):
+    fixes: list[FixedBullet]
 
 
 # ---- assembled pieces -----------------------------------------------------
@@ -112,6 +122,19 @@ class ResumeState(TypedDict, total=False):
     coursework: list[str]
     achievements: list[str]
     violations: list[str]
+    # Phase 2
+    issues: list            # list[validate.Issue] still open
+    approved: list[str]     # bullet texts the judge accepted (not re-judged)
+    fix_round: int
+    layout: object          # layout.Layout from the last compile
+    layout_round: int
+    layout_action: str      # trim | orphans | fill | done
+    trim_level: int
+    max_achievements: int
+    no_fill: bool
+    last_fill: Optional[str]
+    orphan_tried: list[str]
+    notes: list[str]
     tex: str
     tex_path: str
     pdf_path: Optional[str]

@@ -36,6 +36,10 @@ SYNONYMS: dict[str, list[str]] = {
     "medical": ["healthcare", "medical-imaging"], "healthcare": ["healthcare"],
     "image": ["cv"], "object detection": ["cv"], "ocr": ["ocr"],
     "c++": ["cpp", "cpp17"], "ros": ["ros2"],
+    # learning paradigms: what on the page actually demonstrates them
+    "supervised": ["classification", "transfer learning", "learning to rank", "lightgbm", "segmentation"],
+    "unsupervised": ["t-sne", "vae", "clustering", "self-training", "representation learning"],
+    "data science": ["data-science", "hypothesis testing", "forecasting", "statistics"],
 }
 
 

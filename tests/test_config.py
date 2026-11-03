@@ -4,7 +4,7 @@ from resume_agent.llm import load_config
 def test_model_config_shape():
     cfg = load_config()
     assert cfg["base_url"] == "https://openrouter.ai/api/v1"
-    assert set(cfg["roles"]) == {"analyzer", "writer", "fixer", "fast"}
+    assert set(cfg["roles"]) == {"analyzer", "writer", "fixer", "judge", "fast"}
     for role, r in cfg["roles"].items():
         models = [r["model"], *r.get("fallbacks", [])]
         assert all(m.endswith(":free") for m in models), f"{role}: non-free model configured"

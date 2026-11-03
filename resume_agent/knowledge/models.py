@@ -158,7 +158,12 @@ class Profile(BaseModel):
     positioning: list[str]
     coursework: list[str]
     coursework_shorthand: list[str]
+    coursework_aliases: dict[str, str] = Field(default_factory=dict)  # shorthand -> official
     taglines: list[str] = Field(default_factory=list)
+
+    def course_key(self, name: str) -> str:
+        """Same key for a course and its shorthand (dedupe)."""
+        return self.coursework_aliases.get(name, name).lower()
 
 
 class Achievement(BaseModel):

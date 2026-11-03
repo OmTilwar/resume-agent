@@ -48,7 +48,19 @@ def main(argv: list[str] | None = None) -> int:
     init = {"job": job}
     if args.slug:
         init["slug"] = args.slug
-    final = build_graph().invoke(init)
+    import time
+    t0, final = time.time(), dict(init)
+    for chunk in build_graph().stream(init, config={"recursion_limit": 80}, stream_mode="updates"):
+        for node, upd in chunk.items():
+            final.update(upd or {})
+            extra = ""
+            if node == "validate":
+                iss = upd.get("issues", [])
+                extra = f" — {sum(i.severity == 'hard' for i in iss)} hard / {sum(i.severity == 'soft' for i in iss)} soft issue(s)"
+            elif node == "layout_check" and upd.get("layout"):
+                L = upd["layout"]
+                extra = f" — {L.pages} page(s), {L.free_lines} blank lines, {len(L.orphans)} orphan(s) → {upd['layout_action']}"
+            print(f"[{time.time() - t0:6.1f}s] {node}{extra}", flush=True)
 
     rep = final["report"]
     print(f"\n.tex   : {rep.tex_path}")

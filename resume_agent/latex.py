@@ -45,11 +45,14 @@ _METRIC = re.compile(
     r"(?![A-Za-z0-9\-])"
 )
 _YEARLIKE = re.compile(r"^(19|20)\d{2}$")
+# Hardware/model names that look like metrics: "Raspberry Pi 5B", "RTX 4050", "Python 3.11"
+_NOT_METRIC_BEFORE = re.compile(r"(?:\bPi|\bRTX|\bGTX|\bPython|\bpyannote|\bT4|\bA100|\bH100)\s?$")
 
 
 def escape_and_highlight(text: str, max_highlights: int = 4) -> str:
     """Escape plain text and wrap up to `max_highlights` metrics in NavyBlue bold."""
-    cands = [m for m in _METRIC.finditer(text) if not _YEARLIKE.match(m.group(1))]
+    cands = [m for m in _METRIC.finditer(text)
+             if not _YEARLIKE.match(m.group(1)) and not _NOT_METRIC_BEFORE.search(text[:m.start(1)])]
 
     def strength(m: re.Match) -> int:
         t = m.group(1)
