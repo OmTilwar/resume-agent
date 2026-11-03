@@ -2,6 +2,6 @@
 # Source of truth for facts: ../../../MASTER_RESUME_KIT.md (v2).
 # When the kit changes, update the YAML here AND bump kit_updated to match the
 # kit's "*Last updated:" line — tests/test_kit_sync.py fails until you do.
-kit_version: "v2"
-kit_updated: "21 October 2026"
+kit_version: "v2.1"
+kit_updated: "4 November 2026"
 generated_from_sections: ["§2", "§4", "§5", "§6", "§7", "§8", "§9", "§10", "§11", "App. E", "App. F"]

@@ -1,0 +1,53 @@
+# Kit §7.12 — facts ✅ (code + test suite, commit f665e20). NO quality metrics yet.
+id: resume_agent
+name: "ResumeAgent"
+tier: 2
+section: "7.12"
+github: "https://github.com/OmTilwar/resume-agent"
+stack: [Python, LangGraph, LangChain, OpenRouter, Pydantic, Jinja2, pytest, pypdf, LaTeX]
+one_liner: "LangGraph agent that turns a job description into a one-page LaTeX resume, with code-enforced truth guards, an LLM-as-judge faithfulness check, a repair loop and PDF layout measurement."
+tags: [llm, agents, agentic-workflows, langgraph, langchain, llm-evaluation, llm-as-judge, guardrails, hallucination-prevention, structured-outputs, pydantic, openrouter, prompt-engineering, self-correction, automation, document-generation, latex, testing, pytest]
+rules:
+  - "No quality metrics exist yet (one live run): never write pass rates, hallucination reductions, time saved or users."
+  - "Personal tool, not a product: never 'production', 'SaaS', 'used by recruiters/students'."
+  - "Repo is private — make it public before linking it on a resume."
+allowed_terms: ["LangGraph"]          # the one project allowed to name it (kit §2.2.5)
+banned_terms: ["production", "SaaS", "users", "customers", "hallucination rate", "time saved", "% fewer"]
+
+facts:
+  - {id: ra_graph, claim: "14-node LangGraph graph: ingest, JD analysis, deterministic project scoring, bullet writing, validate/fix loop, fallback, assemble, compile, layout check/fix loop, report", values: ["14"], status: verified}
+  - {id: ra_kb, claim: "Knowledge base = the resume kit as YAML: 12 projects, facts tagged verified/stated/banned, context restrictions, 22 JD archetypes; Pydantic schema + cross-reference validation", values: ["12", "22"], status: verified}
+  - {id: ra_guards, claim: "Truth guards: every number in a generated bullet must appear in a cited fact; banned-phrase, analogy-clause, institution, team-verb and %-vs-pts checks; fabricated claims rejected before the page", values: [], status: verified}
+  - {id: ra_judge, claim: "LLM-as-judge reads each bullet against its cited facts' claims, catching wording drift (e.g. 'images' vs 'annotated instances')", values: [], status: verified}
+  - {id: ra_repair, claim: "Repair loop: up to 2 fix rounds, then fallback to verified bank bullets", values: ["2"], status: verified}
+  - {id: ra_layout, claim: "Layout loop measures the compiled PDF with pypdf (page count, blank lines, orphan lines) and applies page-budget trim/fill rules, undoing fills that overflow", values: [], status: verified}
+  - {id: ra_models, claim: "5 model roles (analyzer, writer, fixer, judge, fast) routed to free OpenRouter models with 2 automatic fallbacks each; Pydantic structured outputs", values: ["5", "2"], status: verified}
+  - {id: ra_tests, claim: "101 pytest tests incl. an offline end-to-end graph run with a fake LLM injecting fabricated and drifted bullets", values: ["101"], status: verified}
+  - {id: ra_privacy, claim: "Contact details never sent to a model; filled from the KB by the template", values: [], status: verified}
+
+titles:
+  - {subtitle: "LangGraph Agent with Truth Guards", stack: [Python, LangGraph, LangChain, Pydantic]}
+  - {subtitle: "Self-Correcting LLM Pipeline with LLM-as-Judge", stack: [Python, LangGraph, OpenRouter, pytest]}
+  - {subtitle: "Agentic Document Generation & Validation", stack: [Python, LangGraph, Pydantic, LaTeX]}
+
+bullets:
+  - id: ra_b1
+    text: "Built a 14-node LangGraph agent that turns a job description into a one-page LaTeX resume: JD analysis, deterministic project scoring, LLM bullet writing, a validate–fix loop, PDF compilation and layout checks."
+    fact_ids: [ra_graph]
+  - id: ra_b2
+    text: "Engineered truth guards that trace every number in a generated bullet to a cited fact in a 12-project knowledge base (verified/stated/banned facts, context rules), blocking fabricated claims before rendering."
+    fact_ids: [ra_guards, ra_kb]
+  - id: ra_b3
+    text: "Added an LLM-as-judge faithfulness check and a repair loop (2 rounds, then fallback to verified bullets), so wording drift such as \"images\" for \"annotated instances\" is caught and fixed automatically."
+    fact_ids: [ra_judge, ra_repair]
+  - id: ra_b4
+    text: "Routed 5 model roles (analyzer, writer, fixer, judge, fast) across free OpenRouter models with automatic fallbacks and Pydantic structured outputs; covered by 101 pytest tests with a fake-LLM end-to-end run."
+    fact_ids: [ra_models, ra_tests]
+  - id: ra_b5
+    text: "Measured the compiled PDF with pypdf (page count, blank lines, orphan lines) and applied page-budget trim/fill rules in a layout loop that undoes any fill that overflows the page."
+    fact_ids: [ra_layout]
+
+interview:
+  - {q: "Why LangGraph instead of one long prompt?", a: "Explicit state, conditional loops (validate/fix, layout/trim), each node sees only its slice of facts."}
+  - {q: "How do you know the judge is right?", a: "Not measured yet; deterministic checks are the hard gate, the judge only adds rejections; Phase 5 evaluates it."}
+  - {q: "What happens when free models fail or return bad JSON?", a: "Retries, OpenRouter fallback chain, bank-bullet fallback so a run always produces a truthful page."}

@@ -3,9 +3,9 @@
 # robotics or analytics roles where 4 better-fitting projects exist.
 - id: llm_genai_agents
   name: "LLM / GenAI / Agents"
-  signals: [llm, genai, generative ai, agents, agentic, rag, tool-calling, function-calling, prompt engineering, langchain]
+  signals: [llm, genai, generative ai, agents, agentic, rag, tool-calling, function-calling, prompt engineering, langchain, langgraph, llm evaluation, guardrails]
   emphasize: "Retrieval benchmark, tool-calling, agent orchestration"
-  projects: [finsight, propvox, amazon_er, [medvision, authnet]]
+  projects: [finsight, propvox, amazon_er, [resume_agent, medvision, authnet]]
   exp_groups: [C, B]
 - id: ai_generalist
   name: "AI generalist / Startup (many hats)"
@@ -17,7 +17,7 @@
   name: "AI Automation / Ops"
   signals: [automation, workflow automation, ops, reliability, n8n, zapier, retries]
   emphasize: "Reliability, retries, testing"
-  projects: [propvox, finsight, medvision, voxpipeline]
+  projects: [propvox, resume_agent, finsight, [medvision, voxpipeline]]
   exp_groups: [E, B]
 - id: ml_cv_engineer
   name: "ML / CV Engineer"

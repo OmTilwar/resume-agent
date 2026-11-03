@@ -3,7 +3,7 @@ from resume_agent.knowledge.loader import validate_references
 
 
 def test_loads_with_expected_shape(kb):
-    assert len(kb.projects) == 11
+    assert len(kb.projects) == 12
     assert {p.id for p in kb.selectable_projects(tiers=(1,))} == {
         "amazon_er", "finsight", "propvox", "medvision", "authnet"}
     assert len(kb.archetypes) == 22

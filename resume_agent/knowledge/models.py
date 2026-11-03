@@ -80,6 +80,7 @@ class Project(BaseModel):
     rules: list[str] = Field(default_factory=list)
     forbidden_title_terms: list[str] = Field(default_factory=list)
     banned_terms: list[str] = Field(default_factory=list)   # never in this project's bullets
+    allowed_terms: list[str] = Field(default_factory=list)  # globally banned terms this project may use
     banned_verbs: list[str] = Field(default_factory=list)
     max_bullets: Optional[int] = None
     facts: list[Fact]

@@ -35,8 +35,8 @@ def test_fabricated_bullet_never_reaches_page(final):
 
 def test_skills_enforce_inventory_and_familiar_tags(final):
     entries = [e for line in final["skills"] for e in line.entries]
-    assert "LangChain (Familiar)" in entries          # tag re-attached
-    assert "LangChain" not in entries
+    assert "LlamaIndex (Familiar)" in entries         # tag re-attached
+    assert "LlamaIndex" not in entries
     assert "Kubernetes Operators" not in entries      # not in inventory → dropped
     assert "Underwater Basket Weaving" not in final["coursework"]
 

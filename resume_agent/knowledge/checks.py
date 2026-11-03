@@ -36,8 +36,9 @@ def check_phrases(text: str, where: str, kb: KnowledgeBase, project: Project | N
     for p in kb.rules.banned_phrases:
         if re.search(rf"(?<![A-Za-z]){re.escape(p.lower())}(?![A-Za-z])", low):
             v.append(Violation("banned-phrase", where, f"contains {p!r} (kit §10.1)"))
+    allowed = {t.lower() for t in (project.allowed_terms if project else [])}
     for t in kb.rules.banned_bullet_terms:
-        if t.lower() in low:
+        if t.lower() in low and t.lower() not in allowed:
             v.append(Violation("banned-term", where, f"contains {t!r} (kit §2.2/§2.4)"))
     for pat in kb.rules.analogy_patterns:
         if re.search(pat, body, flags=re.I):

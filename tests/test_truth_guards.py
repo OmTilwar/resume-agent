@@ -89,7 +89,8 @@ def test_no_usable_metric_from_tiny_eval(kb):
 
 def test_familiar_skills_never_in_project_stacks(kb):
     familiar = {s.name.lower() for s in kb.familiar_skills()}
-    assert {"langchain", "ragas", "kubernetes", "power bi", "django"} <= familiar
+    assert {"ragas", "kubernetes", "power bi", "django"} <= familiar
+    assert "langchain" not in familiar   # used for real in resume_agent (kit v2.1)
     for p in kb.projects.values():
         clash = familiar & {s.lower() for s in p.stack}
         assert not clash, (p.id, clash)

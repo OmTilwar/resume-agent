@@ -71,7 +71,7 @@ def _skills(messages):
     return SkillsDraft(
         lines=[
             SkillLine(category="LLMs & AI Agents", entries=["Large Language Models", "RAG Pipelines", "Agentic Workflows",
-                      "Tool-Calling / Function-Calling", "Prompt Engineering", "LangChain", "Retrieval Benchmarking"]),
+                      "Tool-Calling / Function-Calling", "Prompt Engineering", "LlamaIndex", "Retrieval Benchmarking"]),
             SkillLine(category="Retrieval & Ranking", entries=["BM25", "Hybrid Search (BM25 + dense)",
                       "Vector DBs (Pinecone, ChromaDB)", "Entity Resolution", "Kubernetes Operators"]),
             SkillLine(category="Backend & APIs", entries=["FastAPI", "REST APIs", "WebSockets", "asyncio", "Pydantic",
