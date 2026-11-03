@@ -53,6 +53,17 @@ def get_llm(role: str, **overrides):
     )
 
 
+def structured_for_model(model: str, schema, method: str = "function_calling", temperature: float = 0.0):
+    """One specific model, NO fallbacks — for benchmarks, where results must be attributable."""
+    from langchain_openai import ChatOpenAI
+
+    cfg = load_config()
+    llm = ChatOpenAI(model=model, base_url=cfg["base_url"], api_key=_api_key(), temperature=temperature,
+                     max_retries=2, timeout=180, default_headers={"X-Title": cfg.get("app_name", "resume-agent")},
+                     extra_body={"models": [model]})
+    return llm.with_structured_output(schema, method=method)
+
+
 def structured(role: str, schema, **overrides):
     """Chat model bound to a Pydantic schema, using the method the role's model supports."""
     method = load_config()["roles"][role].get("structured", "function_calling")

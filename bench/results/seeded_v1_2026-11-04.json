@@ -1,0 +1,84 @@
+{
+ "benchmark": "seeded_v1",
+ "date": "2026-11-04",
+ "n_items": 411,
+ "layers": {
+  "deterministic": {
+   "n_scored": 411,
+   "n_corrupted": 281,
+   "n_clean": 130,
+   "catch_rate": 0.5623,
+   "false_positive_rate": 0.0,
+   "precision": 1.0,
+   "f1": 0.7198,
+   "by_kind": {
+    "num_fabricate": {
+     "n": 47,
+     "flagged": 47,
+     "rate": 1.0,
+     "reportable": false
+    },
+    "num_add": {
+     "n": 66,
+     "flagged": 66,
+     "rate": 1.0,
+     "reportable": true
+    },
+    "banned_phrase": {
+     "n": 39,
+     "flagged": 39,
+     "rate": 1.0,
+     "reportable": false
+    },
+    "pts_percent": {
+     "n": 2,
+     "flagged": 2,
+     "rate": 1.0,
+     "reportable": false
+    },
+    "noun_swap": {
+     "n": 28,
+     "flagged": 0,
+     "rate": 0.0,
+     "reportable": false
+    },
+    "scope_inflation": {
+     "n": 66,
+     "flagged": 3,
+     "rate": 0.0455,
+     "reportable": true
+    },
+    "domain_swap": {
+     "n": 25,
+     "flagged": 1,
+     "rate": 0.04,
+     "reportable": false
+    },
+    "misattribution": {
+     "n": 8,
+     "flagged": 0,
+     "rate": 0.0,
+     "reportable": false
+    },
+    "benign_trim": {
+     "n": 25,
+     "flagged": 0,
+     "rate": 0.0,
+     "reportable": false
+    },
+    "benign_verb": {
+     "n": 39,
+     "flagged": 0,
+     "rate": 0.0,
+     "reportable": false
+    },
+    "original": {
+     "n": 66,
+     "flagged": 0,
+     "rate": 0.0,
+     "reportable": true
+    }
+   }
+  }
+ }
+}

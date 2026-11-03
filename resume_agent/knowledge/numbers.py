@@ -58,8 +58,11 @@ def extract_numbers(text: str) -> set[str]:
     clean = clean.replace("$", " ")
     out: set[str] = set(sci)
     for m in _NUM.finditer(clean):
-        n = normalize(m.group(1) + (m.group(2) or ""))
-        if _YEAR.match(n):
+        raw = m.group(1)
+        n = normalize(raw + (m.group(2) or ""))
+        nxt = clean[m.end():m.end() + 1]
+        # a year is a bare 4-digit token: "2026" yes; "2,000+" / "2000%" / "2000 users"-with-comma no
+        if _YEAR.match(n) and "," not in raw and nxt not in {"+", "%"}:
             continue
         out.add(n)
     for m in _EQ_NUM.finditer(clean):

@@ -15,7 +15,8 @@ from .knowledge.checks import check_bullet
 from .layout import measure
 from .nodes import _call
 from .state import FinalBullet, FixBatch, ResumeState
-from .validate import Issue, Slot, deterministic_issues, judge_issues, length_issue, slots, visible_len
+from .validate import (Issue, Slot, deterministic_issues, judge_issues, length_issue, near_duplicate, slots,
+                       visible_len)
 
 log = logging.getLogger("resume_agent")
 MAX_FIX = 2
@@ -50,6 +51,15 @@ def _bank(section: str, state: ResumeState, kb: KnowledgeBase):
 
 def _on_page(state: ResumeState) -> set[str]:
     return {b.text for p in state["projects"] for b in p.bullets} | {b.text for b in state["experience"].bullets}
+
+
+def _section_texts(state: ResumeState, section: str, exclude: str | None = None) -> list[str]:
+    kb = get_kb()
+    return [s.bullet.text for s in slots(state, kb) if s.section == section and s.id != exclude]
+
+
+def _fresh(candidate: str, existing: list[str]) -> bool:
+    return not any(near_duplicate(candidate, e) for e in existing)
 
 
 def _vet_one(text: str, fact_ids: list[str], slot: Slot, state: ResumeState, kb: KnowledgeBase) -> list[str]:
@@ -155,7 +165,11 @@ def fallback(state: ResumeState, config: RunnableConfig) -> ResumeState:
     used = _on_page(state)
     for tid in sorted({i.target for i in state["issues"] if i.severity == "hard"}):
         s = by_id[tid]
-        bank = [b for b in _bank(s.section, state, kb) if b.text not in used]
+        others = [t for t in _section_texts(state, s.section, exclude=tid)]
+        others += [b.text for b in (experience.bullets if s.section == 'experience' else
+                   next(p for p in projects if p.project_id == s.section).bullets)]
+        others = [t for t in others if t != s.bullet.text]
+        bank = [b for b in _bank(s.section, state, kb) if b.text not in used and _fresh(b.text, others)]
         bank.sort(key=lambda b: bool(length_issue(b.text, kb, tid)))   # well-sized first
         if bank:
             b = bank[0]
@@ -163,7 +177,15 @@ def fallback(state: ResumeState, config: RunnableConfig) -> ResumeState:
             _put(projects, experience, s, FinalBullet(text=b.text, fact_ids=b.fact_ids, origin="bank"))
             notes.append(f"{tid}: replaced with verified bank bullet after {MAX_FIX} failed fix rounds")
         else:
-            notes.append(f"{tid}: still failing and no unused bank bullet — REVIEW MANUALLY")
+            block = experience if s.section == "experience" else next(p for p in projects if p.project_id == s.section)
+            if len(block.bullets) > 3 or (s.section == "experience" and len(block.bullets) > 2):
+                block.bullets[s.index] = None
+                notes.append(f"{tid}: dropped — still failing and no non-duplicate bank bullet left")
+            else:
+                notes.append(f"{tid}: still failing and no unused bank bullet — REVIEW MANUALLY")
+    for p in projects:
+        p.bullets = [b for b in p.bullets if b is not None]
+    experience.bullets = [b for b in experience.bullets if b is not None]
     soft = [i for i in state["issues"] if i.severity == "soft"]
     return {"projects": projects, "experience": experience, "notes": notes, "issues": soft}
 
@@ -277,7 +299,8 @@ def layout_fix(state: ResumeState, config: RunnableConfig) -> ResumeState:
             if len(p.bullets) >= min(4, proj.max_bullets or 4):
                 continue
             cands = [b for b in kb.allowed_bullets(p.project_id, _ctx(state))
-                     if b.text not in used and not length_issue(b.text, kb, "x")]
+                     if b.text not in used and not length_issue(b.text, kb, "x")
+                     and _fresh(b.text, [x.text for x in p.bullets])]
             if cands:
                 p.bullets.append(FinalBullet(text=cands[0].text, fact_ids=cands[0].fact_ids, origin="bank"))
                 notes.append(f"layout: filled blank space with a 4th {p.name} bullet")

@@ -32,3 +32,12 @@ def test_normalize():
     assert normalize("4.0") == "4"
     assert normalize("0.70") == "0.7"
     assert normalize("1.7 M") == "1.7M"
+
+
+@pytest.mark.parametrize("text,expected", [
+    ("used by 2,000+ students", {"2000"}),     # found by the seeded benchmark: was mistaken for a year
+    ("grew 2000% in a year", {"2000"}),
+    ("Amazon ML Challenge 2026", set()),        # still a year
+])
+def test_year_vs_count(text, expected):
+    assert extract_numbers(text) == expected

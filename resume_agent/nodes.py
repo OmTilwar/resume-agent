@@ -200,7 +200,8 @@ def write_skills(state: ResumeState, config: RunnableConfig) -> ResumeState:
             entries.append(s.display)  # re-attaches '(Familiar)' if the model stripped it
         entries = entries[:14]
         if len(entries) >= 4:
-            lines.append(SkillLine(category=line.category.strip(), entries=entries))
+            cat = re.sub(r"\s*\((?:nice|must|nice-to-have|must-have|required|preferred)\)\s*", " ", line.category, flags=re.I)
+            lines.append(SkillLine(category=cat.strip(), entries=entries))
     if len(lines) < 4:  # fallback: inventory order
         problems.append("skills: model returned <4 usable lines; filled from inventory")
         for cat, items in kb.skills_by_category().items():

@@ -104,3 +104,22 @@ def test_overflowing_fill_is_undone(final):
 def test_blank_space_gets_filled_before_orphans(final):
     L = final["layout"]
     assert L.free_lines < 3 or final.get("no_fill"), L
+
+
+def test_near_duplicates_flagged_and_distinct_bank_bullets_not(kb):
+    from resume_agent.validate import near_duplicate
+    a = ("Ensembled 4 fine-tuned cross-encoders (bge-reranker-v2-m3, mDeBERTa-v3) with a cross-fitted LightGBM "
+         "stacker and query-level gate, lifting leaderboard F0.5 from 0.894 to 0.9837 across 18 iterations.")
+    b = ("Ensembled 4 fine-tuned cross-encoders (2x bge-reranker-v2-m3, 2x mDeBERTa-v3) lifting leaderboard F0.5 "
+         "from 0.894 to 0.9837 across 18 iterations; orphan simulation (25% entity removal) added +0.0043 F0.5.")
+    assert near_duplicate(a, b)                                   # seen in the live KA run
+    for pid, p in kb.projects.items():
+        bs = [x for x in p.bullets if x.id != "mv_b1_health"]
+        for i in range(len(bs)):
+            for j in range(i + 1, len(bs)):
+                assert not near_duplicate(bs[i].text, bs[j].text), (pid, bs[i].id, bs[j].id)
+
+
+def test_no_near_duplicates_ship(final, kb):
+    dups = [i for i in deterministic_issues(final, kb) if i.rule == "duplicate"]
+    assert not dups, dups

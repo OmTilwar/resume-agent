@@ -70,6 +70,22 @@ def length_issue(text: str, kb: KnowledgeBase, target: str) -> Issue | None:
     return None
 
 
+_STOP = {"the", "and", "with", "for", "from", "into", "via", "that", "this", "using", "over", "across", "while"}
+
+
+def _words(text: str) -> set[str]:
+    return {w for w in re.findall(r"[a-z0-9][a-z0-9.\-]*", text.lower()) if len(w) > 2 and w not in _STOP}
+
+
+def near_duplicate(a: str, b: str, threshold: float = 0.35) -> bool:
+    # calibrated: distinct kit bullets max out at 0.30; reworded copies seen in live runs score 0.42-0.74
+    """Two bullets making the same point (a reworded bank bullet next to its original)."""
+    wa, wb = _words(a), _words(b)
+    if not wa or not wb:
+        return False
+    return len(wa & wb) / len(wa | wb) >= threshold
+
+
 def first_verb(text: str) -> str:
     return (text.strip().split(" ", 1)[0] if text.strip() else "").strip(",;:")
 
@@ -94,13 +110,12 @@ def deterministic_issues(state: ResumeState, kb: KnowledgeBase) -> list[Issue]:
             issues.append(Issue(target=s.id, rule="no-number", severity="soft",
                                 message="every bullet needs at least one number from its facts (kit §10.1)"))
 
-    seen_text: dict[str, str] = {}
-    for s in ss:
-        k = re.sub(r"\W+", "", s.bullet.text.lower())
-        if k in seen_text:
-            issues.append(Issue(target=s.id, rule="duplicate", severity="hard",
-                                message=f"same bullet as {seen_text[k]}"))
-        seen_text.setdefault(k, s.id)
+    for j, s in enumerate(ss):
+        for prev in ss[:j]:
+            if prev.section == s.section and near_duplicate(prev.bullet.text, s.bullet.text):
+                issues.append(Issue(target=s.id, rule="duplicate", severity="hard",
+                                    message=f"says the same thing as {prev.id} — cover a different fact"))
+                break
 
     # verbs: none more than twice; never twice in a row (kit §10.2)
     counts: dict[str, int] = {}
