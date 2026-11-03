@@ -1,0 +1,88 @@
+# Kit §5 — Research Intern. All facts are ⚠ (candidate-stated).
+titles: ["Research Intern", "Machine Learning Research Intern"]
+org: "IIIT"
+location: "Nagpur, Maharashtra"
+dates: "August 2025 -- February 2026"
+
+facts:
+  - id: ex_task
+    claim: "YOLOv8 dense object detection for precision agriculture on aerial & field imagery; density 25 objects/frame"
+    values: ["25"]
+    status: stated
+  - id: ex_dataset
+    claim: "3,200+ annotated instances (Roboflow)"
+    values: ["3,200"]
+    status: stated
+  - id: ex_map
+    claim: "mAP improved by 8.4%"
+    values: ["8.4"]
+    status: stated
+  - id: ex_yield
+    claim: "Crop yield prediction improved by 14% via disease-detection integration"
+    values: ["14"]
+    status: stated
+  - id: ex_edge
+    claim: "Edge deployment on Raspberry Pi 5B + Hailo-8; ONNX export -> INT8 quantization -> HEF compilation; latency <30ms"
+    values: ["5B", "30"]
+    status: stated
+    note: "The IEEE publication is on a different topic — never imply this work was published."
+
+groups:
+  - id: A
+    name: "Agriculture / CV / Edge"
+    bullets:
+      - id: A1
+        text: "Improved dense object detection (25 objects/frame) for precision agriculture with YOLOv8, raising mAP by 8.4% on a 3,200+ instance Roboflow dataset of aerial and field imagery."
+        fact_ids: [ex_task, ex_dataset, ex_map]
+      - id: A2
+        text: "Raised crop yield prediction by 14% by integrating disease detection into the precision-agriculture model."
+        fact_ids: [ex_yield]
+      - id: A3
+        text: "Spearheaded edge deployment on Raspberry Pi 5B + Hailo-8 via ONNX → INT8 quantization → HEF compilation, achieving real-time inference at <30ms latency."
+        fact_ids: [ex_edge]
+      - id: A4
+        text: "Deployed the model on a Linux edge device (Raspberry Pi 5B + Hailo-8), handling dependency setup and performance profiling to hold inference under 30ms."
+        fact_ids: [ex_edge]
+  - id: B
+    name: "Data pipelines / Engineering"
+    bullets:
+      - id: B1
+        text: "Built the end-to-end pipeline from raw imagery to deployed model — cleaning and validating 3,200+ annotated instances, training, then ONNX export → INT8 quantization → edge compilation (<30ms)."
+        fact_ids: [ex_dataset, ex_edge]
+      - id: B2
+        text: "Cleaned and validated 3,200+ annotated instances from messy real-world field imagery, feeding a YOLOv8 retrain that improved mAP by 8.4%."
+        fact_ids: [ex_dataset, ex_map]
+  - id: C
+    name: "ML experiments / Research"
+    bullets:
+      - id: C1
+        text: "Pursued a self-defined dense-detection research problem from literature survey to a working prototype, improving mAP by 8.4% on real-world field data."
+        fact_ids: [ex_map]
+      - id: C2
+        text: "Ran systematic experiments across hyperparameter configurations with short iteration cycles, documenting results and dead ends for reproducibility; best configuration improved mAP by 8.4%."
+        fact_ids: [ex_map]
+  - id: D
+    name: "Analytics"
+    bullets:
+      - id: D1
+        text: "Analyzed 3,200+ annotated records to diagnose detection errors by object density and class, guiding a retrain that improved mAP by 8.4% and downstream yield prediction by 14%."
+        fact_ids: [ex_dataset, ex_map, ex_yield]
+  - id: E
+    name: "Backend / Production"
+    bullets:
+      - id: E1
+        text: "Ran model inference on Linux edge hardware with ONNX export, INT8 quantization and output validation, sustaining <30ms latency."
+        fact_ids: [ex_edge]
+
+# Removed from v1 — never use until Om confirms (kit §5)
+unconfirmed_claims:
+  - "idempotent batch processing workflows"
+  - "operational runbooks"
+  - "incident resolution"
+  - "model governance artifacts"
+  - "project trackers"
+  - "presented to research team leadership"
+  - "competitive benchmarking"
+  - "developed new algorithms"
+  - "distinguishing data format mismatches from inference failures"
+  - "typed interfaces and structured configuration"

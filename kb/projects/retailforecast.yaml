@@ -1,0 +1,36 @@
+# Kit §7.9 — facts ⚠ (no saved metrics file; Appendix C Fix 4)
+id: retailforecast
+name: "RetailForecast"
+tier: 2
+section: "7.9"
+github: "https://github.com/OmTilwar/retailforecast"
+stack: [Python, LightGBM, DuckDB, DuckDB SQL, SQL, pandas, NumPy, Scikit-Learn, SciPy, statsmodels, Matplotlib, pytest]
+one_liner: "Store-level demand forecasting on the Rossmann dataset (1M+ daily records) with DuckDB SQL features, LightGBM and hypothesis testing."
+tags: [data-science, forecasting, demand-forecasting, retail, tabular, lightgbm, sql, duckdb, window-functions, cte, feature-engineering, hypothesis-testing, statistics, eda, scenario-analysis]
+rules:
+  - "No forecast-accuracy number is recorded (RMSPE missing) — never claim forecast accuracy until it is."
+banned_terms: ["RMSPE of", "forecast accuracy of", "MAPE of"]
+
+facts:
+  - {id: rf_data, claim: "Rossmann Store Sales (public Kaggle): 1,017 stores, 2.5 years, ~1,017,209 daily records", values: ["1,017", "2.5", "1,017,209", "1M"], status: stated}
+  - {id: rf_sql, claim: "DuckDB SQL: CTEs, window functions, LAG/LEAD, 30-day rolling mean/stddev, JOINs, RANK, NTILE; 5 SQL feature pipelines", values: ["30", "5"], status: stated}
+  - {id: rf_lgbm, claim: "LightGBM: 1,000 rounds, early stopping (patience 50), 127 leaves, lr 0.05", values: ["1,000", "50", "127", "0.05"], status: stated}
+  - {id: rf_metrics, claim: "RMSPE, RMSE, MAE, MAPE computed — no value recorded", values: [], status: stated, note: "Record RMSPE before any forecast-accuracy claim"}
+  - {id: rf_stats, claim: "Welch's t-test (promo effect, p < 0.05), Mann-Whitney U (competition proximity)", values: ["0.05"], status: stated}
+  - {id: rf_whatif, claim: "What-if promo simulator (0.0x -> 1.5x multiplier)", values: ["0.0", "1.5"], status: stated}
+  - {id: rf_tests, claim: "16 pytest tests", values: ["16"], status: stated}
+
+titles:
+  - {subtitle: "Retail Demand Forecasting with SQL Features", stack: [Python, LightGBM, DuckDB SQL]}
+  - {subtitle: "Predictive Modeling & Statistical Analysis", stack: [Python, LightGBM, SQL, SciPy]}
+
+bullets:
+  - id: rf_b1
+    text: "Built a store-level demand forecasting pipeline over 1,017 stores (1M+ daily records) with DuckDB SQL feature engineering and LightGBM gradient boosting."
+    fact_ids: [rf_data, rf_lgbm]
+  - id: rf_b2
+    text: "Engineered 5 SQL feature pipelines using window functions (LAG, 30-day rolling mean/stddev), multi-table CTEs (YoY growth) and tiering (RANK, NTILE)."
+    fact_ids: [rf_sql]
+  - id: rf_b3
+    text: "Quantified promotion and competitor-proximity effects with Welch's t-test and Mann-Whitney U (p < 0.05), and built a what-if simulator over promo intensity (0.0x → 1.5x)."
+    fact_ids: [rf_stats, rf_whatif]

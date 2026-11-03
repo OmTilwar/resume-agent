@@ -1,0 +1,52 @@
+# Kit §8
+- id: ieee_publication
+  kind: publication
+  always_include: true
+  text: "Published technical research in IEEE Xplore (April 2026) — https://ieeexplore.ieee.org/document/11448187/"
+  latex: '\textbf{\textcolor{NavyBlue}{Publication}} -- Published technical research in IEEE Xplore (April 2026): \href{https://ieeexplore.ieee.org/document/11448187/}{IEEE Document 11448187}.'
+  rules:
+    - "Topic: Full Body Gender Detection using DeepFashion (ResNet-50). Name the topic for CV/DL roles; otherwise use the generic wording."
+    - "Different topic from the research internship — never imply the internship's detection work was published."
+  facts:
+    - {id: pub_ieee, claim: "IEEE Xplore publication, April 2026, document 11448187", values: ["11448187"], status: verified}
+
+- id: hackathon_wins
+  kind: hackathon
+  always_include: true
+  text: "Winner — Sankalp Bharat Hackathon (ML) 2026 (976 participants); ML Hackathon, IIIT Nagpur 2026 (850+); Bioinformatics ML Challenge, IIIT Nagpur 2025 (300+)"
+  latex: '\textbf{\textcolor{NavyBlue}{Winner}} -- Sankalp Bharat Hackathon (ML), 2026 (976) {\footnotesize |} ML Hackathon, IIIT Nagpur, 2026 (850+) {\footnotesize |} Bioinformatics ML Challenge, IIIT Nagpur 2025 (300+).'
+  rules: ["Sankalp Bharat: 976 participants — never '976 teams'"]
+  facts:
+    - {id: hack_sankalp, claim: "Sankalp Bharat Hackathon (ML) 2026 winner, 976 participants", values: ["976"], status: stated}
+    - {id: hack_iiitn, claim: "ML Hackathon IIIT Nagpur 2026 winner, 850+ participants", values: ["850"], status: stated}
+    - {id: hack_bioinfo, claim: "Bioinformatics ML Challenge IIIT Nagpur 2025 winner, 300+ participants", values: ["300"], status: stated}
+
+- id: amazon_ml_challenge
+  kind: competition
+  drop_if_project: amazon_er
+  text: "Top-1000 finalist — Amazon ML Challenge 2026: 0.9837 macro F0.5 on 1.7M x 10M entity resolution (2-member team)"
+  latex: '\textbf{\textcolor{NavyBlue}{Top-1000 Finalist}} -- Amazon ML Challenge 2026: 0.9837 macro F0.5 on 1.7M $\times$ 10M entity resolution (2-member team).'
+  rules: ["Never 'winner', a rank or a percentile.", "Drop this line if amazon_er is one of the 4 projects."]
+  facts:
+    - {id: ach_amz, claim: "Top-1000 finalist, 0.9837 public leaderboard macro F0.5, 2-member team", values: ["0.9837", "1.7M", "10M", "2"], status: stated}
+
+- id: eyrc
+  kind: competition
+  text: "7th among 800+ teams in eYantra Robotics Competition (eYRC), IIT Bombay (2024-25), 4-member team"
+  latex: '7th among 800+ teams in eYantra Robotics Competition (eYRC), IIT Bombay (2024-25).'
+  facts:
+    - {id: ach_eyrc, claim: "eYRC 2024-25, 7th of 800+ teams, 4-member team", values: ["7", "800", "4"], status: stated}
+
+- id: groundingdino_pr
+  kind: open_source
+  text: "Submitted PR #465 to IDEA-Research/GroundingDINO (10.6k stars): fixed _C NameError (11 issues) with a GPU fallback ~15x faster than CPU"
+  latex: '\textbf{\textcolor{NavyBlue}{Open Source}} -- Submitted \href{https://github.com/IDEA-Research/GroundingDINO/pull/465}{PR \#465} to IDEA-Research/GroundingDINO (10.6k$\star$): fixed \texttt{\_C} NameError (11 issues) with a GPU fallback $\sim$15x faster than CPU.'
+  include_for: [open source, pytorch, cuda, cv, vision-language, object detection, ml infra]
+  rules:
+    - "Status: open, NOT merged (opened 2026-10-02). Say 'Submitted' — 'Merged' only after it actually merges."
+    - "Default 3rd achievement when space allows."
+  facts:
+    - id: ach_gdino
+      claim: "GroundingDINO PR #465: pure-PyTorch deformable-attention GPU fallback; max diff 1.77e-06 vs CPU; 2.26 vs 34.19 ms/call on RTX 4050 (~15x); fixes 11 issues"
+      values: ["465", "10.6", "11", "15", "1.77e-06", "2.26", "34.19", "4050"]
+      status: verified

@@ -1,0 +1,136 @@
+# Kit §9 — Project selection by JD type. Inner lists = "one of these".
+# amazon_er belongs on almost every ML/AI resume; drop only for pure frontend,
+# robotics or analytics roles where 4 better-fitting projects exist.
+- id: llm_genai_agents
+  name: "LLM / GenAI / Agents"
+  signals: [llm, genai, generative ai, agents, agentic, rag, tool-calling, function-calling, prompt engineering, langchain]
+  emphasize: "Retrieval benchmark, tool-calling, agent orchestration"
+  projects: [finsight, propvox, amazon_er, [medvision, authnet]]
+  exp_groups: [C, B]
+- id: ai_generalist
+  name: "AI generalist / Startup (many hats)"
+  signals: [startup, generalist, many hats, fast-paced, end-to-end, ship, 0 to 1]
+  emphasize: "Speed, breadth, shipped products"
+  projects: [amazon_er, finsight, propvox, medvision]
+  exp_groups: [B, C]
+- id: ai_automation_ops
+  name: "AI Automation / Ops"
+  signals: [automation, workflow automation, ops, reliability, n8n, zapier, retries]
+  emphasize: "Reliability, retries, testing"
+  projects: [propvox, finsight, medvision, voxpipeline]
+  exp_groups: [E, B]
+- id: ml_cv_engineer
+  name: "ML / CV Engineer"
+  signals: [computer vision, cv, image, detection, segmentation, opencv, pytorch, model deployment, quantization]
+  emphasize: "Model metrics, latency, quantization, tests"
+  projects: [authnet, medvision, amazon_er, photoretouch]
+  exp_groups: [A]
+- id: genai_photography
+  name: "Generative AI / Photography"
+  signals: [diffusion, stable diffusion, image generation, photography, photo editing, inpainting, vae, gan]
+  emphasize: "VAE from scratch, diffusion inpainting"
+  projects: [photoretouch, authnet, medvision, finsight]
+  exp_groups: [A, C]
+- id: texture_auth_kyc
+  name: "Texture / Authentication / KYC"
+  signals: [authentication, counterfeit, kyc, identity verification, texture, fingerprinting, verification]
+  emphasize: "Metric learning, ONNX, verification API"
+  projects: [authnet, amazon_er, medvision, id_vlm]
+  exp_groups: [A]
+- id: applied_scientist
+  name: "Applied Scientist / Research"
+  signals: [research, applied scientist, publications, experiments, novel methods, phd, paper]
+  emphasize: "Problem framing, progressions, error analysis, IEEE pub"
+  projects: [amazon_er, authnet, medvision, photoretouch]
+  exp_groups: [C]
+- id: search_retrieval
+  name: "Search / Retrieval / Ranking / RecSys"
+  signals: [search, retrieval, ranking, recommendation, recsys, learning to rank, relevance, vector search]
+  emphasize: "Recall, F-scores, scale, LTR"
+  projects: [amazon_er, finsight, authnet, [propvox, medvision]]
+  exp_groups: [C]
+- id: entity_resolution
+  name: "Entity Resolution / Master Data"
+  signals: [entity resolution, record linkage, deduplication, master data, mdm, matching]
+  emphasize: "Matching at scale, messy data"
+  projects: [amazon_er, finsight, authnet, medvision]
+  exp_groups: [B]
+- id: nlp_multilingual
+  name: "NLP / Multilingual / Indic"
+  signals: [nlp, multilingual, indic, hindi, transliteration, language models, text]
+  emphasize: "Transliteration, Hinglish"
+  projects: [amazon_er, propvox, finsight, voxpipeline]
+  exp_groups: [B]
+- id: ecommerce_catalog
+  name: "Amazon / e-commerce / catalog"
+  signals: [amazon, e-commerce, catalog, marketplace, product data]
+  emphasize: "Scale, ranking, forecasting"
+  projects: [amazon_er, retailforecast, authnet, finsight]
+  exp_groups: [B, C]
+- id: data_science
+  name: "Data Science / Analytics"
+  signals: [data science, analytics, statistics, sql, dashboards, a/b testing, forecasting, hypothesis testing]
+  emphasize: "LightGBM, SQL, hypothesis tests"
+  projects: [retailforecast, amazon_er, medvision, finsight]
+  exp_groups: [D]
+- id: risk_finance
+  name: "Risk / Finance"
+  signals: [risk, finance, fintech, banking, credit, fraud, insurance]
+  emphasize: "Entity matching, SQL, statistics"
+  projects: [amazon_er, finsight, retailforecast, authnet]
+  exp_groups: [D]
+- id: data_engineering
+  name: "Data Engineering / ETL"
+  signals: [data engineering, etl, elt, pipelines, airflow, spark, data quality, batch]
+  emphasize: "Row counts, idempotency, data quality"
+  projects: [amazon_er, voxpipeline, retailforecast, medvision]
+  exp_groups: [B]
+- id: backend_sde
+  name: "Backend / SDE"
+  signals: [backend, sde, software engineer, apis, microservices, rest, databases, distributed systems]
+  emphasize: "Endpoints, latency, tests, retries, Docker"
+  projects: [propvox, medvision, finsight, authnet]
+  exp_groups: [E]
+- id: fullstack_product
+  name: "Full-Stack / Product Engineer"
+  signals: [full-stack, fullstack, product engineer, react, next.js, frontend, ui]
+  emphasize: "Shipped UI + API"
+  projects: [propvox, finsight, medvision, authnet]
+  exp_groups: [E]
+- id: speech_audio
+  name: "Speech / Audio"
+  signals: [speech, audio, voice, asr, tts, stt, diarization]
+  emphasize: "Diarization, real-time voice"
+  projects: [propvox, voxpipeline, amazon_er, finsight]
+  exp_groups: [B, E]
+- id: sre_devops
+  name: "SRE / DevOps / Infra"
+  signals: [sre, devops, infrastructure, kubernetes, ci/cd, observability, cloud]
+  emphasize: "Reliability, Docker, cloud jobs"
+  projects: [amazon_er, medvision, propvox, voxpipeline]
+  exp_groups: [E]
+  note: "No Kubernetes production evidence — list K8s/Prometheus as an honest gap; never revive the retired K8s project."
+- id: ml_infra
+  name: "ML Infra / Inference"
+  signals: [inference, serving, ml infra, mlops, gpu, cuda, latency, quantization, vllm, triton]
+  emphasize: "Quantization, latency, GPU (+ GroundingDINO PR)"
+  projects: [authnet, amazon_er, medvision, finsight]
+  exp_groups: [A, E]
+- id: healthcare
+  name: "Healthcare / Biomedical"
+  signals: [healthcare, medical, clinical, biomedical, hipaa, radiology, dicom, pharma, life sciences]
+  emphasize: "HIPAA, PS3.15, sensitivity"
+  projects: [medvision, authnet, amazon_er, finsight]
+  exp_groups: [A]
+- id: robotics_cpp
+  name: "Robotics / ROS2 / C++"
+  signals: [robotics, ros, ros2, c++, embedded, autonomous, sensor fusion, ekf]
+  emphasize: "C++17, EKF, GTest, CI"
+  projects: [submarine, vio, authnet, medvision]
+  exp_groups: [A]
+- id: vio_slam
+  name: "VIO / SLAM"
+  signals: [slam, vio, visual odometry, localization, state estimation, mapping]
+  emphasize: "ORB, EKF, TF2"
+  projects: [vio, submarine, authnet, medvision]
+  exp_groups: [A]

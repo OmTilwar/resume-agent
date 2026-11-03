@@ -1,0 +1,101 @@
+# resume-agent
+
+A LangGraph pipeline that turns a job description into a one-page, JD-tailored LaTeX resume and cover letter. Every claim on the page must trace back to a verified fact in a knowledge base, and **code** enforces that, not prompt instructions.
+
+It automates the workflow in [`MASTER_RESUME_KIT.md`](../../MASTER_RESUME_KIT.md): the kit's rules (§2), workflow (§3), facts (§5–§8), template (§12) and QA checklist (§13) become data, graph nodes and validators.
+
+## Status
+
+| Phase | What | Status |
+|---|---|---|
+| 0 | Knowledge base as data + truth guards + template | ✅ done |
+| 1 | Linear LangGraph MVP (ingest → analyze → select → write → assemble → compile) | next |
+| 2 | Validators + self-correction loop | — |
+| 3 | Human-in-the-loop interrupts + SQLite checkpointer + application tracker | — |
+| 4 | Cover-letter subgraph | — |
+| 5 | Eval on the golden set (`../../resumes/`) + tracing | — |
+| 6 | Streamlit UI, batch mode | — |
+
+## Design rule
+
+**LLMs decide and write; code checks and assembles.**
+
+- **LLM:** JD analysis, keyword ranking, rewording bullets, cover-letter prose.
+- **Python:** project scoring (kit §3), fact gating, number checks, banned phrases, LaTeX assembly, compile, page count.
+- **Privacy:** contact details never go to an LLM. The template fills them in from `kb/profile.yaml`.
+
+## Layout
+
+```
+kb/                      ← the kit as data (source: MASTER_RESUME_KIT.md v2)
+  meta.yaml              kit version this KB was synced from
+  profile.yaml           §4    contact, education, coursework, taglines
+  experience.yaml        §5    research intern facts + bullet groups A–E
+  skills.yaml            §6    "(Familiar)" tags preserved
+  projects/*.yaml        §7    11 projects: facts (verified/stated/banned), titles, bullet bank
+  achievements.yaml      §8
+  archetypes.yaml        §9    22 JD types → projects + experience groups
+  rules.yaml             §2, §10, §11  banned phrases, analogy regexes, verbs, page budget
+  retired.yaml           App. F
+resume_agent/
+  knowledge/models.py    Pydantic schema + query helpers (allowed_facts, allowed_bullets, …)
+  knowledge/loader.py    load + cross-reference validation
+  knowledge/numbers.py   pulls quotable numbers out of text (skips ResNet-18, F0.5, C++17, years …)
+  knowledge/checks.py    bullet truth checks (reused by the Phase 2 validator)
+  latex.py               escaping + Jinja env with LaTeX-safe delimiters
+  llm.py                 role-based OpenRouter models (Phase 1+)
+templates/resume.tex.j2  kit §12, preamble/spacing frozen
+config/models.yaml       free OpenRouter models per role, with fallbacks
+scripts/list_free_models.py
+tests/
+```
+
+## How facts are gated
+
+Each fact carries a `status` and optional restrictions:
+
+```yaml
+- id: mv_sens_spec
+  claim: "92.3% sensitivity, 91.0% specificity ..."
+  values: ["92.3", "91.0", "94.5", "87.6"]   # the only numbers a bullet citing this may use
+  status: verified                            # verified ✅ | stated ⚠ | banned ⛔
+  eval_size: 624                              # <50 → must be banned (kit §2.4.4)
+  allowed_when: {archetypes: [healthcare]}    # kit §2.5
+```
+
+`kb.allowed_facts(project, Context(archetype=..., company=...))` is the only door the graph will use. Banned facts, out-of-context facts and retired projects never come through it.
+
+A bullet passes `check_bullet` only if:
+- every number in it appears in a fact it cites,
+- it has no banned phrase or term, analogy clause, IIT/IIM implication, unconfirmed claim, lead verb on a team project, or "% vs pts" mix-up.
+
+## Setup
+
+```bash
+pip install -e ".[dev]"          # Phase 0
+pip install -e ".[agent,dev]"    # Phase 1+ (langgraph, langchain-openai, pypdf)
+cp .env.example .env             # add OPENROUTER_API_KEY
+python -m pytest                 # 68 tests; compile test needs pdflatex (MiKTeX)
+python scripts/list_free_models.py --check
+```
+
+## Keeping the KB in sync with the kit
+
+The kit stays the human-readable source. When you change `MASTER_RESUME_KIT.md`:
+1. Update the matching YAML (e.g. a ⚠ fact becomes ✅ after Appendix C Fix 4: change `status: stated` to `verified` and add `source`).
+2. Set `kb/meta.yaml → kit_updated` to the kit's new `*Last updated:` date.
+
+`tests/test_kit_sync.py` fails until step 2 is done, and also checks that every GitHub URL in kit §7 is present in the KB.
+
+## Models (OpenRouter, free)
+
+Defined in `config/models.yaml`, chosen from the live model list on 2026-11-04:
+
+| Role | Primary | Why |
+|---|---|---|
+| analyzer | `nvidia/nemotron-3.5-super-vl:free` | structured outputs, reads PDFs/images, 1M ctx |
+| writer | `thinkingmachines/inkling:free` | largest free model (975B MoE); bullet + CL quality |
+| fixer | `nvidia/nemotron-3-ultra-550b-a55b:free` | reasoning model; precise instruction-following |
+| fast | `nvidia/nemotron-3.5-lightning:free` | cheap classification / tag matching |
+
+Each role has two fallbacks, which OpenRouter tries automatically. Free models disappear without notice, so run `--check` before a batch.

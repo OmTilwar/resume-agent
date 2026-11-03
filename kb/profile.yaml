@@ -1,0 +1,44 @@
+# Kit §4
+name: "OM PRATAP TILWAR"
+phone: "+916263928015"
+email: "omtilwar@gmail.com"
+linkedin: "https://www.linkedin.com/in/omtilwar"
+github: "https://github.com/omtilwar"
+education:
+  institution: "Indian Institute of Information Technology, Nagpur"
+  degree: "B.Tech in Electronics and Communication Engineering (IoT)"
+  dates: "August 2023 - May 2027"
+  cgpa: "8.40"
+targeting: "Internships and 2027 full-time roles"
+positioning:
+  - "Large-scale applied ML: Amazon ML Challenge 2026 Top-1000 finalist — 1.7M x 10M multilingual entity resolution, 0.9837 macro F0.5, full error analysis (flagship)."
+  - "Research credibility: IEEE Xplore publication (April 2026) + 6-month ML research internship with a real edge deployment (<30ms on Raspberry Pi 5 + Hailo-8)."
+  - "Builder with tested code: 11 active projects on public GitHub, most with FastAPI services, automated test suites (16-85 tests each) and Docker/CI."
+  - "Open source: submitted fix to IDEA-Research/GroundingDINO (10.6k stars) resolving one of its most-reported bugs (11 issues)."
+  - "Competitive proof: 3x hackathon winner; 7th/800+ teams at eYRC (IIT Bombay)."
+coursework:
+  - "Database Management Systems"
+  - "Data Structures"
+  - "Fundamentals of Machine Learning"
+  - "Object-Oriented Programming"
+  - "Numerical Methods and Probability Theory"
+  - "Programming Fundamentals"
+  - "Programming Techniques for IoT"
+  - "DSP and Applications"
+  - "Communication Network"
+  - "Robotics"
+  - "IoT Security"
+  - "Applied Mathematics for Engineers"
+coursework_shorthand:
+  - "Data Structures & Algorithms"
+  - "DBMS"
+  - "Probability & Statistics"
+  - "Machine Learning"
+  - "OOP"
+  - "Digital Signal Processing"
+  - "Computer Networks"
+# Kit §8 — optional tagline (costs one line)
+taglines:
+  - 'ML Engineer $\cdot$ Retrieval \& Ranking at 10M Scale $\cdot$ Amazon ML Challenge Top-1000 $\cdot$ IEEE Published'
+  - 'AI/ML Builder $\cdot$ Deep Learning \& Computer Vision $\cdot$ IEEE Published $\cdot$ 3$\times$ Hackathon Winner'
+  - 'LLM Systems $\cdot$ Retrieval \& Agents $\cdot$ FastAPI $\cdot$ 3$\times$ Hackathon Winner'

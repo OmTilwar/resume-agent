@@ -1,0 +1,75 @@
+# Kit §7.1 — flagship. Facts ⚠ (competition repo + leaderboard).
+id: amazon_er
+name: "Amazon ML Challenge 2026"
+tier: 1
+section: "7.1"
+github: "https://github.com/OmTilwar/amazon-ml-challenge-2026-entity-resolution"
+stack: [Python, PyTorch, sentence-transformers, Transformers, HuggingFace Transformers, Cross-Encoders, LightGBM, Polars, PyArrow, RapidFuzz, unidecode, Scikit-Learn, AWS S3, SageMaker, AWS SageMaker, Modal, Lightning AI]
+one_liner: "Matched 10M noisy multilingual business records (US/India/France) to 1.7M reference entities via fine-tuned dense retrieval -> LightGBM ranker -> 4-cross-encoder ensemble -> gate, scoring 0.9837 macro F0.5."
+tags: [entity-resolution, record-linkage, entity-matching, deduplication, fuzzy-matching, search, retrieval, ranking, learning-to-rank, dense-retrieval, bi-encoder, cross-encoder, reranking, contrastive-learning, embeddings, nlp, multilingual, transliteration, lightgbm, ensembling, stacking, pseudo-labeling, self-training, domain-adaptation, large-scale, polars, data-pipelines, aws, s3, sagemaker, cloud-gpu, mlops, competition, e-commerce, catalog, kyc, master-data, research, error-analysis]
+rules:
+  - "2-member team (Om Tilwar, Vedant Badukale): use Built/Designed/Fine-tuned; never Spearheaded/Owned/Led."
+  - "Say 'Top-1000 finalist' — never 'winner', a rank or a percentile."
+  - "0.9837 = public leaderboard; 0.9930 = orphan-simulated validation. Never mix them up."
+banned_terms: ["winner", "percentile", "ranked"]
+banned_verbs: [Spearheaded, Owned, Drove, Led]
+
+facts:
+  - {id: amz_team, claim: "Team YOU_WIN_I_LOSE, 2 members, Top-1000 finalist, submitted 2026-09-28", values: ["2"], status: stated}
+  - {id: amz_scale, claim: "1,732,544 S1 reference entities x 9,969,589 S2/S3 noisy records (US/India/France)", values: ["1,732,544", "9,969,589", "1.7M", "10M"], status: stated}
+  - {id: amz_lb_f05, claim: "Public leaderboard macro F0.5 0.9837", values: ["0.9837"], status: stated}
+  - {id: amz_progression, claim: "Leaderboard progression 0.894 -> 0.934 -> 0.9735 -> 0.9837 across 18 iterations", values: ["0.894", "0.934", "0.9735", "0.9837", "18"], status: stated}
+  - {id: amz_val_orphan, claim: "Orphan-simulated validation macro F0.5 0.9930", values: ["0.9930"], status: stated, note: "Never present as a leaderboard score"}
+  - {id: amz_blocking, claim: "Blocking pair recall 98.29% -> 99.31% (+1.02 pts); multilingual-e5-base bi-encoder trained on 3M pairs, in-batch-negative contrastive loss; top-20 per country", values: ["98.29", "99.31", "1.02", "3M", "20"], status: stated}
+  - {id: amz_stage1, claim: "Stage-1 LightGBM ranker (~40 features, top-3/record) kept 29.9M candidate pairs, retaining 99.89% of reachable true pairs", values: ["29.9M", "99.89", "40", "3"], status: stated}
+  - {id: amz_cross_enc, claim: "4 cross-encoders (2x bge-reranker-v2-m3, 2x mDeBERTa-v3-base); v1 on 2.5M pairs with hard negatives; later versions via 3 rounds of self-training", values: ["4", "2", "2.5M", "3"], status: stated}
+  - {id: amz_orphan, claim: "Orphan simulation (remove 25% of reference entities from val folds) — largest single gain +0.0043 leaderboard F0.5", values: ["25", "0.0043"], status: stated}
+  - {id: amz_france, claim: "France self-training (3 rounds, multi-model agreement): uncertain-record share 7.2% -> 4.9%", values: ["3", "7.2", "4.9"], status: stated}
+  - {id: amz_string_equal, claim: "Only 10.7% of true matches were string-equal names", values: ["10.7"], status: stated}
+  - {id: amz_decision, claim: "Decision layer: per-S1 cap removed 274 links; duplicate consistency harmonized 164 records; France ambiguity drop removed 6,890 risky merges; F0.5 weights precision 2x", values: ["274", "164", "6,890", "2"], status: stated}
+  - {id: amz_error_analysis, claim: "All 4,507 unrecoverable val matches traced; only 10 retrieval misses; >50% unresolvable from the data", values: ["4,507", "10", "50"], status: stated}
+  - {id: amz_constraints, claim: "All models MIT/Apache-2.0, <=568M params; no external data/APIs/LLMs", values: ["568M"], status: stated}
+  - {id: amz_infra, claim: "Modal (H100), Lightning AI (H100/A100/L40S), AWS SageMaker, S3 handoffs; idempotent stages, mid-run checkpointing, per-account cost ledger; byte-for-byte reproducible", values: [], status: stated}
+  - {id: amz_output, claim: "Decision layer -> 5.88M assignments", values: ["5.88M"], status: stated}
+
+titles:
+  - {subtitle: "Business Entity Resolution at 10M Scale", stack: [Python, PyTorch, LightGBM, Transformers]}
+  - {subtitle: "Entity Resolution at 1.7M x 10M Scale", stack: [Python, PyTorch, Cross-Encoders, LightGBM]}
+  - {subtitle: "Large-Scale Multilingual Record Linkage", stack: [Python, PyTorch, sentence-transformers, Polars]}
+  - {subtitle: "Retrieval & Re-Ranking Pipeline for Entity Matching", stack: [Python, PyTorch, LightGBM]}
+  - {subtitle: "Distributed ML Pipeline for Entity Resolution", stack: [Python, PyTorch, AWS S3, SageMaker, Modal]}
+
+bullets:
+  - id: amz_b1
+    text: "Built a business entity-resolution pipeline matching 10M noisy multilingual records (US/India/France) to 1.7M reference entities, reaching 0.9837 macro F0.5 on the Amazon ML Challenge 2026 leaderboard (Top-1000 finalist, 2-member team)."
+    fact_ids: [amz_scale, amz_lb_f05, amz_team]
+  - id: amz_b2
+    text: "Fine-tuned a multilingual-e5-base bi-encoder with contrastive in-batch negatives on 3M pairs, raising blocking recall from 98.29% to 99.31%; a LightGBM ranker (~40 features) cut candidates to 29.9M pairs while keeping 99.89% of true pairs."
+    fact_ids: [amz_blocking, amz_stage1]
+  - id: amz_b3
+    text: "Ensembled 4 fine-tuned cross-encoders (bge-reranker-v2-m3, mDeBERTa-v3) with a cross-fitted LightGBM stacker and query-level gate, lifting leaderboard F0.5 from 0.894 to 0.9837 across 18 iterations."
+    fact_ids: [amz_cross_enc, amz_progression]
+  - id: amz_b4
+    text: "Designed orphan simulation (removing 25% of reference entities from validation folds) to reproduce the test set's distractor rate, closing the val–test gap and delivering the largest single gain (+0.0043 F0.5)."
+    fact_ids: [amz_orphan]
+  - id: amz_b5
+    text: "Adapted models to an unlabeled country (France) via 3 rounds of self-training on high-confidence pseudo-labels with multi-model agreement, cutting uncertain records from 7.2% to 4.9%."
+    fact_ids: [amz_france]
+  - id: amz_b6
+    text: "Built country-agnostic normalization (NFKC, Devanagari/Kannada transliteration, legal-suffix canonicalization, alias splitting) for names where only 10.7% of true matches were string-equal."
+    fact_ids: [amz_string_equal]
+  - id: amz_b7
+    text: "Built a precision-first decision layer from train audits — per-country budgets, per-entity caps and ambiguity drops that removed 6,890 risky merges — under an F0.5 metric weighting precision 2x."
+    fact_ids: [amz_decision]
+  - id: amz_b8
+    text: "Orchestrated idempotent GPU/CPU jobs across Modal, Lightning AI (H100/A100) and AWS SageMaker with S3 handoffs, checkpointing and a cost ledger; final submission reproduces byte-for-byte."
+    fact_ids: [amz_infra]
+  - id: amz_b9
+    text: "Traced all 4,507 unrecoverable validation matches, showing retrieval was effectively solved (10 misses) and >50% of residual errors were unresolvable from the data."
+    fact_ids: [amz_error_analysis]
+
+interview:
+  - {q: "Why F0.5 and how did it change your decisions?", a: "Precision weighted 2x; one false merge can zero an entity -> decision layer, ambiguity drops."}
+  - {q: "What was the val-test gap and how did you close it?", a: "Orphan simulation (+0.0043)."}
+  - {q: "What would you do with more time?", a: "Error analysis says >50% of residuals are unresolvable from data; only 10 retrieval misses."}
+  - {q: "What did you do vs your teammate?", a: "Have a precise answer ready."}

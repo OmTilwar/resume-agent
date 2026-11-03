@@ -1,0 +1,32 @@
+[project]
+name = "resume-agent"
+version = "0.0.1"
+description = "LangGraph pipeline that writes JD-tailored, interview-proof LaTeX resumes and cover letters from a verified knowledge base"
+requires-python = ">=3.11"
+dependencies = [
+    "pydantic>=2.6",
+    "pyyaml>=6.0",
+    "jinja2>=3.1",
+]
+
+[project.optional-dependencies]
+# Phase 1+: graph + LLM via OpenRouter (OpenAI-compatible API)
+agent = [
+    "langgraph>=0.2",
+    "langchain-core>=0.3",
+    "langchain-openai>=0.2",
+    "python-dotenv>=1.0",
+    "pypdf>=4.0",
+]
+dev = ["pytest>=8"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = ["latex: needs pdflatex on PATH"]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["resume_agent*"]

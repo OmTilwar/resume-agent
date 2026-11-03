@@ -1,0 +1,53 @@
+# Kit §7.11 — rebuild pending; VLM / KYC JDs only, harness framing only.
+id: id_vlm
+name: "ID-VLM"
+tier: 2
+section: "7.11"
+github: "https://github.com/OmTilwar/ID-VLM"
+stack: [Python, PyTorch, Qwen2-VL, Qwen2-VL-2B, Unsloth, LoRA, OpenCV, FastAPI, pytest]
+one_liner: "LoRA fine-tuning and evaluation harness for structured field extraction from identity documents (MIDV-2020)."
+tags: [vlm, vision-language-model, fine-tuning, lora, unsloth, document-ai, identity-verification, kyc, structured-extraction, evaluation-harness, cer, tamper-detection, opencv, fastapi, qwen]
+rules:
+  - "Use only if the JD asks for VLMs/document AI and no Tier 1 project covers it."
+  - "Quote 'value recall' only as value recall — never 'accuracy' or 'extraction accuracy'."
+  - "Until run 2 (schema prompts) is done, frame around fine-tuning + evaluation-harness work."
+banned_terms: ["extraction accuracy", "field accuracy", "document accuracy", "RRF", "Ragas"]
+
+facts:
+  - {id: idv_data, claim: "MIDV-2020 rectified photos: 10 document types x 15 = 150 test documents; 700 training samples", values: ["10", "15", "150", "700"], status: verified}
+  - {id: idv_lora, claim: "LoRA via Unsloth FastVisionModel + SFTTrainer on a T4 (300 steps, ~27 min)", values: ["300", "27"], status: verified}
+  - id: idv_value_recall
+    claim: "Value recall 30.8% -> 41.1% (+10.3 pts) over 2,008 fields; expiry 59.3% -> 74.8%, birth date 53.3% -> 66.7%, document number 45.3% -> 54.0%"
+    values: ["30.8", "41.1", "10.3", "2,008", "59.3", "74.8", "53.3", "66.7", "45.3", "54.0"]
+    status: verified
+    eval_size: 2008
+    source: "scripts/run_evaluation.py (re-scored 22 Oct 2026)"
+  - {id: idv_json, claim: "JSON parse rate 67.3% -> 86.0% (+18.7 pts)", values: ["67.3", "86.0", "18.7"], status: verified, eval_size: 150}
+  - {id: idv_diagnosis, claim: "Diagnosed run 1's near-zero strict scores: only ~14-17% of ground-truth keys appeared because the prompt never specified key names", values: ["14", "17"], status: verified}
+  - {id: idv_harness, claim: "Eval harness: strict + normalized field match, key-independent value recall, key coverage, CER, JSON parse rate; breakdowns by document type / capture condition / field", values: [], status: verified}
+  - {id: idv_parser, claim: "Multi-strategy JSON parser (direct parse, markdown extraction, brace matching, auto-fix)", values: [], status: verified}
+  - {id: idv_tamper, claim: "OpenCV synthetic tampering (splice, blur, font mismatch); FastAPI inference API", values: [], status: verified}
+  - {id: idv_tests, claim: "102 pytest tests", values: ["102"], status: verified}
+  - {id: idv_strict, claim: "Field exact match 7.7% / 9.4%, CER, document-level accuracy 0%, per-document gains (Spain 15.2%, Estonia 12.7%)", values: ["7.7", "9.4", "15.2", "12.7"], status: banned, note: "Dominated by key-name mismatch"}
+  - {id: idv_ragas, claim: "'Ragas' / hybrid RRF numbers (Context Recall 0.78, Precision 0.59, Faithfulness 0.91, +26.67%, +31.0%)", values: ["0.78", "0.59", "0.91", "26.67", "31.0"], status: banned, eval_size: 5, source: "src/ragas_doc_eval.py"}
+
+titles:
+  - {subtitle: "VLM Fine-Tuning & Evaluation Harness for ID Documents", stack: [Python, PyTorch, Qwen2-VL, Unsloth]}
+  - {subtitle: "Document AI Pipeline with Synthetic Tamper Data", stack: [Python, Qwen2-VL, LoRA, OpenCV]}
+
+bullets:
+  - id: idv_b1
+    text: "Fine-tuned Qwen2-VL-2B with LoRA (Unsloth) on MIDV-2020 identity documents across 10 types, raising value recall from 30.8% to 41.1% (+10.3 pts) and valid-JSON output from 67.3% to 86.0%."
+    fact_ids: [idv_lora, idv_data, idv_value_recall, idv_json]
+  - id: idv_b2
+    text: "Diagnosed near-zero strict scores as a key-naming mismatch (only ~17% of expected keys produced) by adding key-independent value recall and key coverage metrics, then redesigned prompts around per-document-type key schemas."
+    fact_ids: [idv_diagnosis, idv_harness]
+  - id: idv_b3
+    text: "Built an evaluation harness (strict/normalized field match, value recall, CER, JSON parse rate) with breakdowns by document type, capture condition and field, covered by 102 pytest tests."
+    fact_ids: [idv_harness, idv_tests]
+  - id: idv_b4
+    text: "Built a multi-strategy JSON parser (direct parse, markdown extraction, brace matching, auto-fix) and an OpenCV pipeline generating labelled tamper samples (splice, blur, font mismatch)."
+    fact_ids: [idv_parser, idv_tamper]
+
+interview:
+  - {q: "What's the extraction accuracy?", a: "Honest: fine-tuning improved valid-JSON output but not field accuracy on a 2B model; the evaluation exposed it; next step is constrained decoding plus a larger model."}

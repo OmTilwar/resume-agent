@@ -1,0 +1,37 @@
+# Kit §7.6 — facts ⚠
+id: submarine
+name: "Submarine Driver Framework"
+tier: 2
+section: "7.6"
+github: "https://github.com/OmTilwar/submarine-driver-framework"
+stack: [C++17, ROS2, CMake, GTest, URDF, RViz, Python, YAML, EKF]
+one_liner: "Modular C++17/ROS2 driver framework for underwater-vehicle actuators and sensors, with a 12-state 6-DOF EKF and noise simulation for SIL testing."
+tags: [robotics, cpp, cpp17, ros2, drivers, actuators, sensors, imu, dvl, ekf, state-estimation, sensor-fusion, 6-dof, sil-testing, simulation, rviz, gtest, raii, embedded, underwater-robotics]
+
+facts:
+  - {id: sub_arch, claim: "Dual-mode: pure C++17 core (no ROS2 dependency; RAII, rule of 5) + optional ROS2 node wrappers; abstract bases DriverBase, SensorBase, ActuatorBase", values: ["5"], status: stated}
+  - {id: sub_thrusters, claim: "Thrusters: quadratic PWM thrust curves, deadband compensation, force saturation, thermal protection (Blue Robotics T200/T500)", values: [], status: stated}
+  - {id: sub_sensors, claim: "Simulated sensors: 6-axis IMU (200 Hz), DVL (50 Hz, bottom-lock loss), depth (50 Hz, seawater temperature compensation)", values: ["6", "200", "50"], status: stated}
+  - {id: sub_ekf, claim: "12-state 6-DOF EKF fusing IMU dead-reckoning, DVL velocity, depth corrections", values: ["12", "6"], status: stated}
+  - {id: sub_noise, claim: "SIL noise: Gaussian white noise, bias-drift random walk, ADC quantization", values: [], status: stated}
+  - {id: sub_sim, claim: "Trajectory sim (circle, figure-8, straight), URDF model, RViz pose tracking", values: ["8"], status: stated}
+  - {id: sub_tests, claim: "50 GTest unit tests; GitHub Actions CI (CMake + CTest)", values: ["50"], status: stated}
+
+titles:
+  - {subtitle: "Modular C++17/ROS2 Actuator & Sensor Suite", stack: [C++17, ROS2, EKF, GTest]}
+  - {subtitle: "Underwater Robotics & State Estimation", stack: [C++17, ROS2, EKF, RViz]}
+  - {subtitle: "Sensor Fusion & SIL Simulation", stack: [C++17, ROS2, CMake, GTest]}
+
+bullets:
+  - id: sub_b1
+    text: "Engineered a modular C++17/ROS2 driver framework for underwater vehicles with abstract lifecycle base classes (DriverBase, SensorBase, ActuatorBase) using RAII and smart pointers."
+    fact_ids: [sub_arch]
+  - id: sub_b2
+    text: "Implemented a 12-state 6-DOF Extended Kalman Filter fusing 200 Hz IMU dead-reckoning with 50 Hz DVL velocity and depth corrections."
+    fact_ids: [sub_ekf, sub_sensors]
+  - id: sub_b3
+    text: "Modeled thruster dynamics with quadratic PWM thrust curves, deadband compensation and thermal protection for Blue Robotics T200/T500 thrusters."
+    fact_ids: [sub_thrusters]
+  - id: sub_b4
+    text: "Built a sensor-noise injection suite (white noise, bias-drift random walk, ADC quantization) for software-in-the-loop testing; 50 GTest tests run in GitHub Actions CI."
+    fact_ids: [sub_noise, sub_tests]

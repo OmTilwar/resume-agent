@@ -1,0 +1,36 @@
+# Kit §7.10 — facts ⚠
+id: voxpipeline
+name: "VoxPipeline"
+tier: 2
+section: "7.10"
+github: "https://github.com/OmTilwar/voxpipeline"
+stack: [Python, HuggingFace, FFmpeg, yt-dlp, pyannote, wav2vec2, pandas]
+one_liner: "Five-stage speech-data ETL producing speaker- and emotion-labelled datasets for TTS training."
+tags: [etl, data-pipelines, batch-processing, audio, speech, huggingface, diarization, data-engineering, tts]
+rules:
+  - "No throughput number exists — never write 'thousands of files' or 'hours of audio' until measured."
+  - "Test count 40+ by default; 65 only for Sarvam backend JDs."
+banned_terms: ["thousands of files", "hours of audio", "TB of", "GB of"]
+
+facts:
+  - {id: vp_stages, claim: "5 stages: Acquire (yt-dlp) -> Convert (FFmpeg, 16kHz mono WAV) -> Diarize (pyannote 3.1) -> Emotion (wav2vec2) -> Output (RTTM, JSON, CSV)", values: ["5", "16", "3.1"], status: stated}
+  - {id: vp_reliability, claim: "Checkpoint-resume, per-file error isolation, retry with exponential backoff, rate limiting, per-file logging", values: [], status: stated}
+  - {id: vp_abstractions, claim: "Provider abstractions: AudioAcquirer, FormatHandler, SpeakerDiarizer, EmotionTagger; centralized config", values: [], status: stated}
+  - {id: vp_outputs, claim: "Aligned timestamp -> speaker -> emotion records in RTTM, JSON and CSV", values: [], status: stated}
+  - {id: vp_tests, claim: "40+ pytest tests", values: ["40"], status: stated}
+  - {id: vp_tests_full, claim: "65 pytest tests", values: ["65"], status: stated, allowed_when: {company_contains: [sarvam]}}
+
+titles:
+  - {subtitle: "Speech Data ETL for TTS Training", stack: [Python, HuggingFace, FFmpeg, pyannote]}
+  - {subtitle: "Resilient Batch Processing Pipeline", stack: [Python, FFmpeg, HuggingFace, yt-dlp]}
+
+bullets:
+  - id: vp_b1
+    text: "Built a 5-stage speech-data ETL: yt-dlp acquisition → FFmpeg normalization (16kHz mono) → pyannote diarization → wav2vec2 emotion tagging → RTTM/JSON/CSV outputs for TTS training."
+    fact_ids: [vp_stages]
+  - id: vp_b2
+    text: "Engineered checkpoint-resume, per-file error isolation and retry with exponential backoff behind provider abstractions (AudioAcquirer, FormatHandler, SpeakerDiarizer, EmotionTagger), tested by 40+ pytest tests."
+    fact_ids: [vp_reliability, vp_abstractions, vp_tests]
+  - id: vp_b3
+    text: "Produced aligned timestamp → speaker → emotion records in RTTM, JSON and CSV for downstream training and analysis."
+    fact_ids: [vp_outputs]

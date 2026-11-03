@@ -1,0 +1,69 @@
+# Kit §7.2
+id: finsight
+name: "FinSight AI"
+tier: 1
+section: "7.2"
+github: "https://github.com/OmTilwar/FinSight-AI"
+stack: [Python, FastAPI, Llama-3, llama-cpp-python, GGUF, Pinecone, BM25, rank-bm25, Scikit-Learn, TF-IDF, sentence-transformers, LoRA, Unsloth, React, Vite, Web Speech API]
+one_liner: "Privacy-first banking assistant: local Llama-3 with hybrid BM25 + Pinecone retrieval over policy documents and deterministic function-calling for account queries."
+tags: [llm, rag, agents, tool-calling, function-calling, prompt-engineering, fastapi, finance, fintech, banking, nlp, vector-search, hybrid-search, bm25, retrieval-benchmarking, genai, rest-api, lora, local-llm, privacy, full-stack, react]
+rules:
+  - "This is a BANKING assistant. Do not rename it for scientific/literature/legal JDs."
+  - "The 'SciMining AI' alias is retired."
+forbidden_title_terms: ["SciMining", "Scientific", "Literature", "Knowledge Discovery", "Risk Data Pipeline", "Financial Analytics", "High-Performance Backend"]
+banned_terms: ["4-tier", "risk exposure", "loan portfolios", "chunking strategies"]
+
+facts:
+  - {id: fs_arch, claim: "4-stage pipeline: BM25/TF-IDF lexical -> Pinecone vector search -> deterministic function-calling -> local Llama-3 generation", values: ["4"], status: verified, source: "backend/"}
+  - {id: fs_llm, claim: "Local Llama-3-8B-Instruct (quantized GGUF) via llama-cpp-python; privacy-first", values: [], status: verified}
+  - id: fs_retrieval_bench
+    claim: "Retrieval benchmark on 762 banking queries: BM25 vs TF-IDF Top-1 60.53% -> 66.45% (+5.92 pts), Top-3 78.29% -> 83.55% (+5.26 pts)"
+    values: ["762", "60.53", "66.45", "5.92", "78.29", "83.55", "5.26"]
+    status: verified
+    eval_size: 762
+    source: "backend/benchmark_retrievers.py"
+  - {id: fs_latency, claim: "BM25 retrieval latency ~0.20ms; sub-second end-to-end response", values: ["0.20"], status: stated}
+  - {id: fs_lora, claim: "LoRA fine-tuning via Unsloth on 150+ banking Q&A pairs", values: ["150"], status: stated, note: "Small dataset — never lead with it; 4th bullet only"}
+  - {id: fs_tools, claim: "Deterministic tools: account balance checks, loan eligibility", values: [], status: verified}
+  - {id: fs_thresholds, claim: "Thresholds: TF-IDF 0.65 (strict), Pinecone 0.55 (forgiving)", values: ["0.65", "0.55"], status: verified}
+  - {id: fs_entity_matching, claim: "Entity matching via cosine similarity + fuzzy matching over banking records", values: [], status: verified}
+  - {id: fs_api, claim: "FastAPI backend with request/JSON validation; React (Vite) frontend with voice input (Web Speech API)", values: [], status: verified}
+  - id: fs_ragas
+    claim: "'Ragas' Context Precision 1.00 / Recall 1.00 / Faithfulness 0.90"
+    values: ["1.00", "0.90"]
+    status: banned
+    eval_size: 7
+    source: "backend/ragas_eval.py"
+    note: "Custom heuristic, 7 hand-written questions, hard-coded answers; never imports ragas."
+
+titles:
+  - {subtitle: "LLM Banking Assistant with Hybrid RAG", stack: [Python, FastAPI, Llama-3, Pinecone, BM25]}
+  - {subtitle: "Local LLM Agent & Function-Calling", stack: [Python, FastAPI, Llama-3, Pinecone]}
+  - {subtitle: "Hybrid Retrieval Pipeline (BM25 + Vector Search)", stack: [Python, FastAPI, Pinecone, BM25]}
+  - {subtitle: "Full-Stack AI Banking Assistant", stack: [React, Python, FastAPI, Llama-3, Pinecone]}
+
+bullets:
+  - id: fs_b1
+    text: "Built a privacy-first banking assistant on a local Llama-3-8B (GGUF, llama.cpp) with a 4-stage pipeline: BM25 lexical search → Pinecone vector search → deterministic function-calling → grounded generation."
+    fact_ids: [fs_arch, fs_llm]
+  - id: fs_b2
+    text: "Benchmarked lexical retrievers on 762 banking queries, replacing TF-IDF with BM25 to raise Top-1 accuracy from 60.53% to 66.45% (+5.92 pts) and Top-3 from 78.29% to 83.55%."
+    fact_ids: [fs_retrieval_bench]
+  - id: fs_b3
+    text: "Implemented deterministic function-calling for structured account queries (balance checks, loan eligibility) so numeric answers come from tools rather than LLM generation."
+    fact_ids: [fs_tools]
+  - id: fs_b4
+    text: "Tuned per-retriever confidence thresholds (TF-IDF 0.65, Pinecone 0.55) to route queries between strict keyword matching and semantic fallback; served via FastAPI with JSON validation."
+    fact_ids: [fs_thresholds, fs_api]
+  - id: fs_b5
+    text: "Built the full-stack app: React (Vite) frontend with voice input (Web Speech API) and FastAPI backend serving a local Llama-3 for privacy-first conversations."
+    fact_ids: [fs_api, fs_llm]
+  - id: fs_b6
+    text: "Fine-tuned Llama-3 with LoRA (Unsloth) on 150+ banking Q&A pairs for domain-specific phrasing."
+    fact_ids: [fs_lora]
+    note: "Use only as a 4th bullet; small dataset."
+
+interview:
+  - {q: "How is the 762-query benchmark built, and what counts as a correct Top-1?", a: "Know backend/benchmark_retrievers.py."}
+  - {q: "Why BM25 + Pinecone instead of one? How are the thresholds chosen?"}
+  - {q: "How do you know the LLM doesn't hallucinate?", a: "Numeric answers come from deterministic tools; full generation eval is Fix 3."}

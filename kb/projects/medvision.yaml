@@ -1,0 +1,86 @@
+# Kit §7.4
+id: medvision
+name: "MedVision"
+tier: 1
+section: "7.4"
+github: "https://github.com/OmTilwar/medvision"
+stack: [Python, PyTorch, FastAPI, Docker, pytest, OpenCV, Tesseract OCR, pydicom]
+one_liner: "Medical imaging toolkit — chest X-ray classification, lung segmentation, DICOM handling, PHI de-identification, served as a Dockerized API."
+tags: [ml, cv, healthcare, medical-imaging, classification, segmentation, u-net, transfer-learning, dicom, hipaa, phi, de-identification, ocr, ner, grad-cam, fastapi, docker, pytest, production-api, regulated-industries, compliance]
+rules:
+  - "This is a MEDICAL IMAGING project. Do not add RAG bullets."
+  - "Test count is 64 — never 48."
+forbidden_title_terms: ["Document Extraction", "Messy Record", "Predictive Analytics", "Data Quality", "Data Science & ML Platform", "NLP Pipeline", "Power BI"]
+banned_terms: ["RAG", "Power BI", "Ragas", "clinical retrieval"]
+
+facts:
+  - {id: mv_dataset, claim: "5,800+ chest X-rays (public pneumonia dataset)", values: ["5,800"], status: stated}
+  - id: mv_classifier
+    claim: "ResNet-18 transfer learning (ImageNet, layer1 frozen) on the 624-image held-out test set (234 normal / 390 pneumonia): 91.8% accuracy, 0.97 AUC-ROC (0.974)"
+    values: ["624", "234", "390", "91.8", "0.97", "0.974"]
+    status: verified
+    eval_size: 624
+    source: "outputs/results/classifier_test_results.json"
+  - id: mv_sens_spec
+    claim: "92.3% sensitivity, 91.0% specificity, PPV 94.5%, NPV 87.6% on the 624-image test set"
+    values: ["92.3", "91.0", "94.5", "87.6"]
+    status: verified
+    eval_size: 624
+    allowed_when: {archetypes: [healthcare]}
+    source: "outputs/results/classifier_test_results.json"
+  - id: mv_unet
+    claim: "U-Net from scratch (17.3M params, Dice+BCE, cosine annealing) on NLM Montgomery County (138 real chest X-rays, one per patient), patient-level 5-fold CV, fixed 40 epochs/fold: out-of-fold Dice 0.975 +/- 0.020, IoU 0.951 +/- 0.035 (median Dice 0.981; per-fold 0.969-0.979)"
+    values: ["17.3M", "17M", "138", "5", "40", "0.975", "0.020", "0.951", "0.035", "0.981", "0.969", "0.979"]
+    status: verified
+    eval_size: 138
+    source: "outputs/results/segmenter_cv_results.json (commit 54c8f1d)"
+  - id: mv_unet_synthetic
+    claim: "Old 0.83 Dice / 0.71 IoU from a U-Net trained on 40 synthetic placeholder images, scored on 8"
+    values: ["0.83", "0.71"]
+    status: banned
+    eval_size: 8
+  - {id: mv_deid, claim: "De-identification: 25+ PHI tags, UID regeneration, DICOM PS3.15 Annex E", values: ["25"], status: verified}
+  - {id: mv_ocr, claim: "OCR (Tesseract) + regex NER for burned-in PHI: names, MRN, dates, SSN, phone, email", values: [], status: verified}
+  - {id: mv_dicom, claim: "DICOM load/convert/visualize, CLAHE, CT windowing presets (lung/bone/brain), Grad-CAM", values: [], status: verified}
+  - {id: mv_api, claim: "Docker FastAPI service, 6 REST endpoints (classify, segment, convert, anonymize, de-identify, health), Pydantic validation", values: ["6"], status: verified}
+  - {id: mv_tests, claim: "64 pytest tests", values: ["64"], status: verified}
+  - id: mv_rag
+    claim: "2-stage clinical RAG / 'Ragas' numbers (0.88 Context Precision, 0.92 Faithfulness, 0.77 Recall, +16.7%, +27.4%)"
+    values: ["0.88", "0.92", "0.77", "16.7", "27.4"]
+    status: banned
+    eval_size: 4
+    source: "src/ragas_clinical_eval.py"
+  - {id: mv_powerbi, claim: "Power BI dashboards", values: [], status: banned, note: "Not in the repo"}
+  - {id: mv_val_split, claim: "Validation-split accuracy", values: [], status: banned, eval_size: 16}
+
+titles:
+  - {subtitle: "Medical Imaging AI Toolkit", stack: [Python, PyTorch, OpenCV, FastAPI, Docker]}
+  - {subtitle: "Medical Imaging ML Pipeline & Production API", stack: [Python, PyTorch, FastAPI, Docker, pytest]}
+  - {subtitle: "HIPAA-Compliant Medical Imaging & De-identification", stack: [Python, PyTorch, FastAPI, Docker]}
+  - {subtitle: "Healthcare Computer Vision Microservice", stack: [Python, PyTorch, FastAPI, Docker]}
+
+bullets:
+  - id: mv_b1
+    text: "Fine-tuned ResNet-18 on 5,800+ chest X-rays, reaching 91.8% accuracy and 0.97 AUC-ROC on the 624-image held-out test set."
+    fact_ids: [mv_dataset, mv_classifier]
+  - id: mv_b1_health
+    text: "Fine-tuned ResNet-18 on 5,800+ chest X-rays, reaching 91.8% accuracy, 0.97 AUC-ROC, 92.3% sensitivity and 91.0% specificity on the 624-image held-out test set."
+    fact_ids: [mv_dataset, mv_classifier, mv_sens_spec]
+    note: "Healthcare JDs only."
+  - id: mv_b2
+    text: "Built a U-Net lung segmenter from scratch (17M params, Dice+BCE loss), reaching 0.975 Dice / 0.951 IoU in patient-level 5-fold cross-validation on 138 NLM Montgomery chest X-rays."
+    fact_ids: [mv_unet]
+  - id: mv_b3
+    text: "Built DICOM de-identification following PS3.15 Annex E (25+ PHI tags, UID regeneration) plus Tesseract OCR + regex NER to catch burned-in PHI (names, MRN, dates, SSNs)."
+    fact_ids: [mv_deid, mv_ocr]
+  - id: mv_b4
+    text: "Deployed as a Dockerized FastAPI service with 6 endpoints (classify, segment, convert, anonymize, de-identify, health), Pydantic validation and 64 pytest tests."
+    fact_ids: [mv_api, mv_tests]
+  - id: mv_b5
+    text: "Added Grad-CAM attention maps per prediction so clinicians can check which lung regions drove each classification."
+    fact_ids: [mv_dicom]
+
+interview:
+  - {q: "This dataset is common — what did you do beyond the standard notebook?", a: "From-scratch U-Net, DICOM de-identification to PS3.15, OCR for burned-in PHI, tested API."}
+  - {q: "Why does sensitivity matter more than accuracy here? Class imbalance in the test set?"}
+  - {q: "Is your test split patient-level?", a: "Know the answer."}

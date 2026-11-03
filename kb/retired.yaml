@@ -1,0 +1,9 @@
+# Kit Appendix F — never use on a resume.
+- id: ai_safety_compliance
+  name: "AI Safety Compliance Monitoring System"
+  reason: "Generic YOLOv8 PPE-detection project; 0.72 mAP@50 is unremarkable; PropVox and FinSight already cover full-stack"
+  revive_when: "Deployment with a real site/user, or a measured edge benchmark (Jetson FPS/latency with saved logs)"
+- id: k8s_llm_deployment
+  name: "K8s LLM Deployment"
+  reason: "No public repo; '18 tok/s at $0/day' is not a meaningful infra result"
+  revive_when: "Replace with the vLLM / SGLang / llama.cpp serving benchmark (Appendix C, Step 3)"

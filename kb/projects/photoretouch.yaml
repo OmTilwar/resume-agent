@@ -1,0 +1,34 @@
+# Kit §7.8 — facts ⚠ (no saved metrics file; Appendix C Fix 4)
+id: photoretouch
+name: "PhotoRetouch AI"
+tier: 2
+section: "7.8"
+github: "https://github.com/OmTilwar/PhotoRetouch-AI"
+stack: [Python, PyTorch, Diffusers, HuggingFace Diffusers, Stable Diffusion, torchmetrics, OpenCV, SegFormer, FastAPI, pytest]
+one_liner: "Generative AI toolkit for photography — beta-VAE from scratch, diffusion inpainting, subject segmentation and photo quality scoring."
+tags: [generative-ai, diffusers, diffusion, inpainting, vae, from-scratch, photography, photo-editing, computer-vision, segmentation, segformer, quality-scoring, culling, pytorch, fastapi]
+
+facts:
+  - {id: pr_vae, claim: "beta-VAE from scratch on CelebA, 202,599 faces (128x128); 14M params, 256-dim latent, beta=4.0, cosine annealing", values: ["202,599", "200K", "128", "14M", "256", "4.0"], status: stated}
+  - {id: pr_recon, claim: "Reconstruction 0.62 SSIM, 21.0 dB PSNR; latent interpolation and novel face generation", values: ["0.62", "21.0"], status: stated}
+  - {id: pr_fid, claim: "FID 153.19", values: ["153.19"], status: banned, note: "Weak; never quote"}
+  - {id: pr_inpaint, claim: "Stable Diffusion inpainting via diffusers: object removal, blemish retouching, background replacement; 5 prompt presets", values: ["5"], status: stated}
+  - {id: pr_seg, claim: "3 segmentation backends: threshold, OpenCV GrabCut, SegFormer; mask feeds inpainting", values: ["3"], status: stated}
+  - {id: pr_quality, claim: "Quality scorer: Laplacian variance (sharpness) + histogram exposure -> keep/reject culling", values: [], status: stated}
+  - {id: pr_api, claim: "6 FastAPI endpoints; 49 pytest tests", values: ["6", "49"], status: stated}
+
+titles:
+  - {subtitle: "Generative AI for Photography", stack: [Python, PyTorch, Diffusers, OpenCV, FastAPI]}
+  - {subtitle: "VAE from Scratch & Diffusion Inpainting", stack: [Python, PyTorch, Diffusers]}
+
+bullets:
+  - id: pr_b1
+    text: "Trained a convolutional β-VAE from scratch (14M params, 256-dim latent, β=4.0) on 200K CelebA faces, reaching 0.62 SSIM / 21.0 dB PSNR, with latent interpolation and novel face generation."
+    fact_ids: [pr_vae, pr_recon]
+    note: "'novel face generation' = generating new faces (allowed); the banned-phrase check whitelists it."
+  - id: pr_b2
+    text: "Built Stable Diffusion inpainting (HuggingFace Diffusers) for object removal, blemish retouching and background replacement, driven by masks from 3 segmentation backends (threshold, GrabCut, SegFormer)."
+    fact_ids: [pr_inpaint, pr_seg]
+  - id: pr_b3
+    text: "Developed a photo quality scorer (Laplacian sharpness + histogram exposure) producing keep/reject decisions for batch culling; served via 6 FastAPI endpoints with 49 pytest tests."
+    fact_ids: [pr_quality, pr_api]

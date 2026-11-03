@@ -1,0 +1,34 @@
+# Kit §7.7 — facts ⚠; NO accuracy metrics exist (no ATE/RPE).
+id: vio
+name: "Visual-Inertial Odometry"
+tier: 2
+section: "7.7"
+github: "https://github.com/OmTilwar/visual-inertial-odometry"
+stack: [C++17, ROS2, OpenCV, Eigen3, CMake, GTest, EKF]
+one_liner: "C++17/ROS2 VIO pipeline fusing camera and IMU via EKF for 6-DOF pose estimation."
+tags: [robotics, vio, slam, orb, opencv, eigen3, ekf, cpp17, ros2, sensor-fusion, 6-dof, pose-estimation, gps-denied]
+rules:
+  - "No accuracy metrics exist — never invent ATE/RPE/drift numbers."
+  - "Use only alongside submarine for robotics JDs; max 3 bullets. Exempt from the 'every bullet has a number' rule."
+max_bullets: 3
+
+facts:
+  - {id: vio_features, claim: "ORB features, Hamming matching, Essential Matrix motion recovery", values: [], status: stated}
+  - {id: vio_ekf, claim: "EKF in Eigen3 (IMU predict + visual update) for 6-DOF pose", values: ["6"], status: stated}
+  - {id: vio_ros, claim: "ROS2 subscribes /camera/image_raw, /imu/data; publishes PoseStamped + TF2", values: [], status: stated}
+  - {id: vio_core, claim: "Standalone C++ core, GTest suite", values: [], status: stated}
+
+titles:
+  - {subtitle: "Real-Time 6-DOF State Estimation", stack: [C++17, ROS2, OpenCV, Eigen3]}
+  - {subtitle: "Camera-IMU Sensor Fusion", stack: [C++17, ROS2, EKF, OpenCV]}
+
+bullets:
+  - id: vio_b1
+    text: "Developed a Visual-Inertial Odometry pipeline in C++17/ROS2 fusing camera and IMU streams for 6-DOF pose estimation in GPS-denied settings."
+    fact_ids: [vio_ekf, vio_core]
+  - id: vio_b2
+    text: "Implemented ORB feature tracking with Hamming-distance matching and Essential Matrix decomposition for frame-to-frame motion recovery."
+    fact_ids: [vio_features]
+  - id: vio_b3
+    text: "Engineered an Eigen3 EKF combining high-rate IMU propagation with visual-odometry updates; published PoseStamped and TF2 transforms for RViz."
+    fact_ids: [vio_ekf, vio_ros]

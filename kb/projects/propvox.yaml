@@ -1,0 +1,49 @@
+# Kit §7.3 — facts ⚠ (README)
+id: propvox
+name: "PropVox AI"
+tier: 1
+section: "7.3"
+github: "https://github.com/omtilwar/PropVox"
+stack: [Python, asyncio, TypeScript, React, Next.js, Deepgram, Groq, Sarvam AI, WebSockets, Vercel, LLM APIs]
+one_liner: "Real-time bilingual (English + Hindi) AI voice agent with multi-step LLM orchestration."
+tags: [llm, agents, multi-step-reasoning, tool-use, memory, asyncio, full-stack, websockets, voice, real-time, api-orchestration, deepgram, groq, sarvam, stt, tts, bilingual, hindi, indic]
+
+facts:
+  - {id: pv_ttfb, claim: "~400-600 ms median time-to-first-byte", values: ["400", "600"], status: stated}
+  - {id: pv_workflow, claim: "Multi-step agentic workflow: speech -> LLM -> tool execution -> voice via concurrent asyncio tasks", values: [], status: stated}
+  - {id: pv_stt, claim: "Deepgram Nova-2 STT with dual-event endpointing (200ms VAD + 0.3s async fallback) and mutual-exclusion guard against duplicate LLM calls", values: ["200", "0.3"], status: stated}
+  - {id: pv_llm_tts, claim: "Groq llama-3.1-8b-instant; Sarvam AI bulbul:v3 TTS over WebSocket", values: [], status: stated}
+  - {id: pv_bilingual, claim: "Bilingual English + Hindi (Hinglish code-mix); dual-phase sentence flushing", values: [], status: stated}
+  - {id: pv_bargein, claim: "Barge-in detection, safe asyncio task cancellation, persistent JSON session memory across calls", values: [], status: stated}
+  - {id: pv_provider, claim: "Provider abstraction with retry, timeout and error classification (rate limits vs auth vs server errors)", values: [], status: stated}
+  - {id: pv_fullstack, claim: "Full-stack: Next.js/React on Vercel + async Python backend", values: [], status: stated}
+
+titles:
+  - {subtitle: "Real-Time Bilingual Voice Agent", stack: [Python, asyncio, WebSockets, LLM APIs]}
+  - {subtitle: "Multi-Step LLM Agent & Orchestration", stack: [Python, asyncio, LLM APIs, WebSockets]}
+  - {subtitle: "Full-Stack AI Voice Application", stack: [TypeScript, Next.js, Python, asyncio]}
+  - {subtitle: "Async API Orchestration & Reliability", stack: [Python, asyncio, WebSockets]}
+
+bullets:
+  - id: pv_b1
+    text: "Engineered a real-time voice agent orchestrating speech → LLM → tool execution → voice via concurrent asyncio tasks, reaching ~400–600 ms median time-to-first-byte."
+    fact_ids: [pv_workflow, pv_ttfb]
+  - id: pv_b2
+    text: "Shipped the agent end to end: Next.js/React frontend on Vercel and an async Python backend orchestrating Deepgram STT, Groq LLM and Sarvam AI TTS over WebSockets."
+    fact_ids: [pv_fullstack, pv_llm_tts]
+  - id: pv_b3
+    text: "Integrated Deepgram Nova-2 with dual-event endpointing (200ms VAD + 0.3s fallback timer) and a mutual-exclusion guard that prevents duplicate LLM calls."
+    fact_ids: [pv_stt]
+  - id: pv_b4
+    text: "Added bilingual English + Hindi (Hinglish code-mix) prompting with dual-phase sentence flushing so TTS starts speaking before the full LLM response arrives."
+    fact_ids: [pv_bilingual]
+  - id: pv_b5
+    text: "Implemented provider abstraction with configurable retries, timeouts and error classification (rate limits vs auth failures vs server errors)."
+    fact_ids: [pv_provider]
+  - id: pv_b6
+    text: "Built barge-in detection with safe asyncio task cancellation and persistent JSON session memory for multi-turn, cross-call context."
+    fact_ids: [pv_bargein]
+
+interview:
+  - {q: "Where does the 400-600 ms go (STT / LLM / TTS)? How did you measure it?"}
+  - {q: "How does barge-in cancel in-flight tasks without leaking state?"}

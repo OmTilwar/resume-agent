@@ -1,0 +1,50 @@
+# LLM routing via OpenRouter (OpenAI-compatible API). Free models only.
+# Picked from https://openrouter.ai/api/v1/models on 2026-11-04 (17 free models).
+# Free models come and go — run `python scripts/list_free_models.py --check`
+# to see if any configured model has disappeared, and to list replacements.
+#
+# Each role has a primary + fallbacks. OpenRouter tries them in order
+# (request param `models`) when the primary is rate-limited or down.
+#
+# structured: how to get typed output
+#   json_schema      — model supports structured_outputs
+#   function_calling — model supports tools but not structured_outputs
+
+base_url: "https://openrouter.ai/api/v1"
+app_name: "resume-agent"
+
+roles:
+  # JD -> JDAnalysis (archetype, ranked keywords, must/nice-to-have).
+  # Multimodal + 1M context: can read JD PDFs/screenshots directly.
+  analyzer:
+    model: "nvidia/nemotron-3.5-super-vl:free"        # 120B MoE (12B active), vision, structured outputs
+    fallbacks: ["google/gemma-4-31b-it:free", "xingchen-agi/xing4.0-29b-a4b:free"]
+    structured: json_schema
+    temperature: 0.0
+
+  # Bullet rewriting + cover letters — the quality-critical role.
+  writer:
+    model: "thinkingmachines/inkling:free"            # 975B MoE (41B active), largest free model
+    fallbacks: ["nvidia/nemotron-3-ultra-550b-a55b:free", "dots-studio/dots-3-note-preview:free"]
+    structured: function_calling
+    temperature: 0.4
+
+  # Repairs bullets that failed validation (needs to follow precise instructions).
+  fixer:
+    model: "nvidia/nemotron-3-ultra-550b-a55b:free"   # 550B MoE (55B active), reasoning
+    fallbacks: ["thinkingmachines/inkling:free", "google/gemma-4-31b-it:free"]
+    structured: function_calling
+    temperature: 0.1
+
+  # Cheap/fast: keyword -> tag matching, skill picking, small classifications.
+  fast:
+    model: "nvidia/nemotron-3.5-lightning:free"       # 30B MoE (3B active), high throughput
+    fallbacks: ["google/gemma-4-26b-a4b-it:free", "liquid/lfm-2.5-2.6b:free"]
+    structured: function_calling
+    temperature: 0.0
+
+# Deliberately NOT used:
+#   openrouter/free        — random router; non-reproducible runs
+#   recursive/flint, cohere/north-mini-code — coding-tuned
+#   nvidia/nemotron-3.5-content-safety      — safety classifier, not a generator
+#   google/lyria-*         — music generation

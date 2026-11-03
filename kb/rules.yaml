@@ -1,0 +1,78 @@
+# Kit §2, §10, §11 — rules the validators enforce in code.
+
+# Never anywhere in a bullet (case-insensitive substring). Kit §10.1, §2.4.6.
+banned_phrases:
+  - "Responsible for"
+  - "Worked on"
+  - "Helped"
+  - "Involved in"
+  - "Various"
+  - "etc."
+  - "passionate"
+  - "robust"
+  - "cutting-edge"
+  - "world-class"
+  - "seamless"
+  - "novel"
+  - "new algorithm"
+  - "state-of-the-art"
+  - "production-grade"
+
+# Legitimate uses that contain a banned word (removed before the phrase check).
+phrase_exceptions:
+  - "novel face generation"   # PhotoRetouch: generating new faces from a VAE
+
+# Never in a bullet; some may appear in Skills (e.g. "Ragas (Familiar)"). Kit §2.2.5, §2.4.3, §2.5.
+banned_bullet_terms:
+  - "Ragas"
+  - "LangGraph"
+  - "satellite"
+  - "React Native"
+  - "Flutter"
+  - "SciMining"
+
+# Analogy clauses — kit §2.4.2.
+analogy_patterns:
+  - '\banalogous to\b'
+  - '\bapplicable to\b'
+  - '\brelevant to\b'
+  - '\bsimilar to (mortgage|land|government|financial)\b'
+
+# Kit §10.2 — solo work only; never on the 2-member Amazon ML Challenge.
+lead_verbs_solo_only: ["Spearheaded", "Owned", "Drove", "Led"]
+
+verbs:
+  build: [Built, Engineered, Developed, Shipped, Deployed, Implemented, Designed, Architected]
+  improve: [Improved, Boosted, Raised, Reduced, Cut, Optimized, Accelerated, Compressed]
+  research: [Trained, Fine-tuned, Benchmarked, Evaluated, Investigated, Diagnosed, Analyzed, Validated, Traced]
+  data: [Processed, Cleaned, Normalized, Transformed, Orchestrated, Automated, Integrated]
+  lead: [Spearheaded, Owned, Drove]
+
+# Kit §2.4.4 — never quote a metric from an eval set smaller than this.
+min_eval_size: 50
+
+# Kit §2.2.6 — institution is IIIT Nagpur; never imply IIT/IIM/ISB.
+# ("IIT Bombay" is legitimate: it hosts eYRC.)
+institution_guard:
+  - '\bIIT\s*(,\s*)?Nagpur\b'
+  - '\bIIM\b'
+  - '\bISB\b'
+  - '\bIndian Institute of Technology\b'
+
+# Kit §11
+page_budget:
+  chars_per_line: 115
+  chars_per_bullet_line: 110
+  one_line_bullet_max: 105
+  two_line_bullet_min: 180
+  two_line_bullet_max: 215
+  three_line_spill: 220
+  max_verb_repeats: 2
+  max_highlights_per_bullet: 4
+  projects: 4
+  bullets_per_project_min: 3
+  bullets_per_project_max: 4
+  experience_bullets_min: 2
+  experience_bullets_max: 4
+  skills_lines_min: 4
+  skills_lines_max: 5
