@@ -26,6 +26,11 @@
 # max_tokens: caps each role's output. A skills call once ran away to 16,384 tokens (~8 min,
 # twice) and stalled the whole run at the fan-in; typical outputs are 300-1,500 tokens.
 #
+# Fallbacks are NON-reasoning models: a reasoning model's hidden thinking tokens count against
+# max_tokens, so deepseek-v4-flash failed every retry at the 2,000 cap (live run, 4 Nov).
+# Retry trial (authnet/medvision/amazon_er, x2): gpt-4.1-nano 2-11 s, 1/18 bullets fail truth checks;
+# ministral-8b 7-22 s, 2/18 fail. mistral-small ran away on 3 of 8 first attempts in one live run.
+#
 # Re-check availability: python scripts/list_free_models.py --check
 
 base_url: "https://openrouter.ai/api/v1"
@@ -34,21 +39,21 @@ app_name: "resume-agent"
 roles:
   analyzer:
     model: "mistralai/mistral-small-3.2-24b-instruct"
-    fallbacks: ["deepseek/deepseek-v4-flash", "nvidia/nemotron-3.5-super-vl:free"]
+    fallbacks: ["openai/gpt-4.1-nano", "mistralai/ministral-8b-2512"]
     structured: json_schema
     temperature: 0.0
     max_tokens: 1500
 
   writer:
     model: "mistralai/mistral-small-3.2-24b-instruct"
-    fallbacks: ["deepseek/deepseek-v4-flash", "google/gemma-4-26b-a4b-it"]
+    fallbacks: ["openai/gpt-4.1-nano", "mistralai/ministral-8b-2512"]
     structured: json_schema
-    temperature: 0.4
-    max_tokens: 2000
+    temperature: 0.3
+    max_tokens: 1200
 
   fixer:
     model: "mistralai/mistral-small-3.2-24b-instruct"
-    fallbacks: ["deepseek/deepseek-v4-flash", "google/gemma-4-26b-a4b-it"]
+    fallbacks: ["openai/gpt-4.1-nano", "mistralai/ministral-8b-2512"]
     structured: json_schema
     temperature: 0.1
     max_tokens: 4000
@@ -63,7 +68,7 @@ roles:
 
   fast:
     model: "mistralai/mistral-small-3.2-24b-instruct"
-    fallbacks: ["google/gemma-4-26b-a4b-it", "deepseek/deepseek-v4-flash"]
+    fallbacks: ["openai/gpt-4.1-nano", "mistralai/ministral-8b-2512"]
     structured: json_schema
     temperature: 0.0
     max_tokens: 1500
