@@ -157,14 +157,57 @@ Rewording, reordering and omitting details are FINE. Numbers have already been c
 Return one verdict per bullet id."""
 
 
-def judge_messages(items: list[Slot]):
+JUDGE_SYSTEM_CONTEXT = """You are a strict fact-checker for a resume. For each bullet you get its EVIDENCE:
+- cited_fact_claims: the facts the bullet cites,
+- project: what the project is (one-liner, stack, background) — verified by the candidate,
+- approved_wording: bullets the candidate already verified for this section.
+A claim is supported if ANY piece of evidence states it. Mark supported=false if the bullet:
+- changes a noun or unit relative to the evidence (e.g. "annotated instances" -> "images"; "records" -> "users"),
+- claims something no evidence states (production users, customers, team size, leadership, deployment at a company, awards),
+- inflates scope or certainty, or attributes a validation number to a leaderboard / test set (or vice versa),
+- swaps the project's domain.
+Rewording, reordering, omitting details and choosing a different verb are FINE. Numbers are checked elsewhere.
+Return one verdict per bullet id."""
+
+JUDGE_VARIANTS = {"claims": JUDGE_SYSTEM, "context": JUDGE_SYSTEM_CONTEXT}
+DEFAULT_JUDGE_VARIANT = "context"   # benchmark (bench/results): far fewer false flags than claims-only
+
+
+def evidence(section: str, fact_ids: list[str], facts: dict[str, Fact], kb: KnowledgeBase, ctx: Context,
+             variant: str = DEFAULT_JUDGE_VARIANT) -> dict:
+    ev = {"cited_fact_claims": [facts[f].claim for f in fact_ids if f in facts]}
+    if variant == "claims":
+        return ev
+    if section == "experience":
+        exp = kb.experience
+        ev["project"] = {"what": f"{exp.titles[0]} at {exp.org}, {exp.dates}",
+                         "background": [f.claim for f in exp.facts]}
+        ev["approved_wording"] = [b.text for g in exp.groups for b in g.bullets]
+    else:
+        p = kb.get_project(section)
+        ev["project"] = {"what": p.one_liner, "stack": p.stack, **({"background": p.context} if p.context else {}),
+                         "rules": p.rules}
+        ev["approved_wording"] = [b.text for b in kb.allowed_bullets(section, ctx)]
+    return ev
+
+
+def judge_payload(rows: list[tuple[str, str, dict]], variant: str = DEFAULT_JUDGE_VARIANT):
+    """rows: (id, bullet text, evidence dict)."""
     from langchain_core.messages import HumanMessage, SystemMessage
     import json
-    payload = [{"id": s.id, "bullet": s.bullet.text,
-                "cited_fact_claims": [s.facts[f].claim for f in s.bullet.fact_ids if f in s.facts]}
-               for s in items]
-    return [SystemMessage(content=JUDGE_SYSTEM),
+    payload = [{"id": i, "bullet": t, **ev} for i, t, ev in rows]
+    return [SystemMessage(content=JUDGE_VARIANTS[variant]),
             HumanMessage(content=json.dumps(payload, ensure_ascii=False, indent=1))]
+
+
+def judge_messages(items: list[Slot], kb: KnowledgeBase | None = None, ctx: Context | None = None,
+                   variant: str = DEFAULT_JUDGE_VARIANT):
+    if kb is None:
+        variant = "claims"
+    rows = [(s.id, s.bullet.text, evidence(s.section, s.bullet.fact_ids, s.facts, kb, ctx or Context(), variant)
+             if kb is not None else {"cited_fact_claims": [s.facts[f].claim for f in s.bullet.fact_ids if f in s.facts]})
+            for s in items]
+    return judge_payload(rows, variant)
 
 
 def judge_issues(state: ResumeState, kb: KnowledgeBase, call: Callable, approved: set[str],
@@ -174,7 +217,8 @@ def judge_issues(state: ResumeState, kb: KnowledgeBase, call: Callable, approved
             if s.bullet.origin == "llm" and s.bullet.text not in approved and s.id not in skip]
     if not todo:
         return [], set()
-    res: Verdicts = call("judge", Verdicts, judge_messages(todo))
+    ctx = Context(archetype=state["analysis"].archetype, company=state["job"].company)
+    res: Verdicts = call("judge", Verdicts, judge_messages(todo, kb, ctx))
     by_id = {v.id: v for v in res.verdicts}
     issues, ok = [], set()
     for s in todo:

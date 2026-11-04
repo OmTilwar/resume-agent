@@ -76,6 +76,7 @@ class Project(BaseModel):
     github: str
     stack: list[str]
     one_liner: str
+    context: Optional[str] = None   # kit's Problem/Pipeline prose — evidence for the judge
     tags: list[str]
     rules: list[str] = Field(default_factory=list)
     forbidden_title_terms: list[str] = Field(default_factory=list)

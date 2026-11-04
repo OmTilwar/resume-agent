@@ -19,7 +19,7 @@ from pathlib import Path
 
 from ..knowledge import get_kb
 from ..knowledge.checks import check_bullet
-from ..validate import JUDGE_SYSTEM, Verdicts
+from ..validate import JUDGE_VARIANTS, Verdicts, evidence, judge_payload
 from .seed import CLEAN_KINDS, KINDS, VERSION, Item, _ctx_for, build, to_rows
 
 ROOT = Path(__file__).resolve().parents[2] / "bench"
@@ -53,37 +53,43 @@ def deterministic_flags(items: list[Item]) -> dict[str, bool]:
     return out
 
 
-def _cache_path(model: str) -> Path:
-    return CACHE / (model.replace("/", "__").replace(":", "_") + ".jsonl")
+def _cache_path(model: str, variant: str = "context") -> Path:
+    return CACHE / (model.replace("/", "__").replace(":", "_") + f"@{variant}.jsonl")
 
 
-def load_cache(model: str) -> dict[str, dict]:
-    p = _cache_path(model)
+def _parse_cache_name(stem: str) -> tuple[str, str]:
+    name, _, variant = stem.partition("@")
+    return name.replace("__", "/").replace("_free", ":free"), variant or "claims"
+
+
+def load_cache(model: str, variant: str = "context") -> dict[str, dict]:
+    p = _cache_path(model, variant)
     if not p.exists():
         return {}
     rows = [json.loads(l) for l in p.read_text(encoding="utf-8").splitlines() if l.strip()]
     return {r["id"]: r for r in rows}
 
 
-def run_judge(model: str, items: list[Item], limit: int | None = None) -> None:
-    from langchain_core.messages import HumanMessage, SystemMessage
+def run_judge(model: str, items: list[Item], limit: int | None = None, variant: str = "context") -> None:
     from ..llm import structured_for_model
 
     kb = get_kb()
     CACHE.mkdir(parents=True, exist_ok=True)
-    done = load_cache(model)
+    done = load_cache(model, variant)
     todo = [it for it in items if it.id not in done][: limit or None]
-    print(f"{model}: {len(done)} cached, {len(todo)} to judge")
+    print(f"{model} [{variant}]: {len(done)} cached, {len(todo)} to judge")
     llm = structured_for_model(model, Verdicts)
-    with _cache_path(model).open("a", encoding="utf-8") as fh:
+    with _cache_path(model, variant).open("a", encoding="utf-8") as fh:
         for i in range(0, len(todo), BATCH):
             chunk = todo[i:i + BATCH]
-            payload = [{"id": it.id, "bullet": it.text, "cited_fact_claims": [f.claim for f in _facts(kb, it)]}
-                       for it in chunk]
+            rows = []
+            for it in chunk:
+                facts = _facts(kb, it)
+                ev = evidence(it.section, it.fact_ids, {f.id: f for f in facts}, kb, _ctx_for(kb, facts), variant)
+                rows.append((it.id, it.text, ev))
             t0 = time.time()
             try:
-                res: Verdicts = llm.invoke([SystemMessage(content=JUDGE_SYSTEM),
-                                            HumanMessage(content=json.dumps(payload, ensure_ascii=False))])
+                res: Verdicts = llm.invoke(judge_payload(rows, variant))
             except Exception as e:   # noqa: BLE001 — rate limits etc.: stop, keep what we have
                 print(f"  stopped at batch {i // BATCH + 1}: {type(e).__name__}: {str(e)[:200]}")
                 break
@@ -130,11 +136,12 @@ def report(items: list[Item]) -> dict:
            "layers": {"deterministic": _rates(items, det)}}
     for p in sorted(CACHE.glob("*.jsonl")) if CACHE.exists() else []:
         rows = [json.loads(l) for l in p.read_text(encoding="utf-8").splitlines() if l.strip()]
-        model = p.stem.replace("__", "/").replace("_free", ":free")
+        model, variant = _parse_cache_name(p.stem)
+        tag = f"{model.split('/')[-1]} | evidence={variant}"
         judge = {r["id"]: (not r["supported"]) for r in rows}
         combined = {i: det[i] or judge[i] for i in judge}
-        out["layers"][f"judge[{model}]"] = {**_rates(items, judge), "coverage": round(len(judge) / len(items), 4)}
-        out["layers"][f"deterministic+judge[{model}]"] = _rates(items, combined)
+        out["layers"][f"judge[{tag}]"] = {**_rates(items, judge), "coverage": round(len(judge) / len(items), 4)}
+        out["layers"][f"det+judge[{tag}]"] = _rates(items, combined)
     return out
 
 
@@ -154,7 +161,8 @@ def render_md(res: dict) -> str:
         n = next((L["by_kind"][k]["n"] for L in res["layers"].values() if k in L["by_kind"]), 0)
         if not n:
             continue
-        cells = [pct(L["by_kind"][k]["rate"]) if k in L["by_kind"] else "—" for L in res["layers"].values()]
+        cells = [f'{pct(L["by_kind"][k]["rate"])} ({L["by_kind"][k]["n"]})' if k in L["by_kind"] else "—"
+                 for L in res["layers"].values()]
         flag = "" if n >= MIN_REPORTABLE else " *"
         lines.append(f"| {k}{flag} | {n} | " + " | ".join(cells) + " |")
     lines += ["", f"\\* fewer than {MIN_REPORTABLE} items — not quotable on a resume (kit §2.4.4).",
@@ -170,6 +178,8 @@ def main(argv=None) -> int:
     j = sub.add_parser("judge")
     j.add_argument("--model", required=True)
     j.add_argument("--limit", type=int, help="judge at most N new items (to stay under daily limits)")
+    j.add_argument("--variant", choices=sorted(JUDGE_VARIANTS), default="context",
+                   help="judge evidence: 'claims' = cited fact claims only; 'context' = + project background + approved wording")
     sub.add_parser("report")
     args = ap.parse_args(argv)
 
@@ -181,7 +191,7 @@ def main(argv=None) -> int:
         return 0
     items = load_items()
     if args.cmd == "judge":
-        run_judge(args.model, items, args.limit)
+        run_judge(args.model, items, args.limit, args.variant)
         return 0
     res = report(items)
     RESULTS.mkdir(parents=True, exist_ok=True)

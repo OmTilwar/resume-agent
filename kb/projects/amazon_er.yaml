@@ -6,6 +6,18 @@ section: "7.1"
 github: "https://github.com/OmTilwar/amazon-ml-challenge-2026-entity-resolution"
 stack: [Python, PyTorch, sentence-transformers, Transformers, HuggingFace Transformers, Cross-Encoders, LightGBM, Polars, PyArrow, RapidFuzz, unidecode, Scikit-Learn, AWS S3, SageMaker, AWS SageMaker, Modal, Lightning AI]
 one_liner: "Matched 10M noisy multilingual business records (US/India/France) to 1.7M reference entities via fine-tuned dense retrieval -> LightGBM ranker -> 4-cross-encoder ensemble -> gate, scoring 0.9837 macro F0.5."
+# Kit §7.1 Problem + Pipeline paragraphs (verbatim meaning) — judge evidence
+context: >-
+  Problem: S1 = 1.73M clean reference businesses; S2+S3 = 9.97M noisy records (typos, F/K/A and DBA aliases,
+  Devanagari/Kannada names, reordered/missing addresses) plus distractors that match nothing. Metric = macro F0.5
+  over S1 entities (precision weighted 2x). France appears only in test (no labels).
+  Pipeline: Normalize (NFKC, Indic transliteration, legal-suffix canonicalization, alias split, postcode/house-no
+  extraction) -> Blocking (fine-tuned multilingual-e5-base top-20 per country + exact keys) -> Stage-1 LightGBM
+  ranker (~40 features, top-3/record) -> 4 cross-encoders (2x bge-reranker-v2-m3, 2x mDeBERTa-v3-base) ->
+  cross-fitted LightGBM stacker + query-level gate -> decision layer (per-country budgets, per-entity caps,
+  duplicate consistency, ambiguity drops) -> 5.88M assignments. Orphan simulation removes 25% of reference
+  entities from validation folds to reproduce the test set distractor rate and close the val-test gap.
+  Competition: Amazon ML Challenge 2026, public leaderboard.
 tags: [entity-resolution, record-linkage, entity-matching, deduplication, fuzzy-matching, search, retrieval, ranking, learning-to-rank, dense-retrieval, bi-encoder, cross-encoder, reranking, contrastive-learning, embeddings, nlp, multilingual, transliteration, lightgbm, ensembling, stacking, pseudo-labeling, self-training, domain-adaptation, large-scale, polars, data-pipelines, aws, s3, sagemaker, cloud-gpu, mlops, competition, e-commerce, catalog, kyc, master-data, research, error-analysis]
 rules:
   - "2-member team (Om Tilwar, Vedant Badukale): use Built/Designed/Fine-tuned; never Spearheaded/Owned/Led."
