@@ -21,15 +21,16 @@ context: >-
 tags: [entity-resolution, record-linkage, entity-matching, deduplication, fuzzy-matching, search, retrieval, ranking, learning-to-rank, dense-retrieval, bi-encoder, cross-encoder, reranking, contrastive-learning, embeddings, nlp, multilingual, transliteration, lightgbm, ensembling, stacking, pseudo-labeling, self-training, domain-adaptation, large-scale, polars, data-pipelines, aws, s3, sagemaker, cloud-gpu, mlops, competition, e-commerce, catalog, kyc, master-data, research, error-analysis]
 rules:
   - "2-member team (Om Tilwar, Vedant Badukale): use Built/Designed/Fine-tuned; never Spearheaded/Owned/Led."
-  - "Say 'Top-1000 finalist' — never 'winner', a rank or a percentile."
+  - "Say 'ranked 724th on the public leaderboard' or 'Top-1000 finalist' — never 'winner', a percentile or a team count (~10k is unconfirmed)."
   - "0.9837 = public leaderboard; 0.9930 = orphan-simulated validation. Never mix them up."
-banned_terms: ["winner", "percentile", "ranked"]
+banned_terms: ["winner", "percentile", "10,000 teams", "10k teams"]
 banned_verbs: [Spearheaded, Owned, Drove, Led]
 
 facts:
   - {id: amz_team, claim: "Team YOU_WIN_I_LOSE, 2 members, Top-1000 finalist, submitted 2026-09-28", values: ["2"], status: stated}
   - {id: amz_scale, claim: "1,732,544 S1 reference entities x 9,969,589 S2/S3 noisy records (US/India/France)", values: ["1,732,544", "9,969,589", "1.7M", "10M"], status: stated}
   - {id: amz_lb_f05, claim: "Public leaderboard macro F0.5 0.9837", values: ["0.9837"], status: stated}
+  - {id: amz_rank, claim: "Ranked 724th on the Amazon ML Challenge 2026 public leaderboard (stated by Om, 4 Nov 2026; no screenshot yet)", values: ["724"], status: stated}
   - {id: amz_progression, claim: "Leaderboard progression 0.894 -> 0.934 -> 0.9735 -> 0.9837 across 18 iterations", values: ["0.894", "0.934", "0.9735", "0.9837", "18"], status: stated}
   - {id: amz_val_orphan, claim: "Orphan-simulated validation macro F0.5 0.9930", values: ["0.9930"], status: stated, note: "Never present as a leaderboard score"}
   - {id: amz_blocking, claim: "Blocking pair recall 98.29% -> 99.31% (+1.02 pts); multilingual-e5-base bi-encoder trained on 3M pairs, in-batch-negative contrastive loss; top-20 per country", values: ["98.29", "99.31", "1.02", "3M", "20"], status: stated}
@@ -53,8 +54,8 @@ titles:
 
 bullets:
   - id: amz_b1
-    text: "Built a business entity-resolution pipeline matching 10M noisy multilingual records (US/India/France) to 1.7M reference entities, reaching 0.9837 macro F0.5 on the Amazon ML Challenge 2026 leaderboard (Top-1000 finalist, 2-member team)."
-    fact_ids: [amz_scale, amz_lb_f05, amz_team]
+    text: "Built a business entity-resolution pipeline matching 10M noisy multilingual records (US/India/France) to 1.7M reference entities, ranking 724th on the Amazon ML Challenge 2026 public leaderboard (0.9837 macro F0.5)."
+    fact_ids: [amz_scale, amz_lb_f05, amz_rank]
   - id: amz_b2
     text: "Fine-tuned a multilingual-e5-base bi-encoder with contrastive in-batch negatives on 3M pairs, raising blocking recall from 98.29% to 99.31%; a LightGBM ranker (~40 features) cut candidates to 29.9M pairs while keeping 99.89% of true pairs."
     fact_ids: [amz_blocking, amz_stage1]

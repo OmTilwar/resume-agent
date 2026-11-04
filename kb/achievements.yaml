@@ -24,11 +24,11 @@
 - id: amazon_ml_challenge
   kind: competition
   drop_if_project: amazon_er
-  text: "Top-1000 finalist — Amazon ML Challenge 2026: 0.9837 macro F0.5 on 1.7M x 10M entity resolution (2-member team)"
-  latex: '\textbf{\textcolor{NavyBlue}{Top-1000 Finalist}} -- Amazon ML Challenge 2026: 0.9837 macro F0.5 on 1.7M $\times$ 10M entity resolution (2-member team).'
-  rules: ["Never 'winner', a rank or a percentile.", "Drop this line if amazon_er is one of the 4 projects."]
+  text: "Ranked 724th — Amazon ML Challenge 2026 public leaderboard: 0.9837 macro F0.5 on 1.7M x 10M entity resolution (2-member team)"
+  latex: '\textbf{\textcolor{NavyBlue}{Rank 724}} -- Amazon ML Challenge 2026 public leaderboard: 0.9837 macro F0.5 on 1.7M $\times$ 10M entity resolution (2-member team).'
+  rules: ["Never 'winner', a percentile or a team count.", "Drop this line if amazon_er is one of the 4 projects."]
   facts:
-    - {id: ach_amz, claim: "Top-1000 finalist, 0.9837 public leaderboard macro F0.5, 2-member team", values: ["0.9837", "1.7M", "10M", "2"], status: stated}
+    - {id: ach_amz, claim: "Ranked 724th on the public leaderboard (Top-1000 finalist), 0.9837 macro F0.5, 2-member team", values: ["724", "0.9837", "1.7M", "10M", "2"], status: stated}
 
 - id: eyrc
   kind: competition
