@@ -37,11 +37,22 @@ def _factory(config: RunnableConfig):
     return f
 
 
+def _child_config(config: RunnableConfig, role: str, schema, attempt: int) -> dict:
+    """Name each model call by role and nest it under the current graph step in traces."""
+    cfg = config or {}
+    return {
+        "callbacks": cfg.get("callbacks"),
+        "run_name": f"{role}:{schema.__name__}",
+        "tags": [*(cfg.get("tags") or []), f"role:{role}"],
+        "metadata": {**(cfg.get("metadata") or {}), "role": role, "schema": schema.__name__, "attempt": attempt},
+    }
+
+
 def _call(config: RunnableConfig, role: str, schema, messages, attempts: int = 2):
     last: Exception | None = None
     for i in range(attempts):
         try:
-            out = _factory(config)(role, schema).invoke(messages)
+            out = _factory(config)(role, schema).invoke(messages, config=_child_config(config, role, schema, i + 1))
             if out is None:
                 raise ValueError("model returned no structured output")
             return out
@@ -163,10 +174,11 @@ def max_concurrency(config: RunnableConfig) -> int:
 
 
 def write_projects(state: ResumeState, config: RunnableConfig) -> ResumeState:
-    """The 4 project calls are independent: run them concurrently (capped for rate limits)."""
-    from concurrent.futures import ThreadPoolExecutor
+    """The 4 project calls are independent: run them concurrently (capped for rate limits).
+    ContextThreadPoolExecutor carries tracing context into the worker threads."""
+    from langchain_core.runnables.config import ContextThreadPoolExecutor
     pids = state["selected"]
-    with ThreadPoolExecutor(max_workers=max(1, min(max_concurrency(config), len(pids)))) as pool:
+    with ContextThreadPoolExecutor(max_workers=max(1, min(max_concurrency(config), len(pids)))) as pool:
         results = list(pool.map(lambda pid: _write_one_project(pid, state, config), pids))   # keeps rank order
     return {"projects": [b for b, _ in results], "violations": [v for _, vs in results for v in vs]}
 

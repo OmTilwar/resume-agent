@@ -40,7 +40,7 @@ class _Runnable:
     def __init__(self, fn):
         self.fn = fn
 
-    def invoke(self, messages):
+    def invoke(self, messages, config=None):
         return self.fn(messages)
 
 

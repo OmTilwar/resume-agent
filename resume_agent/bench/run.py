@@ -178,6 +178,7 @@ def main(argv=None) -> int:
     j = sub.add_parser("judge")
     j.add_argument("--model", required=True)
     j.add_argument("--limit", type=int, help="judge at most N new items (to stay under daily limits)")
+    j.add_argument("--trace", action="store_true", help="send judge calls to LangSmith (off by default: hundreds of calls)")
     j.add_argument("--variant", choices=sorted(JUDGE_VARIANTS), default="context",
                    help="judge evidence: 'claims' = cited fact claims only; 'context' = + project background + approved wording")
     sub.add_parser("report")
@@ -191,7 +192,10 @@ def main(argv=None) -> int:
         return 0
     items = load_items()
     if args.cmd == "judge":
+        from ..tracing import configure_tracing, flush
+        configure_tracing(enable=args.trace, project="resume-agent-bench")
         run_judge(args.model, items, args.limit, args.variant)
+        flush()
         return 0
     res = report(items)
     RESULTS.mkdir(parents=True, exist_ok=True)

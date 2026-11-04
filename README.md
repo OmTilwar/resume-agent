@@ -34,6 +34,18 @@ python -m resume_agent run --jd "../../JD ML and Data Science Intern- KA.pdf" --
 
 Any model bullet that fails a truth check is replaced by a verified bank bullet and listed in `report.md`.
 
+## Tracing (LangSmith)
+
+Add `LANGSMITH_API_KEY=lsv2_...` to `.env` and every run is traced automatically (`--no-trace` to skip):
+
+- one trace per resume, named `resume:<slug>` and tagged with the company,
+- each graph step as a child run, and inside it every model call named by role
+  (`writer:ProjectDraft`, `judge:Verdicts`, `fixer:FixBatch`, …) with latency, tokens and the model that answered,
+- the 4 parallel project calls nested under `write_projects` (context is carried into worker threads).
+
+Benchmarks are not traced unless you pass `--trace` (they go to the `resume-agent-bench` project).
+Prompts contain the job description and project facts, never contact details.
+
 ## Design rule
 
 **LLMs decide and write; code checks and assembles.**

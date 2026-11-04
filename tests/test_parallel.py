@@ -19,7 +19,7 @@ def test_writers_run_in_parallel(tmp_path):
             return inner
 
         class Slow:
-            def invoke(self, messages):
+            def invoke(self, messages, config=None):
                 with lock:
                     active[0] += 1
                     peak[0] = max(peak[0], active[0])
@@ -51,7 +51,7 @@ def test_concurrency_cap_respected(tmp_path):
         inner = fakes.fake_factory(role, schema)
 
         class Slow:
-            def invoke(self, messages):
+            def invoke(self, messages, config=None):
                 if schema is ProjectDraft:
                     with lock:
                         active[0] += 1

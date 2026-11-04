@@ -36,23 +36,34 @@ def main(argv: list[str] | None = None) -> int:
     run.add_argument("--role", required=True)
     run.add_argument("--slug", help="output name (default: company_role)")
     run.add_argument("--save-to-kit", action="store_true", help="also copy the .tex to Resume_Builder/resumes/")
+    run.add_argument("--no-trace", action="store_true", help="don't send this run to LangSmith even if a key is set")
     run.add_argument("-v", "--verbose", action="store_true")
     args = ap.parse_args(argv)
 
     logging.basicConfig(level=logging.INFO if args.verbose else logging.WARNING, format="%(levelname)s %(message)s")
+    from . import tracing
     from .graph import build_graph
+    from .nodes import slugify
     from .state import JobPosting
 
+    traced = tracing.configure_tracing(enable=not args.no_trace)
     text, source = read_jd(args.jd)
     job = JobPosting(company=args.company, role=args.role, text=text, source=source)
     init = {"job": job}
     if args.slug:
         init["slug"] = args.slug
+    slug = args.slug or slugify(job.company, job.role)
+    config = {"recursion_limit": 80, **tracing.run_config(slug, job.company, job.role)}
+    print(f"tracing: {'LangSmith — ' + tracing.project_url() if traced else 'off (add LANGSMITH_API_KEY to .env)'}")
+
     import time
     t0, final = time.time(), dict(init)
-    for chunk in build_graph().stream(init, config={"recursion_limit": 80}, stream_mode="updates"):
+    for mode, chunk in build_graph().stream(init, config=config, stream_mode=["updates", "values"]):
+        if mode == "values":
+            final = chunk                      # the graph's real merged state
+            continue
         for node, upd in chunk.items():
-            final.update(upd or {})
+            upd = upd or {}
             extra = ""
             if node == "validate":
                 iss = upd.get("issues", [])
@@ -70,9 +81,12 @@ def main(argv: list[str] | None = None) -> int:
     if rep.honest_gaps:
         print(f"gaps   : {', '.join(rep.honest_gaps)}")
     if final.get("violations"):
-        print(f"note   : {len(final['violations'])} model bullet(s)/items rejected and replaced — see report.md")
+        print(f"note   : {len(final['violations'])} first-draft problem(s) logged — see report.md")
     if rep.pages and rep.pages != 1:
-        print(f"WARNING: {rep.pages} pages — Phase 2 will auto-trim; trim manually for now (kit §11).")
+        print(f"WARNING: {rep.pages} pages after automatic trimming — trim by hand (kit §11).")
+    if traced:
+        tracing.flush()
+        print(f"trace  : {tracing.project_url()}, run 'resume:{slug}'")
     if args.save_to_kit:
         dest = KIT_RESUMES / f"{final['slug']}.tex"
         if dest.exists():
