@@ -193,7 +193,7 @@ def main(argv=None) -> int:
     items = load_items()
     if args.cmd == "judge":
         from ..tracing import configure_tracing, flush
-        configure_tracing(enable=args.trace, project="resume-agent-bench")
+        configure_tracing(enable=args.trace, environment="development")
         run_judge(args.model, items, args.limit, args.variant)
         flush()
         return 0

@@ -4,7 +4,7 @@ name: "ResumeAgent"
 tier: 2
 section: "7.12"
 github: "https://github.com/OmTilwar/resume-agent"
-stack: [Python, LangGraph, LangChain, OpenRouter, Pydantic, Jinja2, pytest, pypdf, LaTeX]
+stack: [Python, LangGraph, LangChain, LangSmith, OpenRouter, Pydantic, Jinja2, pytest, pypdf, LaTeX]
 one_liner: "LangGraph agent that turns a job description into a one-page LaTeX resume, with code-enforced truth guards, an LLM-as-judge faithfulness check, a repair loop and PDF layout measurement."
 tags: [llm, agents, agentic-workflows, langgraph, langchain, llm-evaluation, llm-as-judge, guardrails, hallucination-prevention, structured-outputs, pydantic, openrouter, prompt-engineering, self-correction, automation, document-generation, latex, testing, pytest]
 rules:
@@ -23,6 +23,8 @@ facts:
   - {id: ra_models, claim: "5 model roles (analyzer, writer, fixer, judge, fast) routed to free OpenRouter models with 2 automatic fallbacks each; Pydantic structured outputs", values: ["5", "2"], status: verified}
   - {id: ra_tests, claim: "101 pytest tests incl. an offline end-to-end graph run with a fake LLM injecting fabricated and drifted bullets", values: ["101"], status: verified}
   - {id: ra_privacy, claim: "Contact details never sent to a model; filled from the KB by the template", values: [], status: verified}
+  - {id: ra_tracing, claim: "LangSmith tracing: one trace per resume, every model call named by role and nested under its graph step, including the 4 parallel project calls", values: ["4"], status: verified}
+  - {id: ra_parallel, claim: "Projects, experience and skills written concurrently; 4 project calls at once; validate waits for all three", values: ["4", "3"], status: verified}
 
 titles:
   - {subtitle: "LangGraph Agent with Truth Guards", stack: [Python, LangGraph, LangChain, Pydantic]}

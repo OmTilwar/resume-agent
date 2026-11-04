@@ -43,7 +43,7 @@ Add `LANGSMITH_API_KEY=lsv2_...` to `.env` and every run is traced automatically
   (`writer:ProjectDraft`, `judge:Verdicts`, `fixer:FixBatch`, …) with latency, tokens and the model that answered,
 - the 4 parallel project calls nested under `write_projects` (context is carried into worker threads).
 
-Benchmarks are not traced unless you pass `--trace` (they go to the `resume-agent-bench` project).
+Benchmarks are not traced unless you pass `--trace` (they go to the `resume-agent-development` project; normal runs go to `resume-agent-local`).
 Prompts contain the job description and project facts, never contact details.
 
 ## Design rule

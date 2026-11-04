@@ -20,11 +20,17 @@ import os
 from pathlib import Path
 
 ENV_FILE = Path(__file__).resolve().parents[1] / ".env"
-DEFAULT_PROJECT = "resume-agent"
+DEFAULT_PROJECT = "resume-agent-local"
 
 
-def configure_tracing(enable: bool = True, project: str | None = None) -> bool:
-    """Enable LangSmith for this process if a key is configured. Returns True if tracing is on."""
+def configure_tracing(enable: bool = True, environment: str | None = None) -> bool:
+    """Enable LangSmith for this process if a key is configured. Returns True if tracing is on.
+
+    Two routing modes (LangSmith refuses to trace if both are set):
+      - agent address: LANGSMITH_AGENT_ID (+ LANGSMITH_AGENT_ENVIRONMENT) — used when an agent id is set;
+        `environment` switches it (e.g. "development" for benchmarks),
+      - project name:  LANGSMITH_PROJECT — default "resume-agent-<environment>".
+    """
     try:
         from dotenv import load_dotenv
         load_dotenv(ENV_FILE)
@@ -34,15 +40,33 @@ def configure_tracing(enable: bool = True, project: str | None = None) -> bool:
         os.environ["LANGSMITH_TRACING"] = "false"
         return False
     os.environ["LANGSMITH_TRACING"] = "true"
-    os.environ.setdefault("LANGSMITH_PROJECT", project or DEFAULT_PROJECT)
+    if os.environ.get("LANGSMITH_AGENT_ID"):
+        os.environ.pop("LANGSMITH_PROJECT", None)            # never both: LangSmith would trace nothing
+        if environment:
+            os.environ["LANGSMITH_AGENT_ENVIRONMENT"] = environment
+        else:
+            os.environ.setdefault("LANGSMITH_AGENT_ENVIRONMENT", "local")
+    else:
+        if environment:
+            os.environ["LANGSMITH_PROJECT"] = f"resume-agent-{environment}"
+        else:
+            os.environ.setdefault("LANGSMITH_PROJECT", DEFAULT_PROJECT)
     return True
 
 
+def destination() -> str:
+    """Where traces go, in words."""
+    if os.environ.get("LANGSMITH_AGENT_ID"):
+        return (f"agent '{os.environ['LANGSMITH_AGENT_ID']}', "
+                f"environment '{os.environ.get('LANGSMITH_AGENT_ENVIRONMENT', 'local')}'")
+    return f"project '{os.environ.get('LANGSMITH_PROJECT', DEFAULT_PROJECT)}'"
+
+
 def project_url() -> str:
-    """Best-effort link to the LangSmith project (UI host follows the API region)."""
+    """Best-effort pointer to the traces (UI host follows the API region)."""
     endpoint = os.environ.get("LANGSMITH_ENDPOINT", "https://api.smith.langchain.com")
     host = "https://eu.smith.langchain.com" if "eu." in endpoint else "https://smith.langchain.com"
-    return f"{host} → project '{os.environ.get('LANGSMITH_PROJECT', DEFAULT_PROJECT)}'"
+    return f"{host} → {destination()}"
 
 
 def run_config(slug: str, company: str, role: str, extra_tags: list[str] | None = None) -> dict:
