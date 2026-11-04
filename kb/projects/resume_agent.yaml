@@ -10,7 +10,6 @@ tags: [llm, agents, agentic-workflows, langgraph, langchain, llm-evaluation, llm
 rules:
   - "No quality metrics exist yet (one live run): never write pass rates, hallucination reductions, time saved or users."
   - "Personal tool, not a product: never 'production', 'SaaS', 'used by recruiters/students'."
-  - "Repo is private — make it public before linking it on a resume."
 allowed_terms: ["LangGraph"]          # the one project allowed to name it (kit §2.2.5)
 banned_terms: ["production", "SaaS", "users", "customers", "hallucination rate", "time saved", "% fewer"]
 
