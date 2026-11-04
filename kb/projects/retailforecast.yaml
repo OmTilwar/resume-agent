@@ -26,10 +26,10 @@ titles:
 
 bullets:
   - id: rf_b1
-    text: "Built a store-level demand forecasting pipeline over 1,017 stores (1M+ daily records) with DuckDB SQL feature engineering and LightGBM gradient boosting."
-    fact_ids: [rf_data, rf_lgbm]
+    text: "Built a store-level demand forecasting pipeline over 1,017 stores and 1M+ daily records, combining DuckDB SQL feature engineering with LightGBM (1,000 rounds, early stopping) and 16 pytest tests."
+    fact_ids: [rf_data, rf_lgbm, rf_tests]
   - id: rf_b2
-    text: "Engineered 5 SQL feature pipelines using window functions (LAG, 30-day rolling mean/stddev), multi-table CTEs (YoY growth) and tiering (RANK, NTILE)."
+    text: "Engineered 5 SQL feature pipelines in DuckDB using window functions (LAG/LEAD, 30-day rolling mean and stddev), multi-table CTEs for year-over-year growth, and store tiering with RANK and NTILE."
     fact_ids: [rf_sql]
   - id: rf_b3
     text: "Quantified promotion and competitor-proximity effects with Welch's t-test and Mann-Whitney U (p < 0.05), and built a what-if simulator over promo intensity (0.0x → 1.5x)."

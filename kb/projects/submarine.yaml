@@ -27,11 +27,11 @@ bullets:
     text: "Engineered a modular C++17/ROS2 driver framework for underwater vehicles with abstract lifecycle base classes (DriverBase, SensorBase, ActuatorBase) using RAII and smart pointers."
     fact_ids: [sub_arch]
   - id: sub_b2
-    text: "Implemented a 12-state 6-DOF Extended Kalman Filter fusing 200 Hz IMU dead-reckoning with 50 Hz DVL velocity and depth corrections."
+    text: "Implemented a 12-state 6-DOF EKF fusing 200 Hz IMU dead-reckoning with 50 Hz DVL and depth updates."
     fact_ids: [sub_ekf, sub_sensors]
   - id: sub_b3
-    text: "Modeled thruster dynamics with quadratic PWM thrust curves, deadband compensation and thermal protection for Blue Robotics T200/T500 thrusters."
+    text: "Modeled T200/T500 thruster dynamics: quadratic PWM thrust curves, deadband compensation, thermal protection."
     fact_ids: [sub_thrusters]
   - id: sub_b4
-    text: "Built a sensor-noise injection suite (white noise, bias-drift random walk, ADC quantization) for software-in-the-loop testing; 50 GTest tests run in GitHub Actions CI."
+    text: "Built a sensor-noise injection suite (Gaussian white noise, bias-drift random walk, ADC quantization) for software-in-the-loop testing, with 50 GTest unit tests running in GitHub Actions CI."
     fact_ids: [sub_noise, sub_tests]

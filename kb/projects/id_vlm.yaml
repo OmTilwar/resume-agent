@@ -40,7 +40,7 @@ bullets:
     text: "Fine-tuned Qwen2-VL-2B with LoRA (Unsloth) on MIDV-2020 identity documents across 10 types, raising value recall from 30.8% to 41.1% (+10.3 pts) and valid-JSON output from 67.3% to 86.0%."
     fact_ids: [idv_lora, idv_data, idv_value_recall, idv_json]
   - id: idv_b2
-    text: "Diagnosed near-zero strict scores as a key-naming mismatch (only ~17% of expected keys produced) by adding key-independent value recall and key coverage metrics, then redesigned prompts around per-document-type key schemas."
+    text: "Diagnosed near-zero strict scores as a key-naming mismatch (only ~17% of expected keys produced) via key-independent value recall and key coverage metrics, then redesigned prompts around per-type key schemas."
     fact_ids: [idv_diagnosis, idv_harness]
   - id: idv_b3
     text: "Built an evaluation harness (strict/normalized field match, value recall, CER, JSON parse rate) with breakdowns by document type, capture condition and field, covered by 102 pytest tests."

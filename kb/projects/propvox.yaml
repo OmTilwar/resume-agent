@@ -26,22 +26,22 @@ titles:
 
 bullets:
   - id: pv_b1
-    text: "Engineered a real-time voice agent orchestrating speech → LLM → tool execution → voice via concurrent asyncio tasks, reaching ~400–600 ms median time-to-first-byte."
+    text: "Engineered a real-time voice agent that orchestrates speech → LLM → tool execution → voice through concurrent asyncio tasks, reaching a ~400–600 ms median time-to-first-byte per spoken reply."
     fact_ids: [pv_workflow, pv_ttfb]
   - id: pv_b2
-    text: "Shipped the agent end to end: Next.js/React frontend on Vercel and an async Python backend orchestrating Deepgram STT, Groq LLM and Sarvam AI TTS over WebSockets."
+    text: "Shipped the agent end to end: a Next.js/React frontend on Vercel and an async Python backend orchestrating Deepgram STT, Groq LLM (llama-3.1-8b-instant) and Sarvam AI TTS over WebSockets."
     fact_ids: [pv_fullstack, pv_llm_tts]
   - id: pv_b3
-    text: "Integrated Deepgram Nova-2 with dual-event endpointing (200ms VAD + 0.3s fallback timer) and a mutual-exclusion guard that prevents duplicate LLM calls."
+    text: "Integrated Deepgram Nova-2 STT with dual-event endpointing (200ms VAD plus a 0.3s fallback timer) and a mutual-exclusion guard that prevents duplicate LLM calls when both events fire."
     fact_ids: [pv_stt]
   - id: pv_b4
-    text: "Added bilingual English + Hindi (Hinglish code-mix) prompting with dual-phase sentence flushing so TTS starts speaking before the full LLM response arrives."
+    text: "Added Hinglish (English + Hindi) prompting with sentence flushing so speech starts before the LLM finishes."
     fact_ids: [pv_bilingual]
   - id: pv_b5
-    text: "Implemented provider abstraction with configurable retries, timeouts and error classification (rate limits vs auth failures vs server errors)."
+    text: "Built a provider abstraction with retries, timeouts and error classification (rate limit, auth, server)."
     fact_ids: [pv_provider]
   - id: pv_b6
-    text: "Built barge-in detection with safe asyncio task cancellation and persistent JSON session memory for multi-turn, cross-call context."
+    text: "Built barge-in detection with safe asyncio task cancellation and persistent JSON memory across calls."
     fact_ids: [pv_bargein]
 
 interview:

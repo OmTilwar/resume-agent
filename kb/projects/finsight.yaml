@@ -56,7 +56,7 @@ bullets:
     text: "Tuned per-retriever confidence thresholds (TF-IDF 0.65, Pinecone 0.55) to route queries between strict keyword matching and semantic fallback; served via FastAPI with JSON validation."
     fact_ids: [fs_thresholds, fs_api]
   - id: fs_b5
-    text: "Built the full-stack app: React (Vite) frontend with voice input (Web Speech API) and FastAPI backend serving a local Llama-3 for privacy-first conversations."
+    text: "Built the full stack: a React (Vite) frontend with voice input and a FastAPI backend serving local Llama-3."
     fact_ids: [fs_api, fs_llm]
   - id: fs_b6
     text: "Fine-tuned Llama-3 with LoRA (Unsloth) on 150+ banking Q&A pairs for domain-specific phrasing."

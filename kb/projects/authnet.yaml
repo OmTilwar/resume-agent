@@ -43,14 +43,14 @@ bullets:
     text: "Trained a ResNet-18 metric-learning model (Multi-Similarity Loss + hard-negative mining) producing 128-dim texture fingerprints, reaching 64.5% Recall@1 (~30x random) and 48.97% mAP on 47 DTD classes."
     fact_ids: [an_backbone, an_recall, an_map, an_dataset]
   - id: an_b2
-    text: "Quantized the model with ONNX INT8 (43.3 MB → 10.9 MB, 4x smaller) with negligible output drift, cutting CPU inference from 14.78ms to 8ms; 2.4ms median on GPU."
+    text: "Quantized the model to ONNX INT8 (43.3 MB → 10.9 MB, 4x smaller) with a maximum output drift of 7.45e-08, cutting CPU inference from 14.78ms to 8ms against a 2.4ms median on an RTX 4050 GPU."
     fact_ids: [an_onnx, an_latency]
   - id: an_b3
-    text: "Built gallery-based retrieval and pairwise verification behind a FastAPI service (/authenticate, /fingerprint, /explain), covered by 26 unit and integration tests."
+    text: "Built gallery-based retrieval and pairwise verification behind a FastAPI service (/authenticate, /fingerprint, /explain, /health), covered by 26 unit and integration tests across the API and model."
     fact_ids: [an_api, an_tests]
   - id: an_b4
-    text: "Adapted Grad-CAM to embedding-similarity models to show which texture regions drive a match, and validated cluster separation with t-SNE (NMI 0.70)."
-    fact_ids: [an_gradcam, an_nmi]
+    text: "Adapted Grad-CAM to embedding-similarity models to show which texture regions drive each match, and validated cluster separation with t-SNE visualization and an NMI of 0.70 across all 47 classes."
+    fact_ids: [an_gradcam, an_nmi, an_dataset]
 
 interview:
   - {q: "Why is DTD a reasonable proxy for authentication, and what are its limits?", a: "Texture classes != genuine/counterfeit pairs; say so."}

@@ -24,11 +24,11 @@ titles:
 
 bullets:
   - id: vio_b1
-    text: "Developed a Visual-Inertial Odometry pipeline in C++17/ROS2 fusing camera and IMU streams for 6-DOF pose estimation in GPS-denied settings."
+    text: "Developed C++17/ROS2 visual-inertial odometry fusing camera and IMU for 6-DOF pose in GPS-denied settings."
     fact_ids: [vio_ekf, vio_core]
   - id: vio_b2
-    text: "Implemented ORB feature tracking with Hamming-distance matching and Essential Matrix decomposition for frame-to-frame motion recovery."
+    text: "Implemented ORB tracking with Hamming matching and Essential Matrix decomposition for frame-to-frame motion."
     fact_ids: [vio_features]
   - id: vio_b3
-    text: "Engineered an Eigen3 EKF combining high-rate IMU propagation with visual-odometry updates; published PoseStamped and TF2 transforms for RViz."
+    text: "Built an Eigen3 EKF fusing high-rate IMU propagation with visual updates; published PoseStamped and TF2."
     fact_ids: [vio_ekf, vio_ros]

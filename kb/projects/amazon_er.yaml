@@ -57,7 +57,7 @@ bullets:
     text: "Built a business entity-resolution pipeline matching 10M noisy multilingual records (US/India/France) to 1.7M reference entities, ranking 724th on the Amazon ML Challenge 2026 public leaderboard (0.9837 macro F0.5)."
     fact_ids: [amz_scale, amz_lb_f05, amz_rank]
   - id: amz_b2
-    text: "Fine-tuned a multilingual-e5-base bi-encoder with contrastive in-batch negatives on 3M pairs, raising blocking recall from 98.29% to 99.31%; a LightGBM ranker (~40 features) cut candidates to 29.9M pairs while keeping 99.89% of true pairs."
+    text: "Fine-tuned a multilingual-e5-base bi-encoder on 3M pairs with in-batch negatives, raising blocking recall from 98.29% to 99.31%; a LightGBM ranker (~40 features) cut candidates to 29.9M, kept 99.89% of true pairs."
     fact_ids: [amz_blocking, amz_stage1]
   - id: amz_b3
     text: "Ensembled 4 fine-tuned cross-encoders (bge-reranker-v2-m3, mDeBERTa-v3) with a cross-fitted LightGBM stacker and query-level gate, lifting leaderboard F0.5 from 0.894 to 0.9837 across 18 iterations."
@@ -78,7 +78,7 @@ bullets:
     text: "Orchestrated idempotent GPU/CPU jobs across Modal, Lightning AI (H100/A100) and AWS SageMaker with S3 handoffs, checkpointing and a cost ledger; final submission reproduces byte-for-byte."
     fact_ids: [amz_infra]
   - id: amz_b9
-    text: "Traced all 4,507 unrecoverable validation matches, showing retrieval was effectively solved (10 misses) and >50% of residual errors were unresolvable from the data."
+    text: "Traced all 4,507 unrecoverable validation matches, showing that retrieval was effectively solved (only 10 misses) and that more than 50% of the remaining errors could not be resolved from the data itself."
     fact_ids: [amz_error_analysis]
 
 interview:

@@ -61,20 +61,20 @@ titles:
 
 bullets:
   - id: mv_b1
-    text: "Fine-tuned ResNet-18 on 5,800+ chest X-rays, reaching 91.8% accuracy and 0.97 AUC-ROC on the 624-image held-out test set."
+    text: "Fine-tuned ResNet-18 on 5,800+ chest X-rays: 91.8% accuracy, 0.97 AUC-ROC on a 624-image held-out test set."
     fact_ids: [mv_dataset, mv_classifier]
   - id: mv_b1_health
-    text: "Fine-tuned ResNet-18 on 5,800+ chest X-rays, reaching 91.8% accuracy, 0.97 AUC-ROC, 92.3% sensitivity and 91.0% specificity on the 624-image held-out test set."
+    text: "Fine-tuned ResNet-18 on 5,800+ chest X-rays, reaching 91.8% accuracy, 0.97 AUC-ROC, 92.3% sensitivity and 91.0% specificity on the 624-image held-out test set (234 normal / 390 pneumonia)."
     fact_ids: [mv_dataset, mv_classifier, mv_sens_spec]
     note: "Healthcare JDs only."
   - id: mv_b2
     text: "Built a U-Net lung segmenter from scratch (17M params, Dice+BCE loss), reaching 0.975 Dice / 0.951 IoU in patient-level 5-fold cross-validation on 138 NLM Montgomery chest X-rays."
     fact_ids: [mv_unet]
   - id: mv_b3
-    text: "Built DICOM de-identification following PS3.15 Annex E (25+ PHI tags, UID regeneration) plus Tesseract OCR + regex NER to catch burned-in PHI (names, MRN, dates, SSNs)."
+    text: "Built DICOM de-identification following PS3.15 Annex E (25+ PHI tags, UID regeneration), plus Tesseract OCR and regex NER to catch PHI burned into images (names, MRNs, dates, SSNs, phone numbers)."
     fact_ids: [mv_deid, mv_ocr]
   - id: mv_b4
-    text: "Deployed as a Dockerized FastAPI service with 6 endpoints (classify, segment, convert, anonymize, de-identify, health), Pydantic validation and 64 pytest tests."
+    text: "Deployed as a Dockerized FastAPI service with 6 REST endpoints (classify, segment, convert, anonymize, de-identify, health), Pydantic request validation and a suite of 64 pytest tests."
     fact_ids: [mv_api, mv_tests]
   - id: mv_b5
     text: "Added Grad-CAM attention maps per prediction so clinicians can check which lung regions drove each classification."

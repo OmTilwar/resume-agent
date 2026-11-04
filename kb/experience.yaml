@@ -38,10 +38,10 @@ groups:
         text: "Raised crop yield prediction by 14% by integrating disease detection into the precision-agriculture model."
         fact_ids: [ex_yield]
       - id: A3
-        text: "Spearheaded edge deployment on Raspberry Pi 5B + Hailo-8 via ONNX → INT8 quantization → HEF compilation, achieving real-time inference at <30ms latency."
+        text: "Spearheaded edge deployment on Raspberry Pi 5B + Hailo-8 (ONNX → INT8 → HEF) at under 30ms latency."
         fact_ids: [ex_edge]
       - id: A4
-        text: "Deployed the model on a Linux edge device (Raspberry Pi 5B + Hailo-8), handling dependency setup and performance profiling to hold inference under 30ms."
+        text: "Set up and profiled the model on a Linux edge device, handling dependencies to keep inference under 30ms."
         fact_ids: [ex_edge]
   - id: B
     name: "Data pipelines / Engineering"
@@ -50,13 +50,13 @@ groups:
         text: "Built the end-to-end pipeline from raw imagery to deployed model — cleaning and validating 3,200+ annotated instances, training, then ONNX export → INT8 quantization → edge compilation (<30ms)."
         fact_ids: [ex_dataset, ex_edge]
       - id: B2
-        text: "Cleaned and validated 3,200+ annotated instances from messy real-world field imagery, feeding a YOLOv8 retrain that improved mAP by 8.4%."
+        text: "Cleaned and validated 3,200+ annotated instances of messy field imagery, feeding a YOLOv8 retrain (+8.4% mAP)."
         fact_ids: [ex_dataset, ex_map]
   - id: C
     name: "ML experiments / Research"
     bullets:
       - id: C1
-        text: "Pursued a self-defined dense-detection research problem from literature survey to a working prototype, improving mAP by 8.4% on real-world field data."
+        text: "Took a self-defined dense-detection problem from literature survey to working prototype, improving mAP by 8.4%."
         fact_ids: [ex_map]
       - id: C2
         text: "Ran systematic experiments across hyperparameter configurations with short iteration cycles, documenting results and dead ends for reproducibility; best configuration improved mAP by 8.4%."
@@ -71,7 +71,7 @@ groups:
     name: "Backend / Production"
     bullets:
       - id: E1
-        text: "Ran model inference on Linux edge hardware with ONNX export, INT8 quantization and output validation, sustaining <30ms latency."
+        text: "Validated model outputs after ONNX export and INT8 quantization on Linux edge hardware, at <30ms."
         fact_ids: [ex_edge]
 
 # Removed from v1 — never use until Om confirms (kit §5)
