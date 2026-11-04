@@ -186,6 +186,13 @@ def fix(state: ResumeState, config: RunnableConfig) -> ResumeState:
         notes.append(f"{s.id}: {why} — used a verified kit bullet")
         return True
 
+    restored = set()
+    for tid in [t for t in targets if "missing-headline" in rules[t]]:
+        _restore_headline(by_id[tid].section, projects, state, kb, notes)
+        restored.add(by_id[tid].section)
+    # the swap may shift that project's bullets: its other targets are re-checked next round instead
+    targets = {t: v for t, v in targets.items() if by_id[t].section not in restored}
+    by_id = {s.id: s for s in slots({**state, "projects": projects, "experience": experience}, kb)}
     for tid in list(targets):
         s = by_id[tid]
         if s.bullet.origin == "llm" and rules[tid] & SWAP_NOW:
@@ -213,10 +220,23 @@ def fix(state: ResumeState, config: RunnableConfig) -> ResumeState:
             "fix_round": state.get("fix_round", 0) + 1}
 
 
+def _restore_headline(section: str, projects, state: ResumeState, kb: KnowledgeBase, notes: list[str]) -> None:
+    from .nodes import ensure_headline
+    block = next((p for p in projects if p.project_id == section), None)
+    if block is not None:
+        block.bullets = ensure_headline(block.bullets, kb.get_project(section), _bank(section, state, kb), notes)
+
+
 def fallback(state: ResumeState, config: RunnableConfig) -> ResumeState:
     """Rounds exhausted: swap every still-hard-failing bullet for an unused verified bank bullet."""
     kb = get_kb()
     notes = list(state.get("notes", []))
+    projects, experience = _copy_blocks(state)
+    for i in state["issues"]:
+        if i.rule == "missing-headline":
+            _restore_headline(i.target.split("#")[0], projects, state, kb, notes)
+    state = {**state, "projects": projects, "experience": experience,
+             "issues": [i for i in state["issues"] if i.rule != "missing-headline"]}
     projects, experience = _copy_blocks(state)
     by_id = {s.id: s for s in slots(state, kb)}
     used = _on_page(state)

@@ -13,6 +13,8 @@ rules:
 forbidden_title_terms: ["Record Linkage", "Entity Matching", "Statistical Modelling", "Analytical Dataset"]
 banned_terms: ["authenticated products", "detected counterfeits", "counterfeit detection", "analytical datasets", "31x"]
 
+headline: ["64.5"]          # kit §10.3: the project's headline result stays on the page
+
 facts:
   - {id: an_dataset, claim: "DTD: 47 classes; 1,880 test samples", values: ["47", "1,880"], status: verified, source: "outputs/evaluation_results.json"}
   - id: an_recall

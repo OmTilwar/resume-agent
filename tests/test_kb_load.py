@@ -5,7 +5,7 @@ from resume_agent.knowledge.loader import validate_references
 def test_loads_with_expected_shape(kb):
     assert len(kb.projects) == 12
     assert {p.id for p in kb.selectable_projects(tiers=(1,))} == {
-        "amazon_er", "finsight", "propvox", "medvision", "authnet"}
+        "amazon_er", "finsight", "propvox", "medvision", "authnet", "resume_agent"}   # ResumeAgent: Tier 1 since 4 Nov
     assert len(kb.archetypes) == 22
     assert {g.id for g in kb.experience.groups} == set("ABCDE")
     assert len(kb.retired) == 2

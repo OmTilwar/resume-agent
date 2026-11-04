@@ -154,6 +154,35 @@ def snap_weak(bullets: list[FinalBullet], section: str, bank, kb: KnowledgeBase,
     return out
 
 
+def has_headline(bullets: list[FinalBullet], project) -> bool:
+    from .knowledge.numbers import extract_numbers
+    return not project or not project.headline or any(
+        set(project.headline) & extract_numbers(b.text) for b in bullets)
+
+
+def ensure_headline(bullets: list[FinalBullet], project, bank, notes: list[str]) -> list[FinalBullet]:
+    """Kit §10.3: a project's headline result must be on the page. DataCore run, 4 Nov: the fixer rewrote Amazon
+    bullet 1 without 0.9837 — the flagship lost its score. Swap in the kit bullet that carries it (no model call):
+    in place of a bullet saying the same thing, else at the top, dropping the block's last bullet."""
+    from .validate import near_duplicate
+    if has_headline(bullets, project):
+        return bullets
+    from .knowledge.numbers import extract_numbers
+    on = {b.text for b in bullets}
+    cands = [b for b in bank if set(project.headline) & extract_numbers(b.text) and b.text not in on]
+    if not cands:
+        return bullets
+    h = FinalBullet(text=cands[0].text, fact_ids=cands[0].fact_ids, origin="bank")
+    out = list(bullets)
+    twin = next((i for i, b in enumerate(out) if near_duplicate(b.text, h.text)), None)
+    if twin is not None:
+        out[twin] = h
+    else:
+        out = [h] + out[:max(len(out) - 1, 0)] if out else [h]
+    notes.append(f"{project.id}: headline result ({', '.join(project.headline)}) was missing — used the kit bullet that has it")
+    return out
+
+
 def _fill_from_bank(kept: list[FinalBullet], bank, n_min: int, n_max: int) -> list[FinalBullet]:
     """Top up to n_min from the kit bank, preferring bullets that add metrics the block doesn't show yet."""
     from .validate import near_duplicate, repeated_numbers
@@ -217,7 +246,7 @@ def analyze(state: ResumeState, config: RunnableConfig) -> ResumeState:
 def select(state: ResumeState, config: RunnableConfig) -> ResumeState:
     kb = get_kb()
     a = state["analysis"]
-    scores = score_projects(a, kb)
+    scores = score_projects(a, kb, state["job"].text)
     groups = list(dict.fromkeys(
         kb.archetypes[a.archetype].exp_groups
         + (kb.archetypes[a.secondary_archetype].exp_groups if a.secondary_archetype else [])
@@ -250,6 +279,7 @@ def _write_one_project(pid: str, state: ResumeState, config: RunnableConfig) -> 
         drafted.append(FinalBullet(text=d.text.strip(), fact_ids=d.fact_ids, origin="llm"))
     bank = [b for b in kb.allowed_bullets(pid, ctx) if not kb.cites_last_only(pid, b.fact_ids)]
     bullets = _fill_from_bank(snap_weak(drafted[:n], pid, bank, kb, notes), bank, n, n_max)
+    bullets = ensure_headline(bullets, p, bank, notes)
     idx = draft.title_index if 0 <= draft.title_index < len(p.titles) else 0
     title = p.titles[idx]
     stack = fit_stack(p.name, title.subtitle, draft.stack, p.stack, title.stack)
@@ -326,6 +356,23 @@ def _relevance(state: ResumeState, kb: KnowledgeBase):
     return relevant
 
 
+def _jd_relevance(state: ResumeState):
+    """entry -> True only if it relates to a JD keyword (stricter than _relevance, which also counts the chosen
+    projects' stacks). Used to rank: the JD's skills go first, project-only ones fill in after."""
+    from .selection import _probes
+    keywords = [k.term for k in state["analysis"].top_keywords]
+    kw_probes = {p for k in keywords for p in _probes(k)}
+
+    def jd(entry: str) -> int:
+        """2 = the entry names a JD keyword (or its synonym); 1 = only the entry's own synonyms reach one
+        ("Vision-Language Models" ~ "language models"); 0 = unrelated."""
+        e = entry.replace("(Familiar)", "")
+        if any(mentions(k, entry) for k in keywords):
+            return 2
+        return 1 if _probes(e) & kw_probes else 0
+    return jd
+
+
 _FILLER = {"libraries", "library", "tools", "tooling", "frameworks", "framework", "skills", "core", "stack",
             "languages", "technologies", "platforms", "methods", "other"}
 
@@ -365,6 +412,7 @@ def fit_skills(lines: list[SkillLine], state: ResumeState, kb: KnowledgeBase) ->
     """Enforce kit §10.4 deterministically: relevant categories, JD-relevant entries first, line width."""
     notes: list[str] = []
     relevant = _relevance(state, kb)
+    jd = _jd_relevance(state)
     used = {e for l in lines for e in l.entries}
 
     # 1. swap out lines with nothing relevant to this JD; pad to the minimum line count
@@ -393,7 +441,8 @@ def fit_skills(lines: list[SkillLine], state: ResumeState, kb: KnowledgeBase) ->
     # 2. per line: JD-relevant entries first (stable), then trim to the width budget
     out = []
     for l in kept:
-        rel = [e for e in l.entries if relevant(e)]
+        # JD-keyword entries first, then project-only ones, so width trimming drops the latter first
+        rel = sorted((e for e in l.entries if relevant(e)), key=lambda e: -jd(e))
         other = sorted((e for e in l.entries if not relevant(e)), key=lambda e: "(Familiar)" in e)
         # no padding: unrelated entries (TypeScript, CMake on a data-science JD) only fill a short line
         pad = other[:max(0, SKILL_MIN_ENTRIES - len(rel))]
@@ -413,6 +462,20 @@ def fit_skills(lines: list[SkillLine], state: ResumeState, kb: KnowledgeBase) ->
             while skill_line_chars(line) > SKILL_LINE_MAX_CHARS and len(line.entries) > SKILL_MIN_ENTRIES:
                 line.entries.pop()
         out.append(line)
+
+    # 3. kit §10.4: order lines by JD importance; a line that still can't fit ~1.3 printed lines gives way if the
+    #    section has lines to spare (DataCore, 4 Nov: 'Retrieval & Ranking' took 2 printed lines on a JD that never
+    #    mentions retrieval, while JD skills were trimmed off the LLM line)
+    def score(l: SkillLine) -> int:
+        return sum(jd(e) > 0 for e in l.entries) + 2 * any(mentions(k.term, l.category) for k in state["analysis"].top_keywords)
+    out.sort(key=score, reverse=True)
+    while len(out) > SKILL_LINES_MIN:
+        wide = [l for l in out if skill_line_chars(l) > SKILL_LINE_MAX_CHARS]
+        if not wide:
+            break
+        worst = min(wide, key=score)
+        out.remove(worst)
+        notes.append(f"skills: dropped line '{worst.category}' — too wide for ~1.3 lines and least related to the JD")
     return _ensure_required(out, state, kb, notes), notes
 
 
@@ -506,17 +569,24 @@ def pick_achievements(state: ResumeState, kb: KnowledgeBase) -> list[str]:
     """Kit §8, ranked: publication, hackathons, then the best extras. Callers slice to fit the page."""
     selected = set(state["selected"])
     a = state["analysis"]
-    text = " ".join([k.term for k in a.top_keywords] + [a.archetype, a.domain]).lower()
     by_id = {x.id: x for x in kb.achievements}
     gd, eyrc = by_id["groundingdino_pr"], by_id["eyrc"]
-    wants_gd = a.archetype in {"ml_infra", "ml_cv_engineer", "applied_scientist"} or any(t in text for t in gd.include_for)
+    # the JD's own words count, not just the 10 keywords (DataCore asked for "open-source contributions" and the
+    # analyzer didn't pick it as a keyword, so the line was skipped with blank space left on the page)
+    from .selection import _norm
+    def has(t: str, s: str) -> bool:
+        return bool(re.search(rf"(?<![a-z0-9]){re.escape(_norm(t))}(?![a-z0-9])", s))
+    kw_text = _norm(" ".join([k.term for k in a.top_keywords] + [a.archetype, a.domain]))
+    jd_text = _norm(state["job"].text)
+    # in the raw JD only unambiguous terms count ("send your CV" is not computer vision)
+    jd_asks_gd = any(has(t, kw_text) or (len(t) >= 4 and has(t, jd_text)) for t in gd.include_for)
     extras = []
+    if jd_asks_gd:
+        extras.append(gd)                          # asked for: ahead of the Amazon line too
     if "amazon_er" not in selected:
         extras.append(by_id["amazon_ml_challenge"])
-    if a.archetype in {"robotics_cpp", "vio_slam"}:
-        extras += [eyrc, gd]
-    else:
-        extras += [gd, eyrc] if wants_gd else [eyrc, gd]
+    # kit §8: the PR is "the default 3rd achievement when space allows"; robotics JDs lead with eYRC
+    extras += [eyrc, gd] if a.archetype in {"robotics_cpp", "vio_slam"} else [gd, eyrc]
     ranked = [by_id["ieee_publication"], by_id["hackathon_wins"], *extras]
     seen, out = set(), []
     for x in ranked:

@@ -105,7 +105,12 @@ ORDER_BONUS = [3, 2, 1]   # extra for the 1st / 2nd / 3rd project in the archety
 FLAGSHIP = "amazon_er"    # kit §9: "belongs on almost every ML/AI resume"
 
 
-def score_projects(analysis: JDAnalysis, kb: KnowledgeBase) -> list[ProjectScore]:
+def jd_signal_hits(p: Project, jd_text: str) -> list[str]:
+    t = _norm(jd_text)
+    return [sig for sig in p.jd_signals if re.search(rf"(?<![a-z0-9]){re.escape(_norm(sig))}(?![a-z0-9])", t)]
+
+
+def score_projects(analysis: JDAnalysis, kb: KnowledgeBase, jd_text: str = "") -> list[ProjectScore]:
     primary = kb.archetypes.get(analysis.archetype)
     secondary = kb.archetypes.get(analysis.secondary_archetype or "")
     prim_list = primary.flat_projects() if primary else []
@@ -118,8 +123,9 @@ def score_projects(analysis: JDAnalysis, kb: KnowledgeBase) -> list[ProjectScore
 
     scores: list[ProjectScore] = []
     for p in kb.selectable_projects():
-        if p.tier == 2 and p.id not in prim_list + sec_list:
-            continue
+        signals = jd_signal_hits(p, jd_text) if p.tier == 2 else []
+        if p.tier == 2 and p.id not in prim_list + sec_list and not signals:
+            continue   # kit §3: Tier 2 only when the archetype — or the JD's own words — call for it
         must = [k.term for k in analysis.top_keywords if k.importance == "must" and keyword_hits(k.term, p)]
         nice = [k.term for k in analysis.top_keywords if k.importance == "nice" and keyword_hits(k.term, p)]
         s, reasons = 3 * len(must) + len(nice), []
@@ -140,6 +146,9 @@ def score_projects(analysis: JDAnalysis, kb: KnowledgeBase) -> list[ProjectScore
         if p.tier == 1:
             s += 2
             reasons.append("+2 Tier 1")
+        if signals:
+            s += 2
+            reasons.append(f"+2 JD asks for it: {', '.join(signals)}")
         scores.append(ProjectScore(project_id=p.id, score=s, must_hits=must, nice_hits=nice, reasons=reasons))
 
     order = {pid: i for i, pid in enumerate(prim_list + sec_list)}

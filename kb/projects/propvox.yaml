@@ -8,6 +8,8 @@ stack: [Python, asyncio, TypeScript, React, Next.js, Deepgram, Groq, Sarvam AI, 
 one_liner: "Real-time bilingual (English + Hindi) AI voice agent with multi-step LLM orchestration."
 tags: [llm, agents, multi-step-reasoning, tool-use, memory, asyncio, full-stack, websockets, voice, real-time, api-orchestration, deepgram, groq, sarvam, stt, tts, bilingual, hindi, indic]
 
+headline: ["400"]          # kit §10.3: the project's headline result stays on the page
+
 facts:
   - {id: pv_ttfb, claim: "~400-600 ms median time-to-first-byte", values: ["400", "600"], status: stated}
   - {id: pv_workflow, claim: "Multi-step agentic workflow: speech -> LLM -> tool execution -> voice via concurrent asyncio tasks", values: [], status: stated}

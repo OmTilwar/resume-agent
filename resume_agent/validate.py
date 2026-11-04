@@ -145,6 +145,14 @@ def deterministic_issues(state: ResumeState, kb: KnowledgeBase) -> list[Issue]:
                                     message=f"says the same thing as {prev.id} — cover a different fact"))
                 break
 
+    # kit §10.3: each project's headline result stays on the page
+    for p in state["projects"]:
+        proj = kb.projects.get(p.project_id)
+        if proj and proj.headline and p.bullets and not any(
+                set(proj.headline) & extract_numbers(b.text) for b in p.bullets):
+            issues.append(Issue(target=f"{p.project_id}#1", rule="missing-headline", severity="hard",
+                                message=f"the project's headline result ({', '.join(proj.headline)}) is not on the page"))
+
     # verbs: none more than twice; never twice in a row (kit §10.2)
     counts: dict[str, int] = {}
     prev = ""

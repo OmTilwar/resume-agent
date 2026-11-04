@@ -26,6 +26,8 @@ rules:
 banned_terms: ["winner", "percentile", "10,000 teams", "10k teams"]
 banned_verbs: [Spearheaded, Owned, Drove, Led]
 
+headline: ["0.9837"]          # kit §10.3: the project's headline result stays on the page
+
 facts:
   - {id: amz_team, claim: "Team YOU_WIN_I_LOSE, 2 members, Top-1000 finalist, submitted 2026-09-28", values: ["2"], status: stated}
   - {id: amz_scale, claim: "1,732,544 S1 reference entities x 9,969,589 S2/S3 noisy records (US/India/France)", values: ["1,732,544", "9,969,589", "1.7M", "10M"], status: stated}

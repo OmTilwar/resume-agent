@@ -13,6 +13,8 @@ rules:
 forbidden_title_terms: ["SciMining", "Scientific", "Literature", "Knowledge Discovery", "Risk Data Pipeline", "Financial Analytics", "High-Performance Backend"]
 banned_terms: ["4-tier", "risk exposure", "loan portfolios", "chunking strategies"]
 
+headline: ["66.45"]          # kit §10.3: the project's headline result stays on the page
+
 facts:
   - {id: fs_arch, claim: "4-stage pipeline: BM25/TF-IDF lexical -> Pinecone vector search -> deterministic function-calling -> local Llama-3 generation", values: ["4"], status: verified, source: "backend/"}
   - {id: fs_llm, claim: "Local Llama-3-8B-Instruct (quantized GGUF) via llama-cpp-python; privacy-first", values: [], status: verified}

@@ -29,8 +29,13 @@ See [`docs/graph.mmd`](docs/graph.mmd). Regenerate both the Mermaid file and the
 
 ```bash
 python -m resume_agent run --jd "../../JD ML and Data Science Intern- KA.pdf" --company KA --role "ML & Data Science Intern"
-# -> out/<slug>/<slug>.tex, .pdf, report.md   (add --save-to-kit to copy the .tex into Resume_Builder/resumes/)
+# -> out/<slug>/<slug>.tex, .pdf, report.md
 ```
+
+A finished **1-page** resume is then deployed the way `Resume_Builder/deploy_desktop_resume.ps1` does it:
+`resumes/<slug>.tex`, `build/<slug>.pdf` and **`Desktop/Om_Tilwar_Resume.pdf`** (overwritten each time — apply
+with that one). A hand-written `.tex` in `resumes/` is never overwritten (the agent writes `<slug>_agent.tex`
+instead). `--no-deploy` skips this.
 
 Any model bullet that fails a truth check is replaced by a verified bank bullet and listed in `report.md`.
 

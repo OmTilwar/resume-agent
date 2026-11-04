@@ -1,17 +1,18 @@
 """CLI.
 
     python -m resume_agent run --jd "../../JD ML and Data Science Intern- KA.pdf" --company KA --role "ML & DS Intern"
-    python -m resume_agent run --jd jd.txt --company Acme --role "AI Intern" --save-to-kit
+    python -m resume_agent run --jd jd.txt --company Acme --role "AI Intern" --no-deploy
+
+By default a finished 1-page resume is deployed like Resume_Builder/deploy_desktop_resume.ps1 does:
+resumes/<slug>.tex, build/<slug>.pdf and Desktop/Om_Tilwar_Resume.pdf.
 """
 from __future__ import annotations
 
 import argparse
 import logging
-import shutil
 import sys
 from pathlib import Path
 
-KIT_RESUMES = Path(__file__).resolve().parents[3] / "resumes"   # Resume_Builder/resumes
 CACHE_DIR = Path(__file__).resolve().parents[1] / "cache"         # resume-agent/cache (gitignored)
 
 
@@ -36,7 +37,9 @@ def main(argv: list[str] | None = None) -> int:
     run.add_argument("--company", required=True)
     run.add_argument("--role", required=True)
     run.add_argument("--slug", help="output name (default: company_role)")
-    run.add_argument("--save-to-kit", action="store_true", help="also copy the .tex to Resume_Builder/resumes/")
+    run.add_argument("--no-deploy", action="store_true",
+                     help="don't copy to resumes/, build/ and the Desktop (default: deploy a finished 1-page resume)")
+    run.add_argument("--save-to-kit", action="store_true", help=argparse.SUPPRESS)   # old flag; deploying is now the default
     run.add_argument("--no-trace", action="store_true", help="don't send this run to LangSmith even if a key is set")
     run.add_argument("--fresh", action="store_true",
                      help="re-analyse the JD even if this exact JD was analysed before (default: reuse, saves a call)")
@@ -92,13 +95,15 @@ def main(argv: list[str] | None = None) -> int:
     if traced:
         tracing.flush()
         print(f"trace  : {tracing.project_url()}, run 'resume:{slug}'")
-    if args.save_to_kit:
-        dest = KIT_RESUMES / f"{final['slug']}.tex"
-        if dest.exists():
-            print(f"NOT copied: {dest} already exists (won't overwrite)")
+    if not args.no_deploy:
+        from .deploy import deploy
+        d = deploy(rep.tex_path, rep.pdf_path, rep.pages, final["slug"])
+        print(f"saved  : {d.tex}")
+        if d.desktop:
+            print(f"build  : {d.pdf}")
+            print(f"desktop: {d.desktop}  <- apply with this one")
         else:
-            shutil.copy(rep.tex_path, dest)
-            print(f"copied : {dest}")
+            print(f"NOT on the Desktop: {d.skipped}")
     return 0
 
 

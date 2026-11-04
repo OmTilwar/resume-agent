@@ -85,6 +85,8 @@ class Project(BaseModel):
     allowed_terms: list[str] = Field(default_factory=list)  # globally banned terms this project may use
     banned_verbs: list[str] = Field(default_factory=list)
     max_bullets: Optional[int] = None
+    headline: list[str] = Field(default_factory=list)
+    jd_signals: list[str] = Field(default_factory=list)  # JD phrases that make a Tier 2 project eligible (kit §3)   # kit §10.3: one of these numbers must be on the page
     facts: list[Fact]
     titles: list[Title]
     bullets: list[Bullet]

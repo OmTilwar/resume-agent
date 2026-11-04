@@ -1,17 +1,20 @@
-# Kit §7.12 — facts ✅ (code + test suite, commit f665e20). NO quality metrics yet.
+# Kit §7.12 — Tier 1 since 4 Nov 2026 (Om's call, before the 50-JD eval). Facts ✅: code, tests, saved benchmark JSON.
 id: resume_agent
 name: "ResumeAgent"
-tier: 2
+tier: 1
 section: "7.12"
 github: "https://github.com/OmTilwar/resume-agent"
 stack: [Python, LangGraph, LangChain, LangSmith, OpenRouter, Pydantic, Jinja2, pytest, pypdf, LaTeX]
 one_liner: "LangGraph agent that turns a job description into a one-page LaTeX resume, with code-enforced truth guards, an LLM-as-judge faithfulness check, a repair loop and PDF layout measurement."
-tags: [llm, agents, agentic-workflows, langgraph, langchain, llm-evaluation, llm-as-judge, guardrails, hallucination-prevention, structured-outputs, pydantic, openrouter, prompt-engineering, self-correction, automation, document-generation, latex, testing, pytest]
+tags: [llm, agents, agentic-workflows, langgraph, langchain, langsmith, tracing, observability, llm-evaluation, llm-as-judge, benchmarking, guardrails, hallucination-prevention, structured-outputs, pydantic, openrouter, prompt-engineering, self-correction, cost-optimization, automation, internal-tools, document-generation, latex, testing, pytest]
+context: "Pipeline: JD text -> analyzer (top-10 keywords, archetype; cached per JD) -> deterministic project scoring -> 3 writers in parallel (4 project calls + experience + skills) -> validate (truth guards + LLM judge) <-> fix (up to 2 rounds; weak drafts swapped for verified kit bullets in code) -> fallback -> LaTeX via Jinja2 -> pdflatex -> layout check <-> trim/fill -> report (keyword coverage, honest gaps, interview prep) -> deploy (resumes/, build/, Desktop)."
 rules:
-  - "No quality metrics exist yet (one live run): never write pass rates, hallucination reductions, time saved or users."
+  - "The only quality numbers are the seeded-error benchmark (bench/results) and traced cost/tokens: never write end-to-end pass rates, hallucination reductions, time saved or users."
   - "Personal tool, not a product: never 'production', 'SaaS', 'used by recruiters/students'."
 allowed_terms: ["LangGraph"]          # the one project allowed to name it (kit §2.2.5)
 banned_terms: ["production", "SaaS", "users", "customers", "hallucination rate", "time saved", "% fewer"]
+
+headline: ["97.9"]          # kit §10.3: the seeded-error benchmark result stays on the page
 
 facts:
   - {id: ra_graph, claim: "14-node LangGraph graph: ingest, JD analysis, deterministic project scoring, bullet writing, validate/fix loop, fallback, assemble, compile, layout check/fix loop, report", values: ["14"], status: verified}
@@ -20,8 +23,14 @@ facts:
   - {id: ra_judge, claim: "LLM-as-judge reads each bullet against its cited facts' claims, catching wording drift (e.g. 'images' vs 'annotated instances')", values: [], status: verified}
   - {id: ra_repair, claim: "Repair loop: up to 2 fix rounds, then fallback to verified bank bullets", values: ["2"], status: verified}
   - {id: ra_layout, claim: "Layout loop measures the compiled PDF with pypdf (page count, blank lines, orphan lines) and applies page-budget trim/fill rules, undoing fills that overflow", values: [], status: verified}
-  - {id: ra_models, claim: "5 model roles (analyzer, writer, fixer, judge, fast) routed to free OpenRouter models with 2 automatic fallbacks each; Pydantic structured outputs", values: ["5", "2"], status: verified}
-  - {id: ra_tests, claim: "101 pytest tests incl. an offline end-to-end graph run with a fake LLM injecting fabricated and drifted bullets", values: ["101"], status: verified}
+  - {id: ra_models, claim: "5 model roles (analyzer, writer, fixer, judge, fast) routed through OpenRouter: a low-cost model for the writing roles, a free benchmark-validated judge, automatic fallbacks; Pydantic structured outputs", values: ["5"], status: verified}
+  - {id: ra_tests, claim: "169 pytest tests incl. an offline end-to-end graph run with a fake LLM injecting fabricated and drifted bullets", values: ["169"], status: verified}
+  - {id: ra_quality, claim: "Quality control in code, not prompts: off-length, number-less or repeated-number drafts swapped for a verified kit bullet without a model call; one fixer attempt per length problem; each Tier 1 project's headline result guaranteed on the page", values: [], status: verified}
+  - {id: ra_skills, claim: "Skills fitted in code: lines ranked by the JD, category names backed by their entries, required skills always shown, lines too wide for ~1.3 printed lines dropped first", values: ["1.3"], status: verified}
+  - {id: ra_cache, claim: "JD analysis cached per JD text + prompt + model; re-running the same JD skips that call", values: [], status: verified}
+  - {id: ra_deploy, claim: "Deploy step copies a finished 1-page resume to resumes/, build/ and the Desktop; never overwrites a hand-written .tex", values: ["1"], status: verified}
+  - {id: ra_bench, claim: "Seeded-error benchmark (bench/results/seeded_v1_2026-11-04.json): 411 bank bullets, 281 corrupted (fabricated/added numbers, noun swaps, scope inflation, domain swaps, misattribution, %-vs-pts, banned phrases) + 130 clean controls; code rules + LLM judge flagged 97.9% of corrupted bullets at a 2.0% false-flag rate on the 336 items scored so far (rules alone: 56.2% at 0.0%)", values: ["411", "281", "130", "97.9", "2.0", "336", "56.2", "0.0"], status: verified}
+  - {id: ra_cost, claim: "LangSmith traces of every model call led to cost cuts: paid tokens per resume halved from 41k to 20k, fixer tokens 26k to 6k (~$0.002 per resume, under a minute) by fixing bullet lengths in code and sending smaller fixer prompts", values: ["41k", "20k", "0.002", "26k", "6k"], status: stated}
   - {id: ra_privacy, claim: "Contact details never sent to a model; filled from the KB by the template", values: [], status: verified}
   - {id: ra_tracing, claim: "LangSmith tracing: one trace per resume, every model call named by role and nested under its graph step, including the 4 parallel project calls", values: ["4"], status: verified}
   - {id: ra_parallel, claim: "Projects, experience and skills written concurrently; 4 project calls at once; validate waits for all three", values: ["4", "3"], status: verified}
@@ -30,6 +39,7 @@ titles:
   - {subtitle: "LangGraph Agent with Truth Guards", stack: [Python, LangGraph, LangChain, Pydantic]}
   - {subtitle: "Self-Correcting LLM Pipeline with LLM-as-Judge", stack: [Python, LangGraph, OpenRouter, pytest]}
   - {subtitle: "Agentic Document Generation & Validation", stack: [Python, LangGraph, Pydantic, LaTeX]}
+  - {subtitle: "LLM Agent with Evaluation & Tracing", stack: [Python, LangGraph, LangSmith, pytest]}
 
 bullets:
   - id: ra_b1
@@ -42,13 +52,23 @@ bullets:
     text: "Added an LLM-as-judge faithfulness check and a repair loop (2 rounds, then fallback to verified bullets), so wording drift such as \"images\" for \"annotated instances\" is caught and fixed automatically."
     fact_ids: [ra_judge, ra_repair]
   - id: ra_b4
-    text: "Routed 5 model roles (analyzer, writer, fixer, judge, fast) across free OpenRouter models with automatic fallbacks and Pydantic structured outputs; covered by 101 pytest tests with a fake-LLM end-to-end run."
+    text: "Routed 5 model roles (analyzer, writer, fixer, judge, fast) through OpenRouter with automatic fallbacks and Pydantic structured outputs; covered by 169 pytest tests with a fake-LLM end-to-end run."
     fact_ids: [ra_models, ra_tests]
   - id: ra_b5
     text: "Measured the compiled PDF with pypdf (page count, blank lines, orphan lines) and applied page-budget trim/fill rules in a layout loop that undoes any fill that overflows the page."
     fact_ids: [ra_layout]
+  - id: ra_b6
+    text: "Benchmarked the truth checks on 411 seeded bullets (281 corrupted, 130 clean): code rules plus an LLM judge flagged 97.9% of corrupted ones at a 2.0% false-flag rate on the 336 scored so far."
+    fact_ids: [ra_bench]
+  - id: ra_b7
+    text: "Traced every model call in LangSmith and halved paid tokens per resume (41k → 20k, ~$0.002 a resume, under a minute) by fixing bullet lengths in code and sending smaller fixer prompts."
+    fact_ids: [ra_cost]
+  - id: ra_b8
+    text: "Moved quality control into code: off-length, number-less or repeated-metric drafts are swapped for verified kit bullets with no model call, cutting fixer tokens per resume from 26k to 6k."
+    fact_ids: [ra_quality, ra_cost]
 
 interview:
   - {q: "Why LangGraph instead of one long prompt?", a: "Explicit state, conditional loops (validate/fix, layout/trim), each node sees only its slice of facts."}
-  - {q: "How do you know the judge is right?", a: "Not measured yet; deterministic checks are the hard gate, the judge only adds rejections; Phase 5 evaluates it."}
-  - {q: "What happens when free models fail or return bad JSON?", a: "Retries, OpenRouter fallback chain, bank-bullet fallback so a run always produces a truthful page."}
+  - {q: "How do you know the judge is right?", a: "Seeded-error benchmark: 281 corrupted + 130 clean bullets; giving the judge the project's context (not just the cited claims) cut false flags from 28.5% to 2.0%. Rules stay the hard gate. Caveats: 336 of 411 scored so far; some corruption kinds have under 50 items."}
+  - {q: "What happens when a model fails or returns bad JSON?", a: "Retries that move along the model chain, OpenRouter fallbacks, output caps, and bank-bullet fallback so a run always produces a truthful page."}
+  - {q: "How did you make it cheap?", a: "LangSmith showed the fixer used ~65% of paid tokens retrying bullet lengths; lengths are now fixed in code (verified kit bullets swapped in), one fixer try per problem, facts sent once per project."}

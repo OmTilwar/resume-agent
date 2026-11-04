@@ -13,6 +13,8 @@ rules:
 forbidden_title_terms: ["Document Extraction", "Messy Record", "Predictive Analytics", "Data Quality", "Data Science & ML Platform", "NLP Pipeline", "Power BI"]
 banned_terms: ["RAG", "Power BI", "Ragas", "clinical retrieval"]
 
+headline: ["91.8"]          # kit §10.3: the project's headline result stays on the page
+
 facts:
   - {id: mv_dataset, claim: "5,800+ chest X-rays (public pneumonia dataset)", values: ["5,800"], status: stated}
   - id: mv_classifier
