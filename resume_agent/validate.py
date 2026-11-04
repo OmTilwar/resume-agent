@@ -106,6 +106,9 @@ def deterministic_issues(state: ResumeState, kb: KnowledgeBase) -> list[Issue]:
         li = length_issue(s.bullet.text, kb, s.id)
         if li:
             issues.append(li)
+        if s.index < 3 and kb.cites_last_only(s.section, s.bullet.fact_ids):
+            issues.append(Issue(target=s.id, rule="last-only", severity="hard",
+                                message="cites a weak fact that may only appear as a project's 4th bullet"))
         if s.section != "vio" and not extract_numbers(s.bullet.text):
             issues.append(Issue(target=s.id, rule="no-number", severity="soft",
                                 message="every bullet needs at least one number from its facts (kit §10.1)"))

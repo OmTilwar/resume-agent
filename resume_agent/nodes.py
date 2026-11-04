@@ -150,7 +150,7 @@ def select(state: ResumeState, config: RunnableConfig) -> ResumeState:
         kb.archetypes[a.archetype].exp_groups
         + (kb.archetypes[a.secondary_archetype].exp_groups if a.secondary_archetype else [])
     ))
-    return {"scores": scores, "selected": select_projects(scores, kb), "exp_groups": groups}
+    return {"scores": scores, "selected": select_projects(scores, kb, analysis=a), "exp_groups": groups}
 
 
 def _write_one_project(pid: str, state: ResumeState, config: RunnableConfig) -> tuple[ProjectBlock, list[str]]:
@@ -170,8 +170,14 @@ def _write_one_project(pid: str, state: ResumeState, config: RunnableConfig) -> 
     _, bad = _vet(draft.bullets, pid, facts, ctx, kb, p)
     # Phase 2: keep the model's bullets even if flawed — validate/fix repairs them,
     # fallback swaps in bank bullets only if repair fails.
-    drafted = [FinalBullet(text=d.text.strip(), fact_ids=d.fact_ids, origin="llm") for d in draft.bullets[:n]]
-    bullets = _fill_from_bank(drafted, kb.allowed_bullets(pid, ctx), n, n_max)
+    drafted = []
+    for d in draft.bullets:
+        if kb.cites_last_only(pid, d.fact_ids):     # kit: weak facts only as a 4th bullet
+            notes.append(f"{pid}: moved out a bullet citing a 4th-bullet-only fact ({d.text[:50]}…)")
+            continue
+        drafted.append(FinalBullet(text=d.text.strip(), fact_ids=d.fact_ids, origin="llm"))
+    bank = [b for b in kb.allowed_bullets(pid, ctx) if not kb.cites_last_only(pid, b.fact_ids)]
+    bullets = _fill_from_bank(drafted[:n], bank, n, n_max)
     idx = draft.title_index if 0 <= draft.title_index < len(p.titles) else 0
     title = p.titles[idx]
     stack = fit_stack(p.name, title.subtitle, draft.stack, p.stack, title.stack)
@@ -234,9 +240,15 @@ def _relevance(state: ResumeState, kb: KnowledgeBase):
     vocab = {_norm(x) for pid in state["selected"] for p in [kb.get_project(pid)] for x in [*p.stack, *p.tags]}
     vocab = {v for v in vocab if len(v) > 2}
 
+    from .selection import _probes
+    kw_probes = {p for k in keywords for p in _probes(k)}
+
     def relevant(entry: str) -> bool:
         e = _norm(entry.replace("(Familiar)", ""))
         if any(mentions(k, entry) for k in keywords):
+            return True
+        # expand the entry the same way keywords are expanded: "Large Language Models" ~ "LLMs"
+        if _probes(entry.replace("(Familiar)", "")) & (kw_probes | vocab):
             return True
         return any(re.search(rf"(?<![a-z0-9]){re.escape(v)}(?![a-z0-9])", e) for v in vocab)
     return relevant
@@ -274,7 +286,13 @@ def fit_skills(lines: list[SkillLine], state: ResumeState, kb: KnowledgeBase) ->
     # 2. per line: JD-relevant entries first (stable), then trim to the width budget
     out = []
     for l in kept:
-        entries = sorted(l.entries, key=lambda e: not relevant(e))[:SKILL_MAX_ENTRIES]
+        rel = [e for e in l.entries if relevant(e)]
+        other = sorted((e for e in l.entries if not relevant(e)), key=lambda e: "(Familiar)" in e)
+        # no padding: unrelated entries (TypeScript, CMake on a data-science JD) only fill a short line
+        pad = other[:max(0, SKILL_MIN_ENTRIES - len(rel))]
+        if len(other) > len(pad):
+            notes.append(f"skills: '{l.category}' dropped unrelated {', '.join(other[len(pad):])}")
+        entries = (rel + pad)[:SKILL_MAX_ENTRIES]
         line = SkillLine(category=l.category, entries=entries)
         dropped = []
         while skill_line_chars(line) > SKILL_LINE_MAX_CHARS and len(line.entries) > SKILL_MIN_ENTRIES:

@@ -44,6 +44,7 @@ class Fact(BaseModel):
     eval_size: Optional[int] = None    # items in the eval set behind a metric
     allowed_when: Optional[AllowedWhen] = None
     source: Optional[str] = None       # artifact path / commit
+    last_only: bool = False            # weak fact: may only appear in a project's 4th bullet (kit notes)
     note: Optional[str] = None
 
     @property
@@ -249,6 +250,14 @@ class KnowledgeBase(BaseModel):
         p = self.get_project(project_id)
         ok = {f.id for f in self.allowed_facts(project_id, ctx)}
         return [b for b in p.bullets if set(b.fact_ids) <= ok]
+
+    def cites_last_only(self, section: str, fact_ids: list[str]) -> bool:
+        """True if a bullet citing these facts may only be a project's 4th bullet."""
+        p = self.projects.get(section)
+        if p is None:
+            return False
+        ids = {f.id for f in p.facts if f.last_only}
+        return bool(ids & set(fact_ids))
 
     def banned_facts(self, project_id: str | None = None) -> list[Fact]:
         projects = [self.get_project(project_id)] if project_id else list(self.projects.values())

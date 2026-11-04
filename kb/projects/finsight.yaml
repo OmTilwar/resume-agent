@@ -23,7 +23,7 @@ facts:
     eval_size: 762
     source: "backend/benchmark_retrievers.py"
   - {id: fs_latency, claim: "BM25 retrieval latency ~0.20ms; sub-second end-to-end response", values: ["0.20"], status: stated}
-  - {id: fs_lora, claim: "LoRA fine-tuning via Unsloth on 150+ banking Q&A pairs", values: ["150"], status: stated, note: "Small dataset — never lead with it; 4th bullet only"}
+  - {id: fs_lora, claim: "LoRA fine-tuning via Unsloth on 150+ banking Q&A pairs", values: ["150"], status: stated, last_only: true, note: "Small dataset — never lead with it; 4th bullet only"}
   - {id: fs_tools, claim: "Deterministic tools: account balance checks, loan eligibility", values: [], status: verified}
   - {id: fs_thresholds, claim: "Thresholds: TF-IDF 0.65 (strict), Pinecone 0.55 (forgiving)", values: ["0.65", "0.55"], status: verified}
   - {id: fs_entity_matching, claim: "Entity matching via cosine similarity + fuzzy matching over banking records", values: [], status: verified}

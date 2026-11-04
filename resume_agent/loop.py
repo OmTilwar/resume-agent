@@ -169,7 +169,8 @@ def fallback(state: ResumeState, config: RunnableConfig) -> ResumeState:
         others += [b.text for b in (experience.bullets if s.section == 'experience' else
                    next(p for p in projects if p.project_id == s.section).bullets)]
         others = [t for t in others if t != s.bullet.text]
-        bank = [b for b in _bank(s.section, state, kb) if b.text not in used and _fresh(b.text, others)]
+        bank = [b for b in _bank(s.section, state, kb) if b.text not in used and _fresh(b.text, others)
+                and not (s.index < 3 and kb.cites_last_only(s.section, b.fact_ids))]
         bank.sort(key=lambda b: bool(length_issue(b.text, kb, tid)))   # well-sized first
         if bank:
             b = bank[0]

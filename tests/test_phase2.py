@@ -189,3 +189,49 @@ def test_familiar_tag_reattached_by_write_skills(kb):
     out = write_skills(st, {"configurable": {"llm_factory": lambda r, s: F()}})
     entries = [e for l in out["skills"] for e in l.entries]
     assert "LlamaIndex" not in entries
+
+
+# ---- the three follow-up fixes (4 Nov, live KA run v4) ----------------------
+
+def test_kit_order_keeps_flagship_when_keywords_shift(kb):
+    """v4's analyzer produced EDA/visualization/survey keywords and Amazon ER fell off; kit §9 lists it 2nd."""
+    from resume_agent.selection import score_projects, select_projects
+    from resume_agent.state import JDAnalysis, Keyword
+    m = ["machine learning", "data science", "python", "sql", "statistics"]
+    n = ["exploratory data analysis", "data visualization", "nlp", "computer vision", "survey data analysis"]
+    a = JDAnalysis(archetype="data_science", secondary_archetype="ml_cv_engineer", domain="x",
+                   top_keywords=[Keyword(term=t, importance="must") for t in m] + [Keyword(term=t, importance="nice") for t in n])
+    assert "amazon_er" in select_projects(score_projects(a, kb), kb, analysis=a)
+
+
+def test_flagship_guarantee_only_where_kit_lists_it(kb):
+    from resume_agent.selection import score_projects, select_projects
+    from resume_agent.state import JDAnalysis, Keyword
+    a = JDAnalysis(archetype="robotics_cpp", domain="x",
+                   top_keywords=[Keyword(term=t, importance="must") for t in ["C++", "ROS2", "EKF", "sensor fusion"]])
+    assert "amazon_er" not in select_projects(score_projects(a, kb), kb, analysis=a)
+
+
+def test_last_only_fact_never_in_first_three(kb, final):
+    """FinSight's LoRA bullet (150 Q&A pairs) is 4th-bullet-only in the kit."""
+    from resume_agent.validate import deterministic_issues
+    assert kb.cites_last_only("finsight", ["fs_lora"])
+    fs = kb.projects["finsight"]
+    lora = next(b for b in fs.bullets if "fs_lora" in b.fact_ids)
+    from resume_agent.state import FinalBullet, ProjectBlock
+    blk = ProjectBlock(project_id="finsight", name="FinSight AI", subtitle="x", stack=["Python"], github=fs.github,
+                       bullets=[FinalBullet(text=lora.text, fact_ids=lora.fact_ids, origin="llm"),
+                                *[FinalBullet(text=b.text, fact_ids=b.fact_ids, origin="bank") for b in fs.bullets[:2]]])
+    st = {**final, "projects": [blk]}
+    assert "last-only" in {i.rule for i in deterministic_issues(st, kb) if i.target == "finsight#1"}
+
+
+def test_skills_drop_unrelated_padding(kb):
+    from resume_agent.nodes import fit_skills
+    from resume_agent.state import SkillLine
+    line = SkillLine(category="Python & SQL", entries=["Python", "SQL", "Window Functions", "CTEs", "Joins", "Bash",
+                     "TypeScript", "JavaScript", "HTML/CSS", "YAML", "CMake", "R (Familiar)", "Node.js (Familiar)"])
+    out, notes = fit_skills([line] + [line.model_copy(update={"category": f"x{i}"}) for i in range(3)], _ds_state(kb), kb)
+    e = out[0].entries
+    assert {"Python", "SQL", "Window Functions", "CTEs", "Joins"} <= set(e)
+    assert not {"TypeScript", "HTML/CSS", "CMake", "Node.js (Familiar)"} & set(e)

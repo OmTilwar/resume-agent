@@ -80,11 +80,20 @@ def keyword_hits(keyword: str, project: Project) -> bool:
     return False
 
 
+ORDER_BONUS = [3, 2, 1]   # extra for the 1st / 2nd / 3rd project in the archetype's kit §9 list
+FLAGSHIP = "amazon_er"    # kit §9: "belongs on almost every ML/AI resume"
+
+
 def score_projects(analysis: JDAnalysis, kb: KnowledgeBase) -> list[ProjectScore]:
     primary = kb.archetypes.get(analysis.archetype)
     secondary = kb.archetypes.get(analysis.secondary_archetype or "")
     prim_list = primary.flat_projects() if primary else []
     sec_list = secondary.flat_projects() if secondary else []
+    # slot = position in the archetype's list; "MedVision or AuthNet" share a slot
+    slot = {}
+    for i, entry in enumerate(primary.projects if primary else []):
+        for pid in (entry if isinstance(entry, list) else [entry]):
+            slot[pid] = i
 
     scores: list[ProjectScore] = []
     for p in kb.selectable_projects():
@@ -100,6 +109,10 @@ def score_projects(analysis: JDAnalysis, kb: KnowledgeBase) -> list[ProjectScore
         if p.id in prim_list:
             s += 2
             reasons.append(f"+2 fits archetype {primary.id}")
+            bonus = ORDER_BONUS[slot[p.id]] if slot[p.id] < len(ORDER_BONUS) else 0
+            if bonus:   # kit §9 lists projects in priority order for each JD type
+                s += bonus
+                reasons.append(f"+{bonus} position {slot[p.id] + 1} in kit §9 for {primary.id}")
         elif p.id in sec_list:
             s += 1
             reasons.append(f"+1 fits secondary archetype {secondary.id}")
@@ -113,7 +126,8 @@ def score_projects(analysis: JDAnalysis, kb: KnowledgeBase) -> list[ProjectScore
     return scores
 
 
-def select_projects(scores: list[ProjectScore], kb: KnowledgeBase, k: int = 4) -> list[str]:
+def select_projects(scores: list[ProjectScore], kb: KnowledgeBase, k: int = 4,
+                    analysis: JDAnalysis | None = None) -> list[str]:
     chosen: list[str] = []
     for s in scores:
         if s.project_id == "vio" and "submarine" not in [x.project_id for x in scores[: k + 1]]:
@@ -121,4 +135,11 @@ def select_projects(scores: list[ProjectScore], kb: KnowledgeBase, k: int = 4) -
         chosen.append(s.project_id)
         if len(chosen) == k:
             break
+    # kit §9: the flagship stays whenever the JD type lists it — keyword wording varies between
+    # runs and must not knock it off (seen live, 4 Nov: "EDA"/"survey data" instead of "AWS"/"git").
+    arch = kb.archetypes.get(analysis.archetype) if analysis else None
+    if arch and FLAGSHIP in arch.flat_projects() and FLAGSHIP not in chosen             and any(s.project_id == FLAGSHIP for s in scores) and len(chosen) == k:
+        chosen[-1] = FLAGSHIP
+        order = {s.project_id: i for i, s in enumerate(scores)}
+        chosen.sort(key=lambda pid: order[pid])
     return chosen
