@@ -30,7 +30,9 @@ SYNONYMS: dict[str, list[str]] = {
     "speech": ["speech", "voice"], "asr": ["stt"], "text to speech": ["tts"],
     "fine-tuning": ["fine-tuning", "lora"], "fine tuning": ["fine-tuning", "lora"],
     "embeddings": ["embeddings"], "transformers": ["transformers", "cross-encoder", "bi-encoder"],
-    "statistics": ["statistics", "hypothesis-testing"], "a/b testing": ["hypothesis-testing"],
+    "statistics": ["statistics", "hypothesis-testing", "t-test", "mann-whitney", "p <"],
+    "statistical": ["statistics", "hypothesis-testing", "t-test", "mann-whitney"],
+    "a/b testing": ["hypothesis-testing"],
     "etl": ["etl", "data-pipelines"], "data pipelines": ["data-pipelines", "etl"],
     "cloud": ["aws", "cloud-gpu"], "aws": ["aws", "s3", "sagemaker"],
     "medical": ["healthcare", "medical-imaging"], "healthcare": ["healthcare"],
@@ -57,6 +59,12 @@ def _probes(keyword: str) -> set[str]:
     out |= {p[:-1] for p in out if p.endswith("s") and len(p) > 4}   # LLMs -> LLM
     inner = re.findall(r"\(([^)]+)\)", keyword)                       # "Retrieval-Augmented Generation (RAG)"
     out |= {_norm(x) for x in inner}
+    # alternatives: "TensorFlow/PyTorch", "AWS, GCP or Azure" -> each part counts on its own
+    parts = re.split(r"\s*(?:/|,|or|and)\s*", re.sub(r"\([^)]*\)", "", keyword))
+    if len(parts) > 1:
+        for part in parts:
+            if part.strip():
+                out |= _probes(part)
     return {p for p in out if p}
 
 

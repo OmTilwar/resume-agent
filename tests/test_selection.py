@@ -41,3 +41,19 @@ def test_tier2_excluded_unless_archetype_lists_it(kb):
 def test_data_science_jd_gets_retailforecast(kb):
     sel = select_projects(score_projects(_a("data_science", ["SQL", "statistics", "forecasting"]), kb), kb)
     assert sel[0] == "retailforecast"
+
+
+def test_slash_alternatives_count_separately(kb):
+    """Live KA v5 (4 Nov): 'tensorflow/pytorch' was treated as one phrase, so TensorFlow was dropped as unrelated."""
+    from resume_agent.selection import mentions
+    assert mentions("tensorflow/pytorch", "TensorFlow")
+    assert mentions("tensorflow/pytorch", "PyTorch")
+    assert mentions("AWS, GCP or Azure", "AWS S3 & SageMaker")
+    assert not mentions("tensorflow/pytorch", "LightGBM")
+
+
+def test_statistics_covered_by_hypothesis_tests():
+    from resume_agent.selection import mentions
+    bullet = ("Quantified promotion and competitor-proximity effects with Welch's t-test and Mann-Whitney U "
+              "(p < 0.05), and built a what-if simulator over promo intensity (0.0x → 1.5x).")
+    assert mentions("statistics", bullet)
