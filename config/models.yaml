@@ -7,8 +7,9 @@
 #     paid endpoint as fallback), because cheap judges measured far worse.
 #
 # Each role: primary + fallbacks (OpenRouter tries them in order).
-# structured: function_calling everywhere — every model in these chains supports tools,
-# and the free judge model does not support json_schema mode.
+# structured: json_schema for the writing roles (mistral-small + fallbacks all support it; with
+# function_calling mistral-small returned no tool call for the larger ProjectDraft schema — live run,
+# 4 Nov 2026). The judge uses function_calling, as benchmarked (the free endpoint has no json_schema).
 #
 # Trial, 4 Nov 2026 (real project prompts, same JD):
 #   writer   mistral-small-3.2-24b  8-10 s/call, all bullets pass truth checks
@@ -31,19 +32,19 @@ roles:
   analyzer:
     model: "mistralai/mistral-small-3.2-24b-instruct"
     fallbacks: ["deepseek/deepseek-v4-flash", "nvidia/nemotron-3.5-super-vl:free"]
-    structured: function_calling
+    structured: json_schema
     temperature: 0.0
 
   writer:
     model: "mistralai/mistral-small-3.2-24b-instruct"
-    fallbacks: ["deepseek/deepseek-v4-flash", "nvidia/nemotron-3-ultra-550b-a55b:free"]
-    structured: function_calling
+    fallbacks: ["deepseek/deepseek-v4-flash", "google/gemma-4-26b-a4b-it"]
+    structured: json_schema
     temperature: 0.4
 
   fixer:
     model: "mistralai/mistral-small-3.2-24b-instruct"
-    fallbacks: ["deepseek/deepseek-v4-flash", "nvidia/nemotron-3-ultra-550b-a55b:free"]
-    structured: function_calling
+    fallbacks: ["deepseek/deepseek-v4-flash", "google/gemma-4-26b-a4b-it"]
+    structured: json_schema
     temperature: 0.1
 
   # Benchmark-validated judge. Keep the fallback the SAME model so results stay attributable.
@@ -55,6 +56,6 @@ roles:
 
   fast:
     model: "mistralai/mistral-small-3.2-24b-instruct"
-    fallbacks: ["google/gemma-4-26b-a4b-it", "nvidia/nemotron-3.5-lightning:free"]
-    structured: function_calling
+    fallbacks: ["google/gemma-4-26b-a4b-it", "deepseek/deepseek-v4-flash"]
+    structured: json_schema
     temperature: 0.0

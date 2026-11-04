@@ -153,8 +153,14 @@ def _write_one_project(pid: str, state: ResumeState, config: RunnableConfig) -> 
     p = kb.get_project(pid)
     n_max = min(p.max_bullets or 4, 4)
     n = 3
-    draft: ProjectDraft = _call(config, "writer", ProjectDraft,
-                                prompts.project_messages(pid, state["analysis"], ctx, kb, n))
+    notes: list[str] = []
+    try:
+        draft: ProjectDraft = _call(config, "writer", ProjectDraft,
+                                    prompts.project_messages(pid, state["analysis"], ctx, kb, n))
+    except RuntimeError as e:   # one failed call must not sink the run: fall back to verified bullets
+        log.warning("writer failed for %s; using bank bullets: %s", pid, e)
+        draft = ProjectDraft(title_index=0, stack=[], bullets=[])
+        notes.append(f"{pid}: writer model failed — used verified kit bullets ({e})")
     facts = {f.id: f for f in kb.allowed_facts(pid, ctx)}
     _, bad = _vet(draft.bullets, pid, facts, ctx, kb, p)
     # Phase 2: keep the model's bullets even if flawed — validate/fix repairs them,
@@ -166,7 +172,7 @@ def _write_one_project(pid: str, state: ResumeState, config: RunnableConfig) -> 
     stack = fit_stack(p.name, title.subtitle, draft.stack, p.stack, title.stack)
     block = ProjectBlock(project_id=pid, name=p.name, subtitle=title.subtitle, stack=stack,
                          github=p.github, bullets=bullets)
-    return block, [f"first draft: {x}" for x in bad]
+    return block, notes + [f"first draft: {x}" for x in bad]
 
 
 def max_concurrency(config: RunnableConfig) -> int:
@@ -186,12 +192,18 @@ def write_projects(state: ResumeState, config: RunnableConfig) -> ResumeState:
 def write_experience(state: ResumeState, config: RunnableConfig) -> ResumeState:
     kb, ctx = get_kb(), _ctx(state)
     exp = kb.experience
-    draft: ExperienceDraft = _call(config, "writer", ExperienceDraft,
-                                   prompts.experience_messages(state["exp_groups"], state["analysis"], kb))
+    failed: list[str] = []
+    try:
+        draft: ExperienceDraft = _call(config, "writer", ExperienceDraft,
+                                       prompts.experience_messages(state["exp_groups"], state["analysis"], kb))
+    except RuntimeError as e:
+        log.warning("writer failed for experience; using bank bullets: %s", e)
+        draft = ExperienceDraft(title=exp.titles[0], bullets=[])
+        failed.append(f"experience: writer model failed — used verified kit bullets ({e})")
     facts = {f.id: f for f in exp.facts}
     _, bad = _vet(draft.bullets, "experience", facts, ctx, kb)
     kept = [FinalBullet(text=d.text.strip(), fact_ids=d.fact_ids, origin="llm") for d in draft.bullets[:3]]
-    bad = [f"first draft: {x}" for x in bad]
+    bad = failed + [f"first draft: {x}" for x in bad]
     bank = [b for g in exp.groups if g.id in state["exp_groups"] for b in g.bullets] + \
            [b for g in exp.groups if g.id not in state["exp_groups"] for b in g.bullets]
     bullets = _fill_from_bank(kept, bank, 3, 4)
@@ -201,11 +213,16 @@ def write_experience(state: ResumeState, config: RunnableConfig) -> ResumeState:
 
 def write_skills(state: ResumeState, config: RunnableConfig) -> ResumeState:
     kb = get_kb()
-    draft: SkillsDraft = _call(config, "fast", SkillsDraft,
-                               prompts.skills_messages(state["analysis"], state["selected"], kb))
+    lines, problems = [], []
+    try:
+        draft: SkillsDraft = _call(config, "fast", SkillsDraft,
+                                   prompts.skills_messages(state["analysis"], state["selected"], kb))
+    except RuntimeError as e:   # falls through to the inventory-order fallback below
+        log.warning("skills model failed; using inventory order: %s", e)
+        draft = SkillsDraft(lines=[], coursework=[])
+        problems.append(f"skills: model failed — filled from the skills inventory ({e})")
     by_name = {s.name.lower(): s for s in kb.skills}
     by_name.update({s.display.lower(): s for s in kb.skills})
-    lines, problems = [], []
     seen: set[str] = set()   # an entry appears on one line only
     for line in draft.lines[:5]:
         entries = []

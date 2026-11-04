@@ -66,3 +66,23 @@ def test_concurrency_cap_respected(tmp_path):
         {"job": JobPosting(company="Acme AI", role="LLM Intern", text="x"), "out_dir": str(tmp_path)},
         config={"configurable": {"llm_factory": slow_factory, "max_concurrency": 2}, "recursion_limit": 80})
     assert peak[0] == 2
+
+
+def test_writer_returning_nothing_does_not_sink_the_run(tmp_path):
+    """Reproduces the 4 Nov live crash: the writer returned no structured output for every project."""
+    def broken_writer(role, schema):
+        inner = fakes.fake_factory(role, schema)
+
+        class R:
+            def invoke(self, messages, config=None):
+                return None if schema in (ProjectDraft, ExperienceDraft, SkillsDraft) else inner.invoke(messages)
+        return R()
+
+    final = build_graph().invoke(
+        {"job": JobPosting(company="Acme AI", role="LLM Intern", text="x"), "out_dir": str(tmp_path)},
+        config={"configurable": {"llm_factory": broken_writer}, "recursion_limit": 80})
+    assert len(final["projects"]) == 4
+    # every project still has 3+ bullets (kit bullets, possibly shortened later by the fixer)
+    assert all(len(p.bullets) >= 3 for p in final["projects"])
+    assert any("writer model failed" in v for v in final["violations"])
+    assert final["tex_path"] and len(final["skills"]) >= 4
