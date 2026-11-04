@@ -216,6 +216,75 @@ def write_experience(state: ResumeState, config: RunnableConfig) -> ResumeState:
     return {"experience": ExperienceBlock(title=title, bullets=bullets), "violations": bad}
 
 
+# Kit §10.4: 4-5 lines, 8-14 entries each, each line <= ~1.3 printed lines.
+# Template: ~115 visible chars per printed line (kit §11) -> ~150 chars per Skills line.
+SKILL_LINE_MAX_CHARS = 150
+SKILL_MIN_ENTRIES, SKILL_MAX_ENTRIES = 5, 14   # kit asks 8+, but width wins: long entries ("Dense Retrieval / Bi-Encoders (...)") can't fit 8
+SKILL_LINES_MIN, SKILL_LINES_MAX = 4, 5
+
+
+def skill_line_chars(line: SkillLine) -> int:
+    return len(f"{line.category}: {', '.join(line.entries)}")
+
+
+def _relevance(state: ResumeState, kb: KnowledgeBase):
+    """entry -> True if it relates to a JD keyword or a chosen project's stack/tags."""
+    from .selection import _norm
+    keywords = [k.term for k in state["analysis"].top_keywords]
+    vocab = {_norm(x) for pid in state["selected"] for p in [kb.get_project(pid)] for x in [*p.stack, *p.tags]}
+    vocab = {v for v in vocab if len(v) > 2}
+
+    def relevant(entry: str) -> bool:
+        e = _norm(entry.replace("(Familiar)", ""))
+        if any(mentions(k, entry) for k in keywords):
+            return True
+        return any(re.search(rf"(?<![a-z0-9]){re.escape(v)}(?![a-z0-9])", e) for v in vocab)
+    return relevant
+
+
+def fit_skills(lines: list[SkillLine], state: ResumeState, kb: KnowledgeBase) -> tuple[list[SkillLine], list[str]]:
+    """Enforce kit §10.4 deterministically: relevant categories, JD-relevant entries first, line width."""
+    notes: list[str] = []
+    relevant = _relevance(state, kb)
+    used = {e for l in lines for e in l.entries}
+
+    # 1. swap out lines with nothing relevant to this JD; pad to the minimum line count
+    kept = [l for l in lines if any(relevant(e) for e in l.entries)]
+    for l in lines:
+        if l not in kept:
+            notes.append(f"skills: dropped line '{l.category}' — nothing in it relates to this JD")
+            used -= set(l.entries)
+    if len(kept) < SKILL_LINES_MIN:
+        ranked = []
+        for cat, items in kb.skills_by_category().items():
+            if any(cat == l.category for l in kept):
+                continue
+            entries = [s.display for s in items if s.display not in used]
+            score = sum(relevant(e) for e in entries)
+            if score:
+                ranked.append((score, cat, entries))
+        for score, cat, entries in sorted(ranked, key=lambda r: -r[0]):
+            if len(kept) >= SKILL_LINES_MIN:
+                break
+            kept.append(SkillLine(category=cat, entries=entries))
+            used |= set(entries)
+            notes.append(f"skills: added inventory line '{cat}' ({score} JD-relevant entries)")
+    kept = kept[:SKILL_LINES_MAX]
+
+    # 2. per line: JD-relevant entries first (stable), then trim to the width budget
+    out = []
+    for l in kept:
+        entries = sorted(l.entries, key=lambda e: not relevant(e))[:SKILL_MAX_ENTRIES]
+        line = SkillLine(category=l.category, entries=entries)
+        dropped = []
+        while skill_line_chars(line) > SKILL_LINE_MAX_CHARS and len(line.entries) > SKILL_MIN_ENTRIES:
+            dropped.append(line.entries.pop())
+        if dropped:
+            notes.append(f"skills: trimmed '{l.category}' to fit ~1.3 lines (dropped {', '.join(reversed(dropped))})")
+        out.append(line)
+    return out, notes
+
+
 def write_skills(state: ResumeState, config: RunnableConfig) -> ResumeState:
     kb = get_kb()
     lines, problems = [], []
@@ -244,13 +313,8 @@ def write_skills(state: ResumeState, config: RunnableConfig) -> ResumeState:
         if len(entries) >= 4:
             cat = re.sub(r"\s*\((?:nice|must|nice-to-have|must-have|required|preferred)\)\s*", " ", line.category, flags=re.I)
             lines.append(SkillLine(category=cat.strip(), entries=entries))
-    if len(lines) < 4:  # fallback: inventory order
-        problems.append("skills: model returned <4 usable lines; filled from inventory")
-        for cat, items in kb.skills_by_category().items():
-            if len(lines) >= 4:
-                break
-            if all(l.category != cat for l in lines):
-                lines.append(SkillLine(category=cat, entries=[s.display for s in items[:12]]))
+    lines, fit_notes = fit_skills(lines, state, kb)
+    problems += fit_notes
 
     prof = kb.profile
     allowed_courses = {c.lower(): c for c in prof.coursework + prof.coursework_shorthand}

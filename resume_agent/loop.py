@@ -243,30 +243,40 @@ def layout_fix(state: ResumeState, config: RunnableConfig) -> ResumeState:
             notes.append(f"layout: undid fill ({last}) — it overflowed the page")
             upd.update(projects=projects, last_fill=None, no_fill=True, notes=notes)
             return upd
-        level = state.get("trim_level", 0) + 1     # kit §11 trim order
-        if level == 1:
-            upd["max_achievements"] = 2
-            notes.append("layout: trimmed achievements to 2")
-        elif level == 2:
-            for p in reversed(projects):
-                if len(p.bullets) > 3:
-                    p.bullets.pop()
-                    notes.append(f"layout: dropped 4th bullet of {p.name}")
-                    break
-        elif level == 3 and len(state["skills"]) > 4:
-            upd["skills"] = state["skills"][:4]
-            notes.append("layout: cut Skills to 4 lines")
-        elif level == 4 and len(experience.bullets) > 2:
-            experience.bullets = experience.bullets[:2]
-            notes.append("layout: cut Experience to 2 bullets")
-        elif level == 5:
-            longest = sorted(slots(state, kb), key=lambda s: -visible_len(s.bullet.text))[:2]
-            targets = {s.id: ["page is over by a few lines: shorten to <= 105 characters, keep the main metric"]
-                       for s in longest}
-            projects, experience = _apply_fixes(targets, state, config, kb, notes)
-            notes.append("layout: asked the fixer to shorten the 2 longest bullets")
-            upd["layout_action"] = "orphans"       # route through validate again
-            upd["fix_round"] = MAX_FIX
+        # kit §11 trim order. Skip levels that would change nothing and apply the first one that does,
+        # so a single round always makes progress. Trims don't count against MAX_LAYOUT (own cap: MAX_TRIM).
+        from .nodes import pick_achievements
+        upd["layout_round"] = state.get("layout_round", 0)
+        shown_ach = min(state.get("max_achievements", 3), len(pick_achievements(state, kb)))
+        level = state.get("trim_level", 0)
+        while level < MAX_TRIM:
+            level += 1
+            if level == 1 and shown_ach > 2:
+                upd["max_achievements"] = 2
+                notes.append("layout: trimmed achievements to 2")
+                break
+            if level == 2 and any(len(p.bullets) > 3 for p in projects):
+                p = next(p for p in reversed(projects) if len(p.bullets) > 3)
+                p.bullets.pop()
+                notes.append(f"layout: dropped 4th bullet of {p.name}")
+                break
+            if level == 3 and len(state["skills"]) > 4:
+                upd["skills"] = state["skills"][:4]
+                notes.append("layout: cut Skills to 4 lines")
+                break
+            if level == 4 and len(experience.bullets) > 2:
+                experience.bullets = experience.bullets[:2]
+                notes.append("layout: cut Experience to 2 bullets")
+                break
+            if level == 5:
+                longest = sorted(slots(state, kb), key=lambda s: -visible_len(s.bullet.text))[:2]
+                targets = {s.id: ["page is over by a few lines: shorten to <= 105 characters, keep the main metric"]
+                           for s in longest}
+                projects, experience = _apply_fixes(targets, state, config, kb, notes)
+                notes.append("layout: asked the fixer to shorten the 2 longest bullets")
+                upd["layout_action"] = "orphans"   # route through validate again
+                upd["fix_round"] = MAX_FIX
+                break
         upd.update(projects=projects, experience=experience, trim_level=level, notes=notes, no_fill=True)
         return upd
 

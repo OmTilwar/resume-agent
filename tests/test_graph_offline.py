@@ -4,6 +4,7 @@ import shutil
 import pytest
 
 from resume_agent.graph import build_graph
+from resume_agent.knowledge import get_kb
 from resume_agent.latex import escape_and_highlight
 from resume_agent.state import JobPosting
 
@@ -35,8 +36,11 @@ def test_fabricated_bullet_never_reaches_page(final):
 
 def test_skills_enforce_inventory_and_familiar_tags(final):
     entries = [e for line in final["skills"] for e in line.entries]
-    assert "LlamaIndex (Familiar)" in entries         # tag re-attached
+    # the model wrote "LlamaIndex" without its tag: it may be trimmed for relevance/width,
+    # but it must never appear untagged
     assert "LlamaIndex" not in entries
+    familiar = {s.display for s in get_kb().familiar_skills()}
+    assert all(e in familiar for e in entries if "(Familiar)" in e)
     assert "Kubernetes Operators" not in entries      # not in inventory → dropped
     assert "Underwater Basket Weaving" not in final["coursework"]
 

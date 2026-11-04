@@ -123,3 +123,69 @@ def test_near_duplicates_flagged_and_distinct_bank_bullets_not(kb):
 def test_no_near_duplicates_ship(final, kb):
     dups = [i for i in deterministic_issues(final, kb) if i.rule == "duplicate"]
     assert not dups, dups
+
+
+# ---- fix 1: Skills line budget (kit §10.4) ------------------------------------
+
+def _ds_state(kb):
+    from resume_agent.state import JDAnalysis, Keyword
+    return {"analysis": JDAnalysis(archetype="data_science", domain="analytics",
+                                   top_keywords=[Keyword(term=t, importance="must") for t in
+                                                 ["Python", "SQL", "Scikit-learn", "feature engineering", "statistics"]]),
+            "selected": ["retailforecast", "medvision", "authnet", "amazon_er"]}
+
+
+def test_skills_lines_fit_budget_and_drop_irrelevant(kb):
+    """The live KA run (4 Nov) had ~13 printed lines of skills, incl. an LLM line irrelevant to a DS JD."""
+    from resume_agent.nodes import SKILL_LINE_MAX_CHARS, fit_skills, skill_line_chars
+    from resume_agent.state import SkillLine
+    inv = {c: [s.display for s in items] for c, items in kb.skills_by_category().items()}
+    lines = [
+        SkillLine(category="Machine Learning & Data Science", entries=inv["ML / DL / CV libraries"] + inv["Mathematics"]),
+        SkillLine(category="Retrieval & Ranking", entries=inv["Retrieval / Ranking"] + inv["Data Engineering"][:6]),
+        SkillLine(category="Robotics", entries=inv["Robotics"]),                 # nothing DS-relevant
+        SkillLine(category="SQL & Databases", entries=inv["SQL / Databases"]),
+    ]
+    out, notes = fit_skills(lines, _ds_state(kb), kb)
+    assert all(skill_line_chars(l) <= SKILL_LINE_MAX_CHARS or len(l.entries) <= 5 for l in out), \
+        [(l.category, skill_line_chars(l)) for l in out]
+    assert "Robotics" not in {l.category for l in out}
+    assert len(out) >= 4
+    assert any("dropped line 'Robotics'" in n for n in notes)
+
+
+def test_relevant_entries_kept_first(kb):
+    from resume_agent.nodes import fit_skills
+    from resume_agent.state import SkillLine
+    line = SkillLine(category="Programming", entries=["MATLAB", "CMake", "YAML", "HTML/CSS", "Bash", "JavaScript",
+                                                       "TypeScript", "C", "Python", "SQL", "C++ (C++17)"])
+    out, _ = fit_skills([line] * 1 + [line.model_copy(update={"category": f"x{i}"}) for i in range(3)], _ds_state(kb), kb)
+    assert out[0].entries[:2] == ["Python", "SQL"]
+
+
+# ---- fix 2: trimming always makes progress -------------------------------------
+
+def test_trim_skips_levels_that_change_nothing(final):
+    """No 4th bullets, <=4 skills lines, <=2 achievements shown -> go straight to the Experience cut."""
+    projects = [p.model_copy(update={"bullets": p.bullets[:3]}) for p in final["projects"]]
+    st = {**final, "projects": projects, "skills": final["skills"][:4], "max_achievements": 2,
+          "layout_action": "trim", "trim_level": 0, "last_fill": None, "layout_round": 1,
+          "layout": Layout(pages=2, free_lines=0, orphans=[])}
+    upd = layout_fix(st, {})
+    assert upd["trim_level"] == 4 and len(upd["experience"].bullets) == 2
+    assert upd["layout_round"] == 1          # trims don't use up layout rounds
+
+
+def test_familiar_tag_reattached_by_write_skills(kb):
+    from resume_agent.nodes import write_skills
+    from resume_agent.state import SkillLine, SkillsDraft
+
+    class F:
+        def invoke(self, m, config=None):
+            return SkillsDraft(lines=[SkillLine(category="LLMs & Agents", entries=["LlamaIndex", "LangGraph", "RAG Pipelines",
+                               "Prompt Engineering", "Agentic Workflows"])] * 4, coursework=[])
+    st = {**_ds_state(kb), "analysis": _ds_state(kb)["analysis"].model_copy(update={"top_keywords": []}),
+          "selected": ["resume_agent", "finsight", "propvox", "amazon_er"]}
+    out = write_skills(st, {"configurable": {"llm_factory": lambda r, s: F()}})
+    entries = [e for l in out["skills"] for e in l.entries]
+    assert "LlamaIndex" not in entries
