@@ -54,7 +54,8 @@ def project_messages(project_id: str, analysis: JDAnalysis, ctx: Context, kb: Kn
                      n_bullets: int) -> list:
     p = kb.get_project(project_id)
     facts = [{"id": f.id, "claim": f.claim, "values": f.values} for f in kb.allowed_facts(project_id, ctx)]
-    bank = [{"text": b.text, "fact_ids": b.fact_ids} for b in kb.allowed_bullets(project_id, ctx)]
+    bank = [{"text": b.text, "fact_ids": b.fact_ids, **({"note": b.note} if b.note else {})}
+            for b in kb.allowed_bullets(project_id, ctx)]
     titles = [f"{i}: {t.subtitle} | {', '.join(t.stack)}" for i, t in enumerate(p.titles)]
     payload = {
         "project": p.name,
@@ -76,7 +77,8 @@ def project_messages(project_id: str, analysis: JDAnalysis, ctx: Context, kb: Kn
             f"Write exactly {n_bullets} bullets for this project, most JD-relevant first. "
             "The first bullet carries the strongest JD-relevant claim. Pick the best title option and 4-5 stack "
             "items (JD-matching first). You may reword the reference bullets, but every number must come from a "
-            "cited fact.\n\n" + json.dumps(payload, ensure_ascii=False, indent=1)
+            "cited fact. Respect each reference bullet's note (e.g. 'use only as a 4th bullet').\n\n"
+            + json.dumps(payload, ensure_ascii=False, indent=1)
         )),
     ]
 

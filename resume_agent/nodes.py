@@ -111,7 +111,7 @@ def ingest(state: ResumeState, config: RunnableConfig) -> ResumeState:
     slug = state.get("slug") or slugify(job.company, job.role)
     out_dir = Path(state.get("out_dir") or OUT_ROOT / slug)
     out_dir.mkdir(parents=True, exist_ok=True)
-    return {"slug": slug, "out_dir": str(out_dir), "violations": []}
+    return {"slug": slug, "out_dir": str(out_dir)}
 
 
 def analyze(state: ResumeState, config: RunnableConfig) -> ResumeState:
@@ -137,29 +137,38 @@ def select(state: ResumeState, config: RunnableConfig) -> ResumeState:
     return {"scores": scores, "selected": select_projects(scores, kb), "exp_groups": groups}
 
 
-def write_projects(state: ResumeState, config: RunnableConfig) -> ResumeState:
+def _write_one_project(pid: str, state: ResumeState, config: RunnableConfig) -> tuple[ProjectBlock, list[str]]:
     kb, ctx = get_kb(), _ctx(state)
-    blocks, problems = [], list(state.get("violations", []))
-    for rank, pid in enumerate(state["selected"]):
-        p = kb.get_project(pid)
-        n_max = min(p.max_bullets or 4, 4)
-        n = 3
-        draft: ProjectDraft = _call(config, "writer", ProjectDraft,
-                                    prompts.project_messages(pid, state["analysis"], ctx, kb, n))
-        facts = {f.id: f for f in kb.allowed_facts(pid, ctx)}
-        _, bad = _vet(draft.bullets, pid, facts, ctx, kb, p)
-        problems += [f"first draft: {x}" for x in bad]
-        # Phase 2: keep the model's bullets even if flawed — validate/fix repairs them,
-        # fallback swaps in bank bullets only if repair fails.
-        drafted = [FinalBullet(text=d.text.strip(), fact_ids=d.fact_ids, origin="llm") for d in draft.bullets[:n]]
-        bullets = _fill_from_bank(drafted, kb.allowed_bullets(pid, ctx), n, n_max)
+    p = kb.get_project(pid)
+    n_max = min(p.max_bullets or 4, 4)
+    n = 3
+    draft: ProjectDraft = _call(config, "writer", ProjectDraft,
+                                prompts.project_messages(pid, state["analysis"], ctx, kb, n))
+    facts = {f.id: f for f in kb.allowed_facts(pid, ctx)}
+    _, bad = _vet(draft.bullets, pid, facts, ctx, kb, p)
+    # Phase 2: keep the model's bullets even if flawed — validate/fix repairs them,
+    # fallback swaps in bank bullets only if repair fails.
+    drafted = [FinalBullet(text=d.text.strip(), fact_ids=d.fact_ids, origin="llm") for d in draft.bullets[:n]]
+    bullets = _fill_from_bank(drafted, kb.allowed_bullets(pid, ctx), n, n_max)
+    idx = draft.title_index if 0 <= draft.title_index < len(p.titles) else 0
+    title = p.titles[idx]
+    stack = fit_stack(p.name, title.subtitle, draft.stack, p.stack, title.stack)
+    block = ProjectBlock(project_id=pid, name=p.name, subtitle=title.subtitle, stack=stack,
+                         github=p.github, bullets=bullets)
+    return block, [f"first draft: {x}" for x in bad]
 
-        idx = draft.title_index if 0 <= draft.title_index < len(p.titles) else 0
-        title = p.titles[idx]
-        stack = fit_stack(p.name, title.subtitle, draft.stack, p.stack, title.stack)
-        blocks.append(ProjectBlock(project_id=pid, name=p.name, subtitle=title.subtitle, stack=stack,
-                                   github=p.github, bullets=bullets))
-    return {"projects": blocks, "violations": problems}
+
+def max_concurrency(config: RunnableConfig) -> int:
+    return int((config or {}).get("configurable", {}).get("max_concurrency", 4))
+
+
+def write_projects(state: ResumeState, config: RunnableConfig) -> ResumeState:
+    """The 4 project calls are independent: run them concurrently (capped for rate limits)."""
+    from concurrent.futures import ThreadPoolExecutor
+    pids = state["selected"]
+    with ThreadPoolExecutor(max_workers=max(1, min(max_concurrency(config), len(pids)))) as pool:
+        results = list(pool.map(lambda pid: _write_one_project(pid, state, config), pids))   # keeps rank order
+    return {"projects": [b for b, _ in results], "violations": [v for _, vs in results for v in vs]}
 
 
 def write_experience(state: ResumeState, config: RunnableConfig) -> ResumeState:
@@ -175,8 +184,7 @@ def write_experience(state: ResumeState, config: RunnableConfig) -> ResumeState:
            [b for g in exp.groups if g.id not in state["exp_groups"] for b in g.bullets]
     bullets = _fill_from_bank(kept, bank, 3, 4)
     title = draft.title if draft.title in exp.titles else exp.titles[0]
-    return {"experience": ExperienceBlock(title=title, bullets=bullets),
-            "violations": list(state.get("violations", [])) + bad}
+    return {"experience": ExperienceBlock(title=title, bullets=bullets), "violations": bad}
 
 
 def write_skills(state: ResumeState, config: RunnableConfig) -> ResumeState:
@@ -219,8 +227,7 @@ def write_skills(state: ResumeState, config: RunnableConfig) -> ResumeState:
             keys.add(prof.course_key(name))
             courses.append(name)
     courses = courses[:5] or prof.coursework[:5]
-    return {"skills": lines, "coursework": courses,
-            "violations": list(state.get("violations", [])) + problems}
+    return {"skills": lines, "coursework": courses, "violations": problems}
 
 
 def pick_achievements(state: ResumeState, kb: KnowledgeBase) -> list[str]:
@@ -284,7 +291,7 @@ def compile_pdf(state: ResumeState, config: RunnableConfig) -> ResumeState:
     if r.returncode != 0 or not m:
         tail = r.stdout[-2000:]
         return {"pdf_path": None, "pages": None,
-                "violations": list(state.get("violations", [])) + [f"compile failed:\n{tail}"]}
+                "violations": [f"compile failed:\n{tail}"]}
     return {"pdf_path": str(out_dir / f"{tex.stem}.pdf"), "pages": int(m.group(1))}
 
 

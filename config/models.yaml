@@ -1,57 +1,60 @@
-# LLM routing via OpenRouter (OpenAI-compatible API). Free models only.
-# Picked from https://openrouter.ai/api/v1/models on 2026-11-04 (17 free models).
-# Free models come and go — run `python scripts/list_free_models.py --check`
-# to see if any configured model has disappeared, and to list replacements.
+# LLM routing via OpenRouter (OpenAI-compatible API).
+# Chosen by measurement on 2026-11-04 (see bench/results and the trial notes below).
 #
-# Each role has a primary + fallbacks. OpenRouter tries them in order
-# (request param `models`) when the primary is rate-limited or down.
+# Hybrid on purpose:
+#   - writing roles use a cheap, fast PAID model (~8-10 s/call, ~$0.01 per resume),
+#   - the judge stays on the model the seeded benchmark validated (free, same-model
+#     paid endpoint as fallback), because cheap judges measured far worse.
 #
-# structured: how to get typed output
-#   json_schema      — model supports structured_outputs
-#   function_calling — model supports tools but not structured_outputs
+# Each role: primary + fallbacks (OpenRouter tries them in order).
+# structured: function_calling everywhere — every model in these chains supports tools,
+# and the free judge model does not support json_schema mode.
+#
+# Trial, 4 Nov 2026 (real project prompts, same JD):
+#   writer   mistral-small-3.2-24b  8-10 s/call, all bullets pass truth checks
+#            deepseek-v4-flash      61-92 s/call (reasoning), all pass
+#            glm-5.3-flash          3-175 s/call, erratic
+#            qwen3.5-flash          structured-output errors
+#            inkling:free           403 — now only available to partner apps
+#   judge    (96 seeded items, rules + judge)  catch / false-flag rate
+#            nemotron-3-ultra       98.6% / 0.0%
+#            mistral-small-3.2      84.7% / 8.3%
+#            gpt-oss-120b           84.7% / 12.5%
+#            gpt-5-nano             83.3% / 4.2%
+#
+# Re-check availability: python scripts/list_free_models.py --check
 
 base_url: "https://openrouter.ai/api/v1"
 app_name: "resume-agent"
 
 roles:
-  # JD -> JDAnalysis (archetype, ranked keywords, must/nice-to-have).
-  # Multimodal + 1M context: can read JD PDFs/screenshots directly.
   analyzer:
-    model: "nvidia/nemotron-3.5-super-vl:free"        # 120B MoE (12B active), vision, structured outputs
-    fallbacks: ["google/gemma-4-31b-it:free", "xingchen-agi/xing4.0-29b-a4b:free"]
-    structured: json_schema
+    model: "mistralai/mistral-small-3.2-24b-instruct"
+    fallbacks: ["deepseek/deepseek-v4-flash", "nvidia/nemotron-3.5-super-vl:free"]
+    structured: function_calling
     temperature: 0.0
 
-  # Bullet rewriting + cover letters — the quality-critical role.
   writer:
-    model: "thinkingmachines/inkling:free"            # 975B MoE (41B active), largest free model
-    fallbacks: ["nvidia/nemotron-3-ultra-550b-a55b:free", "dots-studio/dots-3-note-preview:free"]
+    model: "mistralai/mistral-small-3.2-24b-instruct"
+    fallbacks: ["deepseek/deepseek-v4-flash", "nvidia/nemotron-3-ultra-550b-a55b:free"]
     structured: function_calling
     temperature: 0.4
 
-  # Repairs bullets that failed validation (needs to follow precise instructions).
   fixer:
-    model: "nvidia/nemotron-3-ultra-550b-a55b:free"   # 550B MoE (55B active), reasoning
-    fallbacks: ["thinkingmachines/inkling:free", "google/gemma-4-31b-it:free"]
+    model: "mistralai/mistral-small-3.2-24b-instruct"
+    fallbacks: ["deepseek/deepseek-v4-flash", "nvidia/nemotron-3-ultra-550b-a55b:free"]
     structured: function_calling
     temperature: 0.1
 
-  # Faithfulness judge: reads each bullet against its cited facts' claims.
+  # Benchmark-validated judge. Keep the fallback the SAME model so results stay attributable.
   judge:
-    model: "nvidia/nemotron-3-ultra-550b-a55b:free"   # reasoning model; strict reading
-    fallbacks: ["nvidia/nemotron-3.5-super-vl:free", "thinkingmachines/inkling:free"]
+    model: "nvidia/nemotron-3-ultra-550b-a55b:free"
+    fallbacks: ["nvidia/nemotron-3-ultra-550b-a55b"]
     structured: function_calling
     temperature: 0.0
 
-  # Cheap/fast: keyword -> tag matching, skill picking, small classifications.
   fast:
-    model: "nvidia/nemotron-3.5-lightning:free"       # 30B MoE (3B active), high throughput
-    fallbacks: ["google/gemma-4-26b-a4b-it:free", "liquid/lfm-2.5-2.6b:free"]
+    model: "mistralai/mistral-small-3.2-24b-instruct"
+    fallbacks: ["google/gemma-4-26b-a4b-it", "nvidia/nemotron-3.5-lightning:free"]
     structured: function_calling
     temperature: 0.0
-
-# Deliberately NOT used:
-#   openrouter/free        — random router; non-reproducible runs
-#   recursive/flint, cohere/north-mini-code — coding-tuned
-#   nvidia/nemotron-3.5-content-safety      — safety classifier, not a generator
-#   google/lyria-*         — music generation

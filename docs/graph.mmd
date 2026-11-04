@@ -31,12 +31,14 @@ graph TD;
 	layout_check -.-> report;
 	layout_fix -.-> assemble;
 	layout_fix -.-> validate;
+	select --> write_experience;
 	select --> write_projects;
+	select --> write_skills;
 	validate -.-> assemble;
 	validate -.-> fallback;
 	validate -.-> fix;
-	write_experience --> write_skills;
-	write_projects --> write_experience;
+	write_experience --> validate;
+	write_projects --> validate;
 	write_skills --> validate;
 	report --> __end__;
 	classDef default fill:#f2f0ff,line-height:1.2

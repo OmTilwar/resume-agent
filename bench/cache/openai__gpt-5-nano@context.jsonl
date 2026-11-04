@@ -1,0 +1,96 @@
+{"id": "s0001", "supported": true, "issue": ""}
+{"id": "s0002", "supported": false, "issue": "Production deployment claim not evidenced; evidence only shows 50 GTest tests in GitHub Actions CI."}
+{"id": "s0003", "supported": false, "issue": "Production deployment claim not evidenced; Grad-CAM claim is supported by evidence."}
+{"id": "s0004", "supported": true, "issue": ""}
+{"id": "s0005", "supported": true, "issue": ""}
+{"id": "s0006", "supported": true, "issue": ""}
+{"id": "s0007", "supported": true, "issue": ""}
+{"id": "s0008", "supported": true, "issue": ""}
+{"id": "s0009", "supported": true, "issue": ""}
+{"id": "s0010", "supported": true, "issue": ""}
+{"id": "s0011", "supported": true, "issue": ""}
+{"id": "s0012", "supported": true, "issue": ""}
+{"id": "s0013", "supported": false, "issue": "Unsubstantiated time savings claim: 'saving 120 hours per month' is not stated in the cited facts."}
+{"id": "s0014", "supported": false, "issue": "DuckDB SQL feature engineering claim is not reflected in the cited facts."}
+{"id": "s0015", "supported": false, "issue": "End-to-end pipeline/training/edge deployment claims are not fully evidenced; only 3,200+ annotated images and edge deployment steps are cited."}
+{"id": "s0016", "supported": true, "issue": ""}
+{"id": "s0017", "supported": true, "issue": ""}
+{"id": "s0018", "supported": false, "issue": "Deployment to live users after a pilot is not evidenced; only publication of PoseStamped and TF2 transforms is shown."}
+{"id": "s0019", "supported": false, "issue": "Domain mismatch: bullet claims GPS velocity while evidence cites DVL velocity."}
+{"id": "s0020", "supported": false, "issue": "Unsubstantiated time-savings claim: 'saving 120 hours per month' is not in the cited facts."}
+{"id": "s0021", "supported": true, "issue": ""}
+{"id": "s0022", "supported": false, "issue": "Normalization details (NFKC, transliteration, canonicalization, alias splitting) are not reflected in the cited facts; only the 10.7% string-equal stat is present."}
+{"id": "s0023", "supported": false, "issue": "SSIM score claimed (0.75) is higher than evidenced (0.62)."}
+{"id": "s0024", "supported": false, "issue": "Leaderboard claim of 0.9990 F0.5 is not supported; evidence shows 0.9837."}
+{"id": "s0025", "supported": false, "issue": "The claim that it became the default system for the whole department is not evidenced."}
+{"id": "s0026", "supported": false, "issue": "The term 'cutting-edge' is not evidenced."}
+{"id": "s0027", "supported": false, "issue": "Claim of 26 production deployments is not evidenced."}
+{"id": "s0028", "supported": true, "issue": ""}
+{"id": "s0029", "supported": false, "issue": "The term 'cutting-edge' is not evidenced."}
+{"id": "s0030", "supported": true, "issue": ""}
+{"id": "s0031", "supported": true, "issue": ""}
+{"id": "s0032", "supported": false, "issue": "The claim of 50 field trials is not evidenced; evidence shows 50 GTest tests."}
+{"id": "s0033", "supported": true, "issue": ""}
+{"id": "s0034", "supported": false, "issue": "The claimed 35% infrastructure cost reduction is not evidenced."}
+{"id": "s0035", "supported": false, "issue": "The repair loop claim states 3 rounds, but evidence indicates 2 rounds."}
+{"id": "s0036", "supported": true, "issue": ""}
+{"id": "s0037", "supported": true, "issue": ""}
+{"id": "s0038", "supported": false, "issue": "The claim of reducing manual effort by 60% is not stated in the evidence."}
+{"id": "s0039", "supported": false, "issue": "Accuracy claim 97.8% is not stated in the evidence (the evidence shows 91.8% accuracy); the AUC-ROC figure is supported."}
+{"id": "s0040", "supported": true, "issue": ""}
+{"id": "s0041", "supported": false, "issue": "Parameter count 17M is not supported by the evidence, which states 17.3M."}
+{"id": "s0042", "supported": true, "issue": ""}
+{"id": "s0043", "supported": true, "issue": ""}
+{"id": "s0044", "supported": false, "issue": "Hours saved claim of 120 hours per month is not supported by evidence."}
+{"id": "s0045", "supported": true, "issue": ""}
+{"id": "s0046", "supported": true, "issue": ""}
+{"id": "s0047", "supported": true, "issue": ""}
+{"id": "s0048", "supported": false, "issue": "pytest test count 142 is not evidenced; the evidence lists 102 tests."}
+{"id": "s0049", "supported": false, "issue": "35% infrastructure cost reduction claim not supported by cited facts; evidence covers checkpointing, error isolation, tests (40+) and provider abstractions but not cost savings."}
+{"id": "s0050", "supported": true, "issue": ""}
+{"id": "s0051", "supported": false, "issue": "Deployed to live users after a successful pilot is not evidenced; orphan simulation gain (+0.0043 F0.5) is evidenced."}
+{"id": "s0052", "supported": true, "issue": ""}
+{"id": "s0053", "supported": true, "issue": ""}
+{"id": "s0054", "supported": true, "issue": ""}
+{"id": "s0055", "supported": false, "issue": "Test count discrepancy: bullet says 33 tests, evidence cites 26 unit/integration tests."}
+{"id": "s0056", "supported": true, "issue": ""}
+{"id": "s0057", "supported": true, "issue": ""}
+{"id": "s0058", "supported": false, "issue": "Domain swap: evidence describes camera+IMU VIO; bullet claims lidar/radar fusion."}
+{"id": "s0059", "supported": false, "issue": "Usage by 2,000+ students is not evidenced; LangGraph details are evidenced but not user count."}
+{"id": "s0060", "supported": true, "issue": ""}
+{"id": "s0061", "supported": true, "issue": ""}
+{"id": "s0062", "supported": true, "issue": ""}
+{"id": "s0063", "supported": false, "issue": "Claims 4 segmentation backends, but evidence cites 3 backends (threshold, OpenCV GrabCut, SegFormer)."}
+{"id": "s0064", "supported": false, "issue": "Time savings claim (saving 120 hours per month) is not evidenced in cited facts."}
+{"id": "s0065", "supported": true, "issue": ""}
+{"id": "s0066", "supported": false, "issue": "Production deployment claim is not evidenced by cited facts."}
+{"id": "s0067", "supported": false, "issue": "Deployment to live users is not evidenced."}
+{"id": "s0068", "supported": false, "issue": "Production deployment claim not evidenced by cited facts."}
+{"id": "s0069", "supported": true, "issue": ""}
+{"id": "s0070", "supported": false, "issue": "Production deployment claim not evidenced by cited facts."}
+{"id": "s0071", "supported": true, "issue": ""}
+{"id": "s0072", "supported": true, "issue": ""}
+{"id": "s0073", "supported": true, "issue": ""}
+{"id": "s0074", "supported": true, "issue": ""}
+{"id": "s0075", "supported": true, "issue": ""}
+{"id": "s0076", "supported": true, "issue": ""}
+{"id": "s0077", "supported": true, "issue": ""}
+{"id": "s0078", "supported": true, "issue": ""}
+{"id": "s0079", "supported": true, "issue": ""}
+{"id": "s0080", "supported": true, "issue": ""}
+{"id": "s0081", "supported": true, "issue": ""}
+{"id": "s0082", "supported": false, "issue": "Domain mismatch: evidence describes a photo quality scorer; the bullet claims a radiology quality scorer."}
+{"id": "s0083", "supported": false, "issue": "Unsubstantiated productivity/time-savings claim ('saving 120 hours per month'); no evidence or approved wording supports this numeric claim."}
+{"id": "s0084", "supported": true, "issue": ""}
+{"id": "s0085", "supported": false, "issue": "Claimed 6 model roles, but evidence lists 5 roles (analyzer, writer, fixer, judge, fast)."}
+{"id": "s0086", "supported": false, "issue": "Claim of 2,000+ students as users is not evidenced; project domain is banking assistant, not an educational app."}
+{"id": "s0087", "supported": true, "issue": ""}
+{"id": "s0088", "supported": false, "issue": "Adoption of the retrain as the standard pipeline is not evidenced in the cited facts."}
+{"id": "s0089", "supported": true, "issue": ""}
+{"id": "s0090", "supported": true, "issue": ""}
+{"id": "s0091", "supported": false, "issue": "Claim of 60% reduction in manual effort is not evidenced."}
+{"id": "s0092", "supported": false, "issue": "Claim of production deployment at a partner company is not evidenced."}
+{"id": "s0093", "supported": false, "issue": "Adoption by the lab as the standard pipeline is not evidenced."}
+{"id": "s0094", "supported": false, "issue": "Adoption by the lab as the standard pipeline is not evidenced."}
+{"id": "s0095", "supported": false, "issue": "Claim of 101 beta testers is not evidenced."}
+{"id": "s0096", "supported": false, "issue": "CelebA count mismatch (200K claimed vs 202,599 in evidence) and daily-user claim is not evidenced."}

@@ -1,0 +1,96 @@
+{"id": "s0001", "supported": false, "issue": "Changed noun from \"annotated instances\" to \"annotated records\" and added unsupported \"state-of-the-art\" qualifier."}
+{"id": "s0002", "supported": false, "issue": "Claims the suite is now running in production at a partner company, which is not supported by the evidence."}
+{"id": "s0003", "supported": false, "issue": "Adds an unsupported claim that the Grad\u2011CAM feature is running in production at a partner company."}
+{"id": "s0004", "supported": false, "issue": "Alters the simulator range from 0.0x\u20131.5x (evidence) to 0.0x\u20131.7x, which is not supported."}
+{"id": "s0005", "supported": false, "issue": "Introduces an unsupported \"state-of-the-art\" descriptor not present in the evidence."}
+{"id": "s0006", "supported": false, "issue": "Adds an unsupported \"state-of-the-art\" qualifier to the mutual\u2011exclusion guard."}
+{"id": "s0007", "supported": true, "issue": ""}
+{"id": "s0008", "supported": false, "issue": "Incorrect original CPU inference time (15.65\u202fms) does not match the evidence (14.78\u202fms)."}
+{"id": "s0009", "supported": true, "issue": ""}
+{"id": "s0010", "supported": false, "issue": "Swaps domain from leaderboard improvement to held\u2011out test improvement, which is not supported by the evidence."}
+{"id": "s0011", "supported": false, "issue": "Adds an unsupported \"state-of-the-art\" descriptor to the async Python backend."}
+{"id": "s0012", "supported": true, "issue": ""}
+{"id": "s0013", "supported": false, "issue": "Claim of saving 120 hours per month is not supported by the cited facts."}
+{"id": "s0014", "supported": true, "issue": ""}
+{"id": "s0015", "supported": true, "issue": ""}
+{"id": "s0016", "supported": false, "issue": "Cited facts do not mention per-country budgets or per-entity caps; only per-S1 cap and duplicate consistency."}
+{"id": "s0017", "supported": false, "issue": "JSON output start rate is cited as 67.3%, not 83.4%."}
+{"id": "s0018", "supported": false, "issue": "Deployment to live users after a pilot is not mentioned in the cited facts."}
+{"id": "s0019", "supported": false, "issue": "Cited facts refer to DVL velocity, not GPS velocity."}
+{"id": "s0020", "supported": false, "issue": "Claim of saving 120 hours per month is not supported."}
+{"id": "s0021", "supported": true, "issue": ""}
+{"id": "s0022", "supported": false, "issue": "Specific normalization steps are not present in the cited facts."}
+{"id": "s0023", "supported": false, "issue": "SSIM value of 0.75 is not supported; evidence states 0.62."}
+{"id": "s0024", "supported": false, "issue": "Final leaderboard F0.5 of 0.9990 is not supported; evidence caps at 0.9837."}
+{"id": "s0025", "supported": false, "issue": "Adds claim that the system became the default for the whole department, which is not in the cited facts."}
+{"id": "s0026", "supported": true, "issue": ""}
+{"id": "s0027", "supported": false, "issue": "Claims 26 production deployments, but evidence only mentions 26 unit and integration tests."}
+{"id": "s0028", "supported": true, "issue": ""}
+{"id": "s0029", "supported": true, "issue": ""}
+{"id": "s0030", "supported": true, "issue": ""}
+{"id": "s0031", "supported": true, "issue": ""}
+{"id": "s0032", "supported": true, "issue": ""}
+{"id": "s0033", "supported": true, "issue": ""}
+{"id": "s0034", "supported": false, "issue": "Adds claim of cutting infrastructure cost by 35%, which is not supported by the cited facts."}
+{"id": "s0035", "supported": false, "issue": "States the repair loop has 3 rounds, but evidence specifies up to 2 rounds."}
+{"id": "s0036", "supported": true, "issue": ""}
+{"id": "s0037", "supported": true, "issue": ""}
+{"id": "s0038", "supported": true, "issue": ""}
+{"id": "s0039", "supported": false, "issue": "Accuracy claim of 97.8% is not supported; evidence states 91.8% accuracy."}
+{"id": "s0040", "supported": true, "issue": ""}
+{"id": "s0041", "supported": false, "issue": "Claim of deployment to live users after a pilot is not backed by evidence."}
+{"id": "s0042", "supported": true, "issue": ""}
+{"id": "s0043", "supported": true, "issue": ""}
+{"id": "s0044", "supported": false, "issue": "Claim of saving 120 hours per month is not present in the cited facts."}
+{"id": "s0045", "supported": true, "issue": ""}
+{"id": "s0046", "supported": true, "issue": ""}
+{"id": "s0047", "supported": false, "issue": "Claim of adoption by the research lab as its standard pipeline is not supported by evidence."}
+{"id": "s0048", "supported": false, "issue": "Test count of 142 is unsupported; evidence states 102 pytest tests."}
+{"id": "s0049", "supported": false, "issue": "claim of cutting infrastructure cost by 35% is not supported"}
+{"id": "s0050", "supported": true, "issue": ""}
+{"id": "s0051", "supported": false, "issue": "claim of deployment to live users after a pilot is not supported"}
+{"id": "s0052", "supported": true, "issue": ""}
+{"id": "s0053", "supported": true, "issue": ""}
+{"id": "s0054", "supported": true, "issue": ""}
+{"id": "s0055", "supported": false, "issue": "test count stated as 33 but evidence cites 26 tests"}
+{"id": "s0056", "supported": true, "issue": ""}
+{"id": "s0057", "supported": true, "issue": ""}
+{"id": "s0058", "supported": false, "issue": "claims fusing lidar and radar streams, which swaps the project's domain"}
+{"id": "s0059", "supported": false, "issue": "claim of usage by 2,000+ students is not supported"}
+{"id": "s0060", "supported": true, "issue": ""}
+{"id": "s0061", "supported": true, "issue": ""}
+{"id": "s0062", "supported": false, "issue": "The claim of a \"state-of-the-art\" research problem is not backed by any cited fact."}
+{"id": "s0063", "supported": false, "issue": "The bullet states \"4 segmentation backends\" whereas the evidence cites only 3 backends."}
+{"id": "s0064", "supported": true, "issue": ""}
+{"id": "s0065", "supported": true, "issue": ""}
+{"id": "s0066", "supported": false, "issue": "The bullet adds \"now running in production at a partner company\", which is not mentioned in the cited facts."}
+{"id": "s0067", "supported": false, "issue": "The bullet claims deployment to live users after a pilot, which is not supported by the evidence."}
+{"id": "s0068", "supported": false, "issue": "The bullet adds \"now running in production at a partner company\", which is not backed by the cited facts."}
+{"id": "s0069", "supported": true, "issue": ""}
+{"id": "s0070", "supported": false, "issue": "The bullet adds \"now running in production at a partner company\", which is not supported by the evidence."}
+{"id": "s0071", "supported": true, "issue": ""}
+{"id": "s0072", "supported": true, "issue": ""}
+{"id": "s0073", "supported": false, "issue": "Per-country budgets and per-entity caps not in evidence."}
+{"id": "s0074", "supported": false, "issue": "The bullet adds adoption as standard pipeline, not in evidence."}
+{"id": "s0075", "supported": true, "issue": ""}
+{"id": "s0076", "supported": false, "issue": "Domain mismatch: legal vs banking Q&A pairs."}
+{"id": "s0077", "supported": false, "issue": "Cost reduction claim unsupported."}
+{"id": "s0078", "supported": false, "issue": "Noun change from reference entities to verified customers."}
+{"id": "s0079", "supported": false, "issue": "Testing described as beta testers, not pytest tests."}
+{"id": "s0080", "supported": false, "issue": "Leadership claim unsupported."}
+{"id": "s0081", "supported": false, "issue": "Adoption as standard pipeline unsupported."}
+{"id": "s0082", "supported": true, "issue": ""}
+{"id": "s0083", "supported": false, "issue": "Saving 120 hours per month not in evidence."}
+{"id": "s0084", "supported": true, "issue": ""}
+{"id": "s0085", "supported": false, "issue": "Changed the number of model roles from 5 (evidence) to 6 (bullet)."}
+{"id": "s0086", "supported": false, "issue": "Added an unsupported claim of usage by 2,000+ students."}
+{"id": "s0087", "supported": true, "issue": ""}
+{"id": "s0088", "supported": true, "issue": ""}
+{"id": "s0089", "supported": true, "issue": ""}
+{"id": "s0090", "supported": true, "issue": ""}
+{"id": "s0091", "supported": true, "issue": ""}
+{"id": "s0092", "supported": false, "issue": "Introduced an unsupported claim that the pipeline is running in production at a partner company."}
+{"id": "s0093", "supported": true, "issue": ""}
+{"id": "s0094", "supported": true, "issue": ""}
+{"id": "s0095", "supported": true, "issue": ""}
+{"id": "s0096", "supported": true, "issue": ""}

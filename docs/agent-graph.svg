@@ -32,7 +32,7 @@
   <rect x="20" y="105" width="1060" height="285" rx="14" fill="#F7FAFC"/>
   <text class="band" x="40" y="135">1 · UNDERSTAND</text><text class="bandd" x="40" y="153">read the JD, pick 4 projects</text>
   <rect x="20" y="405" width="1060" height="260" rx="14" fill="#FAF8FF"/>
-  <text class="band" x="40" y="435">2 · WRITE</text><text class="bandd" x="40" y="453">LLM drafts; every bullet</text><text class="bandd" x="40" y="469">cites fact IDs</text>
+  <text class="band" x="40" y="435">2 · WRITE</text><text class="bandd" x="40" y="453">3 writers run in parallel;</text><text class="bandd" x="40" y="469">4 projects at once</text><text class="bandd" x="40" y="485">every bullet cites fact IDs</text>
   <rect x="20" y="680" width="1060" height="215" rx="14" fill="#FFFAF0"/>
   <text class="band" x="40" y="710">3 · VERIFY</text><text class="bandd" x="40" y="728">≤ 2 repair rounds,</text><text class="bandd" x="40" y="744">then verified fallback</text>
   <rect x="20" y="910" width="1060" height="240" rx="14" fill="#F0FFF4"/>
@@ -87,25 +87,30 @@
   <!-- select -->
   <rect class="code" x="260" y="326" width="280" height="58" rx="10"/>
   <text class="t" x="274" y="350">select</text><text class="s" x="274" y="370">score projects (kit §3) → top 4</text>
-  <path class="e" d="M400,384 L400,444"/>
+  <path class="e" d="M400,384 L400,428"/>
 
+  <!-- parallel group -->
+  <rect x="246" y="430" width="308" height="230" rx="14" fill="none" stroke="#6B46C1" stroke-width="1.4" stroke-dasharray="6 5"/>
+  <text x="236" y="560" font-size="12" font-weight="700" fill="#553C9A" text-anchor="end">in parallel</text>
+  <text x="236" y="576" font-size="11.5" fill="#718096" text-anchor="end">validate waits</text>
+  <text x="236" y="591" font-size="11.5" fill="#718096" text-anchor="end">for all three</text>
   <!-- write_projects -->
   <rect class="llm" x="260" y="446" width="280" height="58" rx="10"/>
-  <text class="t" x="274" y="470">write_projects</text><text class="s" x="274" y="490">rewrite bullets, cite fact IDs</text>
+  <text class="t" x="274" y="470">write_projects</text><text class="s" x="274" y="490">4 projects concurrently</text>
   <rect class="pill" x="470" y="454" width="60" height="18" rx="9"/><text class="tag" x="500" y="467" text-anchor="middle">writer</text>
-  <path class="e" d="M400,504 L400,524"/>
+  
 
   <!-- write_experience -->
   <rect class="llm" x="260" y="526" width="280" height="58" rx="10"/>
   <text class="t" x="274" y="550">write_experience</text><text class="s" x="274" y="570">internship bullets for this JD</text>
   <rect class="pill" x="470" y="534" width="60" height="18" rx="9"/><text class="tag" x="500" y="547" text-anchor="middle">writer</text>
-  <path class="e" d="M400,584 L400,594"/>
+  
 
   <!-- write_skills -->
   <rect class="llm" x="260" y="596" width="280" height="50" rx="10"/>
   <text class="t" x="274" y="617">write_skills</text><text class="s" x="274" y="636">skills lines + coursework</text>
   <rect class="pill" x="478" y="603" width="52" height="18" rx="9"/><text class="tag" x="504" y="616" text-anchor="middle">fast</text>
-  <path class="e" d="M400,646 L400,708"/>
+  <path class="e" d="M400,662 L400,708"/>
 
   <!-- validate -->
   <rect class="code" x="260" y="710" width="280" height="70" rx="10"/>

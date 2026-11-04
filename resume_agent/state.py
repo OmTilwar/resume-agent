@@ -1,7 +1,8 @@
 """Graph state + the structured schemas LLM nodes must return."""
 from __future__ import annotations
 
-from typing import Literal, Optional, TypedDict
+import operator
+from typing import Annotated, Literal, Optional, TypedDict
 
 from pydantic import BaseModel, Field
 
@@ -121,7 +122,7 @@ class ResumeState(TypedDict, total=False):
     skills: list[SkillLine]
     coursework: list[str]
     achievements: list[str]
-    violations: list[str]
+    violations: Annotated[list[str], operator.add]   # parallel writers append; never return the old list
     # Phase 2
     issues: list            # list[validate.Issue] still open
     approved: list[str]     # bullet texts the judge accepted (not re-judged)

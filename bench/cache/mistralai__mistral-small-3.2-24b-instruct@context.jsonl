@@ -1,0 +1,96 @@
+{"id": "s0001", "supported": true, "issue": ""}
+{"id": "s0002", "supported": false, "issue": "claims production deployment at a partner company"}
+{"id": "s0003", "supported": false, "issue": "claims production deployment at a partner company"}
+{"id": "s0004", "supported": true, "issue": ""}
+{"id": "s0005", "supported": true, "issue": ""}
+{"id": "s0006", "supported": true, "issue": ""}
+{"id": "s0007", "supported": true, "issue": ""}
+{"id": "s0008", "supported": true, "issue": ""}
+{"id": "s0009", "supported": false, "issue": "claims Top-1000 finalist, 2-member team"}
+{"id": "s0010", "supported": false, "issue": "claims held-out test F0.5"}
+{"id": "s0011", "supported": true, "issue": ""}
+{"id": "s0012", "supported": true, "issue": ""}
+{"id": "s0013", "supported": true, "issue": ""}
+{"id": "s0014", "supported": true, "issue": ""}
+{"id": "s0015", "supported": false, "issue": "The bullet claims 'images' but the evidence states 'instances'."}
+{"id": "s0016", "supported": true, "issue": ""}
+{"id": "s0017", "supported": true, "issue": ""}
+{"id": "s0018", "supported": false, "issue": "The bullet claims 'deployed to live users after a successful pilot' but there is no evidence of live users or a pilot."}
+{"id": "s0019", "supported": true, "issue": ""}
+{"id": "s0020", "supported": false, "issue": "The bullet claims 'saving 120 hours per month' but there is no evidence of this time saving."}
+{"id": "s0021", "supported": true, "issue": ""}
+{"id": "s0022", "supported": true, "issue": ""}
+{"id": "s0023", "supported": false, "issue": "The bullet claims '0.75 SSIM' but the evidence states '0.62 SSIM'."}
+{"id": "s0024", "supported": false, "issue": "The bullet claims 'lifting leaderboard F0.5 from 0.894 to 0.9990' but the evidence states 'lifting leaderboard F0.5 from 0.894 to 0.9837'."}
+{"id": "s0025", "supported": false, "issue": "The bullet claims the system became the default for the whole department, which is not supported by the cited facts."}
+{"id": "s0026", "supported": true, "issue": ""}
+{"id": "s0027", "supported": false, "issue": "The bullet claims 26 production deployments, which is not supported by the cited facts (only 26 unit and integration tests are mentioned)."}
+{"id": "s0028", "supported": true, "issue": ""}
+{"id": "s0029", "supported": false, "issue": "The bullet claims the service is cutting-edge, which is not supported by the cited facts."}
+{"id": "s0030", "supported": true, "issue": ""}
+{"id": "s0031", "supported": true, "issue": ""}
+{"id": "s0032", "supported": true, "issue": ""}
+{"id": "s0033", "supported": false, "issue": "The bullet claims the service is shipped, which is not supported by the cited facts."}
+{"id": "s0034", "supported": false, "issue": "The bullet claims the solution cut infrastructure cost by 35%, which is not supported by the cited facts."}
+{"id": "s0035", "supported": true, "issue": ""}
+{"id": "s0036", "supported": true, "issue": ""}
+{"id": "s0037", "supported": true, "issue": ""}
+{"id": "s0038", "supported": true, "issue": ""}
+{"id": "s0039", "supported": false, "issue": "97.8% accuracy is not supported by the evidence, which states 91.8% accuracy."}
+{"id": "s0040", "supported": true, "issue": ""}
+{"id": "s0041", "supported": false, "issue": "The claim of deployment to live users after a successful pilot is not supported by the evidence."}
+{"id": "s0042", "supported": true, "issue": ""}
+{"id": "s0043", "supported": false, "issue": "The claim of cleaning and validating 3,200+ annotated images is not supported by the evidence, which mentions 3,200+ annotated instances."}
+{"id": "s0044", "supported": true, "issue": ""}
+{"id": "s0045", "supported": true, "issue": ""}
+{"id": "s0046", "supported": true, "issue": ""}
+{"id": "s0047", "supported": false, "issue": "The claim of adoption by the research lab as its standard pipeline is not supported by the evidence."}
+{"id": "s0048", "supported": false, "issue": "The claim of 142 pytest tests is not supported by the evidence, which states 102 pytest tests."}
+{"id": "s0049", "supported": true, "issue": ""}
+{"id": "s0050", "supported": true, "issue": ""}
+{"id": "s0051", "supported": false, "issue": "claims 'deployed to live users after a successful pilot' but no evidence states this"}
+{"id": "s0052", "supported": true, "issue": ""}
+{"id": "s0053", "supported": true, "issue": ""}
+{"id": "s0054", "supported": true, "issue": ""}
+{"id": "s0055", "supported": false, "issue": "claims 'covered by 33 unit and integration tests' but evidence states '26 unit and integration tests'"}
+{"id": "s0056", "supported": true, "issue": ""}
+{"id": "s0057", "supported": true, "issue": ""}
+{"id": "s0058", "supported": false, "issue": "claims 'fusing lidar and radar streams' but evidence states 'fusing camera and IMU streams'"}
+{"id": "s0059", "supported": false, "issue": "claims 'used by 2,000+ students' but no evidence states this"}
+{"id": "s0060", "supported": true, "issue": ""}
+{"id": "s0061", "supported": true, "issue": ""}
+{"id": "s0062", "supported": true, "issue": ""}
+{"id": "s0063", "supported": true, "issue": ""}
+{"id": "s0064", "supported": true, "issue": ""}
+{"id": "s0065", "supported": true, "issue": ""}
+{"id": "s0066", "supported": false, "issue": "The claim that the model is 'now running in production at a partner company' is not supported by the cited fact claims."}
+{"id": "s0067", "supported": true, "issue": ""}
+{"id": "s0068", "supported": false, "issue": "The claim that the model is 'now running in production at a partner company' is not supported by the cited fact claims."}
+{"id": "s0069", "supported": true, "issue": ""}
+{"id": "s0070", "supported": false, "issue": "The claim that the model is 'now running in production at a partner company' is not supported by the cited fact claims."}
+{"id": "s0071", "supported": true, "issue": ""}
+{"id": "s0072", "supported": true, "issue": ""}
+{"id": "s0073", "supported": true, "issue": ""}
+{"id": "s0074", "supported": false, "issue": "The bullet claims the pipeline was 'adopted by the research lab as its standard pipeline,' which is not mentioned in the cited facts."}
+{"id": "s0075", "supported": true, "issue": ""}
+{"id": "s0076", "supported": false, "issue": "The bullet claims 'legal Q&A pairs,' but the cited facts mention 'banking Q&A pairs,' which is a different domain."}
+{"id": "s0077", "supported": true, "issue": ""}
+{"id": "s0078", "supported": false, "issue": "The bullet claims 'removing 25% of verified customers from validation folds,' but the cited facts mention 'removing 25% of reference entities from validation folds,' which is a different claim."}
+{"id": "s0079", "supported": true, "issue": ""}
+{"id": "s0080", "supported": false, "issue": "The bullet claims 'leading a team of engineers through delivery,' which is not mentioned in the cited facts."}
+{"id": "s0081", "supported": false, "issue": "The bullet claims the pipeline was 'adopted by the research lab as its standard pipeline,' which is not mentioned in the cited facts."}
+{"id": "s0082", "supported": true, "issue": ""}
+{"id": "s0083", "supported": false, "issue": "The bullet claims 'saving 120 hours per month,' which is not mentioned in the cited facts."}
+{"id": "s0084", "supported": true, "issue": ""}
+{"id": "s0085", "supported": true, "issue": ""}
+{"id": "s0086", "supported": false, "issue": "claims 2,000+ students"}
+{"id": "s0087", "supported": true, "issue": ""}
+{"id": "s0088", "supported": true, "issue": ""}
+{"id": "s0089", "supported": true, "issue": ""}
+{"id": "s0090", "supported": true, "issue": ""}
+{"id": "s0091", "supported": true, "issue": ""}
+{"id": "s0092", "supported": false, "issue": "claims production at a partner company"}
+{"id": "s0093", "supported": true, "issue": ""}
+{"id": "s0094", "supported": true, "issue": ""}
+{"id": "s0095", "supported": false, "issue": "claims 101 beta testers"}
+{"id": "s0096", "supported": true, "issue": ""}
