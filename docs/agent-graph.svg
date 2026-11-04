@@ -1,0 +1,199 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 1480" width="1100" height="1480" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
+  <title>resume-agent — LangGraph flow</title>
+  <defs>
+    <marker id="a-gray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#4A5568"/></marker>
+    <marker id="a-orange" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#C05621"/></marker>
+    <marker id="a-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2F855A"/></marker>
+    <style>
+      .t  { font-size: 15px; font-weight: 700; fill: #1A202C; }
+      .s  { font-size: 12px; fill: #4A5568; }
+      .tag{ font-size: 10.5px; font-weight: 700; fill: #553C9A; }
+      .lbl{ font-size: 11.5px; fill: #4A5568; paint-order: stroke; stroke: #FFFFFF; stroke-width: 4px; }
+      .lbo{ font-size: 11.5px; fill: #C05621; font-weight: 600; paint-order: stroke; stroke: #FFFFFF; stroke-width: 4px; }
+      .band{ font-size: 13px; font-weight: 700; fill: #2D3748; letter-spacing: .5px; }
+      .bandd{ font-size: 11.5px; fill: #718096; }
+      .llm  { fill: #F1ECFF; stroke: #6B46C1; stroke-width: 1.6; }
+      .code { fill: #EBF4FB; stroke: #2B6CB0; stroke-width: 1.6; }
+      .pill { fill: #E9D8FD; }
+      .e  { stroke: #4A5568; stroke-width: 1.8; fill: none; marker-end: url(#a-gray); }
+      .eo { stroke: #C05621; stroke-width: 1.8; fill: none; stroke-dasharray: 7 5; marker-end: url(#a-orange); }
+      .ek { stroke: #2F855A; stroke-width: 1.5; fill: none; stroke-dasharray: 2 4; marker-end: url(#a-green); }
+    </style>
+  </defs>
+
+  <rect x="0" y="0" width="1100" height="1480" fill="#FFFFFF"/>
+
+  <!-- title -->
+  <text x="40" y="52" font-size="26" font-weight="800" fill="#1A202C">resume-agent</text>
+  <text x="232" y="52" font-size="17" fill="#4A5568">LangGraph flow: job description → truthful one-page LaTeX resume</text>
+  <text x="40" y="80" font-size="13" fill="#718096">14 nodes · 2 self-correction loops · every claim traced to the knowledge base · free open-weight models via OpenRouter</text>
+
+  <!-- phase bands -->
+  <rect x="20" y="105" width="1060" height="285" rx="14" fill="#F7FAFC"/>
+  <text class="band" x="40" y="135">1 · UNDERSTAND</text><text class="bandd" x="40" y="153">read the JD, pick 4 projects</text>
+  <rect x="20" y="405" width="1060" height="260" rx="14" fill="#FAF8FF"/>
+  <text class="band" x="40" y="435">2 · WRITE</text><text class="bandd" x="40" y="453">LLM drafts; every bullet</text><text class="bandd" x="40" y="469">cites fact IDs</text>
+  <rect x="20" y="680" width="1060" height="215" rx="14" fill="#FFFAF0"/>
+  <text class="band" x="40" y="710">3 · VERIFY</text><text class="bandd" x="40" y="728">≤ 2 repair rounds,</text><text class="bandd" x="40" y="744">then verified fallback</text>
+  <rect x="20" y="910" width="1060" height="240" rx="14" fill="#F0FFF4"/>
+  <text class="band" x="40" y="940">4 · BUILD &amp; FIT</text><text class="bandd" x="40" y="958">measure the real PDF,</text><text class="bandd" x="40" y="974">trim / fill (kit §11)</text>
+  <rect x="20" y="1165" width="1060" height="160" rx="14" fill="#F7FAFC"/>
+  <text class="band" x="40" y="1195">5 · OUTPUT</text><text class="bandd" x="40" y="1213">.tex · .pdf · report.md</text>
+
+  <!-- knowledge base panel -->
+  <rect x="700" y="165" width="360" height="470" rx="14" fill="#F0FFF4" stroke="#2F855A" stroke-width="1.6"/>
+  <text x="722" y="198" font-size="16" font-weight="800" fill="#22543D">Knowledge base</text>
+  <text x="722" y="218" font-size="12" fill="#2F855A">kb/*.yaml — synced from MASTER_RESUME_KIT.md</text>
+  <g font-size="12.5" fill="#22543D">
+    <text x="722" y="252">• Facts tagged verified / stated / banned</text>
+    <text x="722" y="278">• Context rules (e.g. healthcare-only metrics)</text>
+    <text x="722" y="304">• Bullet bank, titles, stacks per project</text>
+    <text x="722" y="330">• Skills inventory with (Familiar) tags</text>
+    <text x="722" y="356">• 22 JD archetypes · writing rules · page budget</text>
+  </g>
+  <rect x="722" y="386" width="316" height="96" rx="10" fill="#FFFFFF" stroke="#9AE6B4"/>
+  <text x="738" y="410" font-size="12" font-weight="700" fill="#22543D">The only door into prompts:</text>
+  <text x="738" y="434" font-size="13" font-family="Consolas, 'SFMono-Regular', Menlo, monospace" fill="#1A202C">kb.allowed_facts(project, ctx)</text>
+  <text x="738" y="456" font-size="11.5" fill="#2F855A">banned and out-of-context facts never</text>
+  <text x="738" y="472" font-size="11.5" fill="#2F855A">reach a model; retired projects can't be picked</text>
+  <text x="722" y="512" font-size="12" fill="#2F855A">Also read by validate, fix and fallback:</text>
+  <text x="722" y="530" font-size="12" fill="#2F855A">fact values, approved wording, rules.</text>
+  <text x="722" y="562" font-size="12" fill="#22543D" font-weight="700">Contact details</text>
+  <text x="722" y="580" font-size="12" fill="#2F855A">are filled in by the template and are</text>
+  <text x="722" y="598" font-size="12" fill="#2F855A">never sent to any model.</text>
+
+  <!-- KB read edges -->
+  <path class="ek" d="M700,355 L544,355"/>
+  <path class="ek" d="M700,475 L544,475"/>
+  <path class="ek" d="M700,555 L544,555"/>
+  <path class="ek" d="M700,620 L544,620"/>
+
+  <!-- START -->
+  <rect x="355" y="112" width="90" height="28" rx="14" fill="#2D3748"/>
+  <text x="400" y="131" font-size="12.5" font-weight="700" fill="#FFFFFF" text-anchor="middle">START</text>
+  <path class="e" d="M400,140 L400,164"/>
+
+  <!-- ingest -->
+  <rect class="code" x="260" y="166" width="280" height="58" rx="10"/>
+  <text class="t" x="274" y="190">ingest</text><text class="s" x="274" y="210">read JD (PDF / text), set up run</text>
+  <path class="e" d="M400,224 L400,244"/>
+
+  <!-- analyze -->
+  <rect class="llm" x="260" y="246" width="280" height="58" rx="10"/>
+  <text class="t" x="274" y="270">analyze</text><text class="s" x="274" y="290">archetype + top-10 JD keywords</text>
+  <rect class="pill" x="458" y="254" width="72" height="18" rx="9"/><text class="tag" x="494" y="267" text-anchor="middle">analyzer</text>
+  <path class="e" d="M400,304 L400,324"/>
+
+  <!-- select -->
+  <rect class="code" x="260" y="326" width="280" height="58" rx="10"/>
+  <text class="t" x="274" y="350">select</text><text class="s" x="274" y="370">score projects (kit §3) → top 4</text>
+  <path class="e" d="M400,384 L400,444"/>
+
+  <!-- write_projects -->
+  <rect class="llm" x="260" y="446" width="280" height="58" rx="10"/>
+  <text class="t" x="274" y="470">write_projects</text><text class="s" x="274" y="490">rewrite bullets, cite fact IDs</text>
+  <rect class="pill" x="470" y="454" width="60" height="18" rx="9"/><text class="tag" x="500" y="467" text-anchor="middle">writer</text>
+  <path class="e" d="M400,504 L400,524"/>
+
+  <!-- write_experience -->
+  <rect class="llm" x="260" y="526" width="280" height="58" rx="10"/>
+  <text class="t" x="274" y="550">write_experience</text><text class="s" x="274" y="570">internship bullets for this JD</text>
+  <rect class="pill" x="470" y="534" width="60" height="18" rx="9"/><text class="tag" x="500" y="547" text-anchor="middle">writer</text>
+  <path class="e" d="M400,584 L400,594"/>
+
+  <!-- write_skills -->
+  <rect class="llm" x="260" y="596" width="280" height="50" rx="10"/>
+  <text class="t" x="274" y="617">write_skills</text><text class="s" x="274" y="636">skills lines + coursework</text>
+  <rect class="pill" x="478" y="603" width="52" height="18" rx="9"/><text class="tag" x="504" y="616" text-anchor="middle">fast</text>
+  <path class="e" d="M400,646 L400,708"/>
+
+  <!-- validate -->
+  <rect class="code" x="260" y="710" width="280" height="70" rx="10"/>
+  <text class="t" x="274" y="734">validate</text>
+  <text class="s" x="274" y="753">truth checks · length · duplicates</text>
+  <text class="s" x="274" y="770">+ judge: bullet vs. cited evidence</text>
+  <rect class="pill" x="472" y="718" width="58" height="18" rx="9"/><text class="tag" x="501" y="731" text-anchor="middle">judge</text>
+
+  <!-- fix -->
+  <rect class="llm" x="690" y="716" width="260" height="58" rx="10"/>
+  <text class="t" x="704" y="740">fix</text><text class="s" x="704" y="760">repair flagged bullets</text>
+  <rect class="pill" x="880" y="724" width="60" height="18" rx="9"/><text class="tag" x="910" y="737" text-anchor="middle">fixer</text>
+
+  <!-- validate <-> fix -->
+  <path class="eo" d="M540,733 L686,733"/>
+  <text class="lbo" x="560" y="725">issues · round &lt; 2</text>
+  <path class="eo" d="M690,760 L544,760"/>
+  <text class="lbo" x="583" y="778">re-check</text>
+
+  <!-- fallback -->
+  <rect class="code" x="690" y="822" width="260" height="56" rx="10"/>
+  <text class="t" x="704" y="845">fallback</text><text class="s" x="704" y="865">swap in verified kit bullets</text>
+  <path class="eo" d="M510,780 L510,850 L686,850"/>
+  <text class="lbo" x="560" y="842">still failing after 2 rounds</text>
+
+  <!-- validate -> assemble ; fallback -> assemble -->
+  <path class="eo" d="M400,780 L400,924"/>
+  <text class="lbo" x="410" y="870">all checks pass</text>
+  <path class="e" d="M820,878 L820,898 L470,898 L470,924"/>
+
+  <!-- assemble -->
+  <rect class="code" x="260" y="926" width="280" height="58" rx="10"/>
+  <text class="t" x="274" y="950">assemble</text><text class="s" x="274" y="970">Jinja → .tex, highlight metrics</text>
+  <path class="e" d="M400,984 L400,1004"/>
+
+  <!-- compile -->
+  <rect class="code" x="260" y="1006" width="280" height="58" rx="10"/>
+  <text class="t" x="274" y="1030">compile</text><text class="s" x="274" y="1050">pdflatex → PDF</text>
+  <path class="e" d="M400,1064 L400,1084"/>
+
+  <!-- layout_check -->
+  <rect class="code" x="260" y="1086" width="280" height="58" rx="10"/>
+  <text class="t" x="274" y="1110">layout_check</text><text class="s" x="274" y="1130">pages · blank lines · orphan lines</text>
+
+  <!-- layout_fix -->
+  <rect class="code" x="690" y="1086" width="260" height="58" rx="10"/>
+  <text class="t" x="704" y="1110">layout_fix</text><text class="s" x="704" y="1130">trim (§11) · fill · fix orphans</text>
+  <rect class="pill" x="880" y="1094" width="60" height="18" rx="9"/><text class="tag" x="910" y="1107" text-anchor="middle">fixer</text>
+
+  <path class="eo" d="M540,1110 L686,1110"/>
+  <text class="lbo" x="553" y="1102">&gt;1 page · blank · orphan</text>
+  <!-- layout_fix -> assemble -->
+  <path class="eo" d="M760,1086 L760,955 L544,955"/>
+  <text class="lbo" x="580" y="947">trim / fill → rebuild</text>
+  <!-- layout_fix -> validate -->
+  <path class="eo" d="M950,1115 L1040,1115 L1040,692 L500,692 L500,706"/>
+  <text class="lbo" x="770" y="686">rewrote orphan bullets → re-verify</text>
+
+  <!-- layout_check -> report -->
+  <path class="eo" d="M400,1144 L400,1194"/>
+  <text class="lbo" x="410" y="1176">fits: 1 page, no orphans</text>
+
+  <!-- report -->
+  <rect class="code" x="260" y="1196" width="280" height="58" rx="10"/>
+  <text class="t" x="274" y="1220">report</text><text class="s" x="274" y="1240">coverage · gaps · interview prep</text>
+  <path class="e" d="M400,1254 L400,1278"/>
+  <rect x="355" y="1280" width="90" height="28" rx="14" fill="#2D3748"/>
+  <text x="400" y="1299" font-size="12.5" font-weight="700" fill="#FFFFFF" text-anchor="middle">END</text>
+
+  <!-- outputs -->
+  <g font-size="12" fill="#4A5568">
+    <text x="700" y="1215">out/&lt;slug&gt;/&lt;slug&gt;.tex · .pdf</text>
+    <text x="700" y="1237">report.md: keyword coverage, honest gaps,</text>
+    <text x="700" y="1255">interview questions, quality checks,</text>
+    <text x="700" y="1273">"still open" list for human review</text>
+  </g>
+
+  <!-- legend -->
+  <rect x="20" y="1345" width="1060" height="110" rx="14" fill="#FFFFFF" stroke="#E2E8F0"/>
+  <text x="40" y="1372" font-size="13" font-weight="800" fill="#2D3748">Legend</text>
+  <rect class="llm" x="40" y="1388" width="44" height="24" rx="6"/>
+  <text x="94" y="1405" font-size="12.5" fill="#2D3748">LLM call</text>
+  <rect class="pill" x="160" y="1391" width="52" height="18" rx="9"/><text class="tag" x="186" y="1404" text-anchor="middle">role</text>
+  <text x="220" y="1405" font-size="12.5" fill="#2D3748">model role (config/models.yaml)</text>
+  <rect class="code" x="440" y="1388" width="44" height="24" rx="6"/>
+  <text x="494" y="1405" font-size="12.5" fill="#2D3748">deterministic code</text>
+  <path class="e" d="M640,1400 L690,1400"/><text x="700" y="1405" font-size="12.5" fill="#2D3748">always</text>
+  <path class="eo" d="M760,1400 L810,1400"/><text x="820" y="1405" font-size="12.5" fill="#2D3748">conditional / loop</text>
+  <path class="ek" d="M40,1435 L90,1435"/><text x="100" y="1440" font-size="12.5" fill="#2D3748">reads knowledge base</text>
+  <text x="290" y="1440" font-size="12" fill="#718096">Loops are bounded: ≤ 2 content repair rounds, ≤ 4 layout rounds — every run ends with a truthful, compiled page.</text>
+</svg>

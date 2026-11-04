@@ -4,6 +4,15 @@ A LangGraph pipeline that turns a job description into a one-page, JD-tailored L
 
 It automates the workflow in [`MASTER_RESUME_KIT.md`](../../MASTER_RESUME_KIT.md): the kit's rules (§2), workflow (§3), facts (§5–§8), template (§12) and QA checklist (§13) become data, graph nodes and validators.
 
+![resume-agent LangGraph flow](docs/agent-graph.svg)
+
+<details>
+<summary>Mermaid version (generated from the compiled graph)</summary>
+
+See [`docs/graph.mmd`](docs/graph.mmd). Regenerate both the Mermaid file and the PNG with `python scripts/export_graph.py`.
+`tests/test_docs.py` fails if a graph node is added without updating the diagram.
+</details>
+
 ## Status
 
 | Phase | What | Status |
