@@ -23,6 +23,9 @@
 #            gpt-oss-120b           84.7% / 12.5%
 #            gpt-5-nano             83.3% / 4.2%
 #
+# max_tokens: caps each role's output. A skills call once ran away to 16,384 tokens (~8 min,
+# twice) and stalled the whole run at the fan-in; typical outputs are 300-1,500 tokens.
+#
 # Re-check availability: python scripts/list_free_models.py --check
 
 base_url: "https://openrouter.ai/api/v1"
@@ -34,18 +37,21 @@ roles:
     fallbacks: ["deepseek/deepseek-v4-flash", "nvidia/nemotron-3.5-super-vl:free"]
     structured: json_schema
     temperature: 0.0
+    max_tokens: 1500
 
   writer:
     model: "mistralai/mistral-small-3.2-24b-instruct"
     fallbacks: ["deepseek/deepseek-v4-flash", "google/gemma-4-26b-a4b-it"]
     structured: json_schema
     temperature: 0.4
+    max_tokens: 2000
 
   fixer:
     model: "mistralai/mistral-small-3.2-24b-instruct"
     fallbacks: ["deepseek/deepseek-v4-flash", "google/gemma-4-26b-a4b-it"]
     structured: json_schema
     temperature: 0.1
+    max_tokens: 4000
 
   # Benchmark-validated judge. Keep the fallback the SAME model so results stay attributable.
   judge:
@@ -53,9 +59,11 @@ roles:
     fallbacks: ["nvidia/nemotron-3-ultra-550b-a55b"]
     structured: function_calling
     temperature: 0.0
+    max_tokens: 12000
 
   fast:
     model: "mistralai/mistral-small-3.2-24b-instruct"
     fallbacks: ["google/gemma-4-26b-a4b-it", "deepseek/deepseek-v4-flash"]
     structured: json_schema
     temperature: 0.0
+    max_tokens: 1500

@@ -52,7 +52,12 @@ def _call(config: RunnableConfig, role: str, schema, messages, attempts: int = 2
     last: Exception | None = None
     for i in range(attempts):
         try:
-            out = _factory(config)(role, schema).invoke(messages, config=_child_config(config, role, schema, i + 1))
+            factory = _factory(config)
+            try:
+                model = factory(role, schema, attempt=i + 1)   # retries move along the model chain
+            except TypeError:                                 # test fakes take (role, schema) only
+                model = factory(role, schema)
+            out = model.invoke(messages, config=_child_config(config, role, schema, i + 1))
             if out is None:
                 raise ValueError("model returned no structured output")
             return out

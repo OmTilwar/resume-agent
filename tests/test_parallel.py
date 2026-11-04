@@ -86,3 +86,25 @@ def test_writer_returning_nothing_does_not_sink_the_run(tmp_path):
     assert all(len(p.bullets) >= 3 for p in final["projects"])
     assert any("writer model failed" in v for v in final["violations"])
     assert final["tex_path"] and len(final["skills"]) >= 4
+
+
+def test_retry_asks_factory_for_next_attempt(tmp_path):
+    """_call passes attempt=2 on retry so the real factory can switch models."""
+    seen = []
+
+    def flaky(role, schema, attempt=1):
+        seen.append((role, schema.__name__, attempt))
+        inner = fakes.fake_factory(role, schema)
+
+        class R:
+            def invoke(self, messages, config=None):
+                if schema is SkillsDraft and attempt == 1:
+                    return None                       # first attempt "runs away"
+                return inner.invoke(messages)
+        return R()
+
+    final = build_graph().invoke(
+        {"job": JobPosting(company="Acme AI", role="LLM Intern", text="x"), "out_dir": str(tmp_path)},
+        config={"configurable": {"llm_factory": flaky}, "recursion_limit": 80})
+    assert ("fast", "SkillsDraft", 2) in seen
+    assert not any("skills: model failed" in v for v in final["violations"])   # attempt 2 succeeded
