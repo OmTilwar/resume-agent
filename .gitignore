@@ -10,4 +10,3 @@ out/
 *.out
 *.pdf
 .venv/
-bench/cache/

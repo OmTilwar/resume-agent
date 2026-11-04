@@ -1,0 +1,411 @@
+{"id": "s0001", "supported": false, "issue": "Bullet changes 'annotated instances' to 'annotated records' and adds unsupported claim 'state-of-the-art retrain'."}
+{"id": "s0002", "supported": false, "issue": "Bullet claims 'now running in production at a partner company' which is not stated in cited facts."}
+{"id": "s0003", "supported": false, "issue": "Bullet adds unsupported claims about clinicians checking lung regions and 'running in production at a partner company'."}
+{"id": "s0004", "supported": false, "issue": "Bullet changes what-if simulator range from 1.5x (facts) to 1.7x."}
+{"id": "s0005", "supported": false, "issue": "Bullet inflates scope with 'state-of-the-art' not present in facts."}
+{"id": "s0006", "supported": false, "issue": "Bullet adds 'state-of-the-art' to mutual-exclusion guard, an unsupported inflation."}
+{"id": "s0007", "supported": true, "issue": ""}
+{"id": "s0008", "supported": false, "issue": "Bullet states CPU inference cut from 15.65ms to 8ms, but facts cite 14.78ms vs 8ms."}
+{"id": "s0009", "supported": false, "issue": "Bullet adds 'Amazon ML Challenge 2026' leaderboard name not in facts."}
+{"id": "s0010", "supported": false, "issue": "Bullet claims 'cross-fitted LightGBM stacker and query-level gate' which are not in cited facts."}
+{"id": "s0011", "supported": false, "issue": "Bullet adds 'state-of-the-art' and mentions Deepgram STT not present in cited facts for this bullet."}
+{"id": "s0012", "supported": true, "issue": ""}
+{"id": "s0013", "supported": false, "issue": "Claims 'saving 120 hours per month' which is not stated in the cited facts."}
+{"id": "s0014", "supported": false, "issue": "Claims 'DuckDB SQL feature engineering' and 'cutting-edge' which are not in the cited facts."}
+{"id": "s0015", "supported": false, "issue": "Changes 'annotated instances' to 'annotated images' (noun change) and adds 'raw imagery' not in facts."}
+{"id": "s0016", "supported": false, "issue": "Claims 'per-country budgets' and 'per-entity caps' but facts only mention 'per-S1 cap' and 'France ambiguity drop'."}
+{"id": "s0017", "supported": false, "issue": "Claims valid-JSON output improved from 83.4% to 86.0% but facts state JSON parse rate improved from 67.3% to 86.0%."}
+{"id": "s0018", "supported": false, "issue": "Claims 'deployed to live users after a successful pilot' which is not in the cited facts."}
+{"id": "s0019", "supported": false, "issue": "Changes 'DVL velocity' to 'GPS velocity' (different sensor/domain)."}
+{"id": "s0020", "supported": false, "issue": "Claims 'saving 120 hours per month' which is not in the cited facts."}
+{"id": "s0021", "supported": true, "issue": ""}
+{"id": "s0022", "supported": false, "issue": "Lists specific normalization techniques (NFKC, Devanagari/Kannada transliteration, legal-suffix canonicalization, alias splitting) not mentioned in the cited facts."}
+{"id": "s0023", "supported": false, "issue": "Claims 0.75 SSIM but facts state 0.62 SSIM."}
+{"id": "s0024", "supported": false, "issue": "Claims leaderboard F0.5 lifted to 0.9990 and mentions 'cross-fitted LightGBM stacker and query-level gate' not in facts; facts show progression to 0.9837."}
+{"id": "s0025", "supported": false, "issue": "Claims the system 'became the default system for the whole department,' which is not stated in the cited facts."}
+{"id": "s0026", "supported": false, "issue": "Describes the parser as 'cutting-edge,' an inflation of scope/certainty not present in the cited facts."}
+{"id": "s0027", "supported": false, "issue": "Changes '26 unit and integration tests' to '26 production deployments,' altering the noun/unit."}
+{"id": "s0028", "supported": true, "issue": ""}
+{"id": "s0029", "supported": false, "issue": "Describes the service as 'cutting-edge,' an inflation not supported by the cited facts."}
+{"id": "s0030", "supported": false, "issue": "Adds 'C++17/ROS2' and 'GPS-denied settings,' which are not mentioned in the cited facts."}
+{"id": "s0031", "supported": true, "issue": ""}
+{"id": "s0032", "supported": false, "issue": "Changes '50 GTest unit tests' to '50 field trials,' altering the noun/unit."}
+{"id": "s0033", "supported": true, "issue": ""}
+{"id": "s0034", "supported": false, "issue": "Claims 'cutting infrastructure cost by 35%,' which is not stated in the cited facts."}
+{"id": "s0035", "supported": false, "issue": "States '3 rounds' for the repair loop, but cited facts say 'up to 2 fix rounds.'"}
+{"id": "s0036", "supported": false, "issue": "Lists specific normalization techniques (NFKC, Devanagari/Kannada transliteration, legal-suffix canonicalization, alias splitting) not mentioned in the cited facts."}
+{"id": "s0037", "supported": true, "issue": ""}
+{"id": "s0038", "supported": false, "issue": "Claims 'reducing manual effort by 60%' which is not in cited facts"}
+{"id": "s0039", "supported": false, "issue": "Claims 97.8% accuracy but cited facts state 91.8% accuracy"}
+{"id": "s0040", "supported": true, "issue": ""}
+{"id": "s0041", "supported": false, "issue": "Claims 'deployed to live users after a successful pilot' which is not in cited facts"}
+{"id": "s0042", "supported": false, "issue": "Claims 'cross-fitted LightGBM stacker and query-level gate' which are not in cited facts"}
+{"id": "s0043", "supported": false, "issue": "Changes 'annotated instances' to 'annotated images', adds 'messy real-world field imagery' and 'YOLOv8' not in cited facts"}
+{"id": "s0044", "supported": false, "issue": "Claims 'saving 120 hours per month' which is not in cited facts"}
+{"id": "s0045", "supported": false, "issue": "Adds 'cutting-edge' which inflates scope/certainty beyond cited facts"}
+{"id": "s0046", "supported": true, "issue": ""}
+{"id": "s0047", "supported": false, "issue": "Claims 'adopted by the research lab as its standard pipeline' which is not in cited facts"}
+{"id": "s0048", "supported": false, "issue": "Claims 142 pytest tests but cited facts state 102 pytest tests"}
+{"id": "s0049", "supported": false, "issue": "Bullet claims 'cutting infrastructure cost by 35%' which is not stated in the cited facts."}
+{"id": "s0050", "supported": true, "issue": ""}
+{"id": "s0051", "supported": false, "issue": "Bullet adds 'to reproduce the test set's distractor rate, closing the val\u2013test gap' and 'deployed to live users after a successful pilot' which are not in the cited facts."}
+{"id": "s0052", "supported": false, "issue": "Bullet says '5,800+ patients' but cited facts state '5,800+ chest X-rays' \u2014 changes the noun/unit."}
+{"id": "s0053", "supported": true, "issue": ""}
+{"id": "s0054", "supported": true, "issue": ""}
+{"id": "s0055", "supported": false, "issue": "Bullet claims '33 unit and integration tests' but cited facts state '26 unit and integration tests' \u2014 changes the number."}
+{"id": "s0056", "supported": true, "issue": ""}
+{"id": "s0057", "supported": true, "issue": ""}
+{"id": "s0058", "supported": false, "issue": "Bullet claims 'fusing lidar and radar streams' but cited facts only mention IMU and visual (camera) updates \u2014 swaps the project's sensor domain."}
+{"id": "s0059", "supported": false, "issue": "Bullet claims 'used by 2,000+ students' which is not in the cited facts \u2014 asserts production users."}
+{"id": "s0060", "supported": true, "issue": ""}
+{"id": "s0061", "supported": true, "issue": ""}
+{"id": "s0062", "supported": false, "issue": "Bullet adds unsupported claims: 'state-of-the-art', 'self-defined dense-detection research problem', 'from literature survey to a working prototype', 'on real-world field data'."}
+{"id": "s0063", "supported": false, "issue": "Bullet says '4 segmentation backends' but cited facts state '3 segmentation backends'."}
+{"id": "s0064", "supported": false, "issue": "Bullet claims 'saving 120 hours per month' and 'redesigned prompts around per-document-type key schemas', which are not in cited facts."}
+{"id": "s0065", "supported": true, "issue": ""}
+{"id": "s0066", "supported": false, "issue": "Bullet adds 'now running in production at a partner company', which is not in cited facts."}
+{"id": "s0067", "supported": false, "issue": "Bullet adds specific normalization techniques (NFKC, Devanagari/Kannada transliteration, legal-suffix canonicalization, alias splitting) and 'deployed to live users after a successful pilot', none of which are in cited facts."}
+{"id": "s0068", "supported": false, "issue": "Bullet adds 'now running in production at a partner company', which is not in cited facts."}
+{"id": "s0069", "supported": false, "issue": "Bullet uses 'cutting-edge' to describe LLM-as-judge, inflating certainty beyond cited facts."}
+{"id": "s0070", "supported": false, "issue": "Bullet adds 'output validation' and 'now running in production at a partner company', which are not in cited facts."}
+{"id": "s0071", "supported": true, "issue": ""}
+{"id": "s0072", "supported": false, "issue": "Bullet adds 'to reproduce the test set's distractor rate, closing the val\u2013test gap', which are not stated in cited facts."}
+{"id": "s0073", "supported": false, "issue": "Bullet says 'per-country budgets' and 'per-entity caps' but facts state 'per-S1 cap' and 'duplicate consistency harmonized 164 records' \u2014 different nouns/units."}
+{"id": "s0074", "supported": false, "issue": "Bullet claims 'adopted by the research lab as its standard pipeline' which is not in cited facts."}
+{"id": "s0075", "supported": true, "issue": ""}
+{"id": "s0076", "supported": false, "issue": "Bullet says 'legal Q&A pairs' but facts state 'banking Q&A pairs' \u2014 swaps the project's domain."}
+{"id": "s0077", "supported": false, "issue": "Bullet claims 'cutting infrastructure cost by 35%' which is not in cited facts."}
+{"id": "s0078", "supported": false, "issue": "Bullet says 'verified customers' but facts state 'reference entities' \u2014 changes a noun."}
+{"id": "s0079", "supported": false, "issue": "Bullet says 'tested by 40+ beta testers' but facts state '40+ pytest tests' \u2014 changes the testing subject."}
+{"id": "s0080", "supported": false, "issue": "Bullet claims 'leading a team of engineers through delivery' which is not in cited facts."}
+{"id": "s0081", "supported": false, "issue": "Bullet adds 'Deepgram STT' and 'adopted by the research lab as its standard pipeline' \u2014 neither in cited facts."}
+{"id": "s0082", "supported": true, "issue": ""}
+{"id": "s0083", "supported": false, "issue": "Bullet claims 'saving 120 hours per month' which is not in cited facts."}
+{"id": "s0084", "supported": false, "issue": "Bullet adds 'cutting-edge cross-fitted LightGBM stacker and query-level gate' not stated in facts; 'cutting-edge' inflates certainty."}
+{"id": "s0085", "supported": false, "issue": "Bullet claims 6 model roles but facts state 5 model roles."}
+{"id": "s0086", "supported": false, "issue": "Bullet claims 'used by 2,000+ students' which is not stated in the cited facts."}
+{"id": "s0087", "supported": true, "issue": ""}
+{"id": "s0088", "supported": false, "issue": "Bullet adds claims about 'messy real-world field imagery', 'YOLOv8 retrain', and 'adopted by the research lab as its standard pipeline' not present in the cited facts."}
+{"id": "s0089", "supported": true, "issue": ""}
+{"id": "s0090", "supported": false, "issue": "Bullet claims 'cutting-edge', 'for underwater vehicles', and frames it as a ROS2 driver framework, while facts describe a pure C++17 core with optional ROS2 wrappers and do not mention an underwater vehicle domain."}
+{"id": "s0091", "supported": false, "issue": "Bullet adds 'Deepgram STT' and 'reducing manual effort by 60%' which are not in the cited facts."}
+{"id": "s0092", "supported": false, "issue": "Bullet claims 'now running in production at a partner company' which is not stated in the cited facts."}
+{"id": "s0093", "supported": false, "issue": "Bullet adds 'adopted by the research lab as its standard pipeline' which is not in the cited facts."}
+{"id": "s0094", "supported": false, "issue": "Bullet adds 'adopted by the research lab as its standard pipeline' which is not in the cited facts."}
+{"id": "s0095", "supported": false, "issue": "Bullet changes '101 pytest tests' to '101 beta testers', altering the noun and meaning."}
+{"id": "s0096", "supported": false, "issue": "Bullet adds 'serving 10,000+ daily users' which is not in the cited facts."}
+{"id": "s0097", "supported": false, "issue": "Bullet adds 'saving 120 hours per month' which is not in cited facts."}
+{"id": "s0098", "supported": false, "issue": "Bullet claims framework 'became the default system for the whole department' which is not in cited facts."}
+{"id": "s0099", "supported": false, "issue": "Bullet adds 'used by 2,000+ students' which is not in cited facts."}
+{"id": "s0100", "supported": false, "issue": "Bullet changes 'annotated instances' to 'annotated customer accounts' and adds 'diagnose detection errors by object density and class' not in cited facts."}
+{"id": "s0101", "supported": true, "issue": ""}
+{"id": "s0102", "supported": true, "issue": ""}
+{"id": "s0103", "supported": false, "issue": "Bullet claims F0.5 weights precision 3x but cited facts state F0.5 weights precision 2x."}
+{"id": "s0104", "supported": false, "issue": "Bullet adds 'used by 2,000+ students' which is not in cited facts."}
+{"id": "s0105", "supported": false, "issue": "Bullet adds 'for TTS training' purpose which is not in cited facts."}
+{"id": "s0106", "supported": false, "issue": "Bullet uses 'Spearheaded' implying leadership role not stated in cited facts."}
+{"id": "s0107", "supported": false, "issue": "Bullet adds 'used by 2,000+ students' which is not in cited facts."}
+{"id": "s0108", "supported": false, "issue": "Bullet adds 'leading a team of engineers through delivery' leadership claim not in cited facts."}
+{"id": "s0109", "supported": false, "issue": "Cited facts do not mention 'Amazon ML Challenge 2026', only 'Public leaderboard' and submission date."}
+{"id": "s0110", "supported": false, "issue": "Cited facts do not mention deployment to live users or a successful pilot."}
+{"id": "s0111", "supported": false, "issue": "Cited facts do not mention 'reducing manual effort by 60%'."}
+{"id": "s0112", "supported": false, "issue": "Cited facts do not specify Llama-3 model or that it is running in production at a partner company."}
+{"id": "s0113", "supported": true, "issue": ""}
+{"id": "s0114", "supported": false, "issue": "Cited facts do not specify Qwen2-VL-2B model, only 'FastVisionModel'."}
+{"id": "s0115", "supported": false, "issue": "Cited facts say 'Hinglish code-mix' (Hindi+English), not 'Mandarin code-mix'."}
+{"id": "s0116", "supported": false, "issue": "Cited facts do not mention 'serving 10,000+ daily users'."}
+{"id": "s0117", "supported": false, "issue": "Cited facts do not support 'state-of-the-art' claim, that key-independent metrics were added (they were in the harness), or that prompts were redesigned around per-document-type key schemas."}
+{"id": "s0118", "supported": false, "issue": "Cited facts do not mention 'fraud-detection' (domain swap from entity-resolution) nor 'Amazon ML Challenge 2026'."}
+{"id": "s0119", "supported": true, "issue": ""}
+{"id": "s0120", "supported": false, "issue": "Cited facts do not mention diagnosis of detection errors by object density and class."}
+{"id": "s0121", "supported": false, "issue": "Bullet claims <38ms latency but cited facts state <30ms; also adds 'output validation' not in facts."}
+{"id": "s0122", "supported": false, "issue": "Bullet claims 8.9% mAP improvement but cited facts state 8.4%; also adds 'real-world field data' not explicitly in facts."}
+{"id": "s0123", "supported": false, "issue": "Bullet says '17M params' but facts state 17.3M params; also claims 'novel' which is not in facts."}
+{"id": "s0124", "supported": false, "issue": "Bullet adds 'saving 120 hours per month' and 'cleaning and validating' not supported by cited facts."}
+{"id": "s0125", "supported": false, "issue": "Bullet claims 'novel fake-LLM end-to-end run' but facts describe it as an offline end-to-end graph run without 'novel'."}
+{"id": "s0126", "supported": false, "issue": "Bullet adds 'Multi-Similarity Loss + hard-negative mining' and 'reducing manual effort by 60%' not in cited facts."}
+{"id": "s0127", "supported": false, "issue": "Bullet adds 'serving 10,000+ daily users' and 'handling dependency setup and performance profiling' not in cited facts."}
+{"id": "s0128", "supported": true, "issue": ""}
+{"id": "s0129", "supported": true, "issue": ""}
+{"id": "s0130", "supported": false, "issue": "Bullet adds 'now running in production at a partner company' not supported by cited facts."}
+{"id": "s0131", "supported": true, "issue": ""}
+{"id": "s0132", "supported": true, "issue": ""}
+{"id": "s0133", "supported": false, "issue": "Bullet adds claims about 'self-defined dense-detection research problem', 'literature survey to a working prototype', and 'real-world field data' not present in cited facts."}
+{"id": "s0134", "supported": true, "issue": ""}
+{"id": "s0135", "supported": false, "issue": "Bullet changes 'annotated instances' to 'annotated records', claims 'diagnose detection errors by object density and class, guiding a retrain' not in facts, and states yield prediction improved by 16% vs cited 14%."}
+{"id": "s0136", "supported": true, "issue": ""}
+{"id": "s0137", "supported": false, "issue": "Bullet claims '49 beta testers' but cited facts state '49 pytest tests'."}
+{"id": "s0138", "supported": false, "issue": "Bullet claims 'live customer traffic' but cited facts only mention '762 banking queries'."}
+{"id": "s0139", "supported": false, "issue": "Bullet states 18% yield prediction improvement but cited facts state 14%."}
+{"id": "s0140", "supported": true, "issue": ""}
+{"id": "s0141", "supported": false, "issue": "Bullet adds 'Multi-Similarity Loss + hard-negative mining' and 'texture fingerprints' not in cited facts."}
+{"id": "s0142", "supported": false, "issue": "Bullet claims 'reducing manual effort by 60%' not present in cited facts."}
+{"id": "s0143", "supported": false, "issue": "Bullet claims 'reducing manual effort by 60%' not present in cited facts."}
+{"id": "s0144", "supported": true, "issue": ""}
+{"id": "s0145", "supported": true, "issue": ""}
+{"id": "s0146", "supported": false, "issue": "Cited facts do not state the assistant is a 'legal assistant' (domain not specified)."}
+{"id": "s0147", "supported": false, "issue": "Cited facts do not state the assistant is a 'banking assistant' nor mention 'saving 120 hours per month'."}
+{"id": "s0148", "supported": false, "issue": "Cited facts do not mention 'leading a team of engineers through delivery'."}
+{"id": "s0149", "supported": true, "issue": ""}
+{"id": "s0150", "supported": false, "issue": "Cited facts do not mention ROS2, GPS-denied settings, or leading a team."}
+{"id": "s0151", "supported": false, "issue": "Cited facts do not mention 'underwater vehicles' or 'used by 2,000+ students'."}
+{"id": "s0152", "supported": false, "issue": "Cited facts do not state it is 'now running in production at a partner company'."}
+{"id": "s0153", "supported": true, "issue": ""}
+{"id": "s0154", "supported": false, "issue": "Cited facts do not mention 'legal contract', 'LaTeX', or 'one-page'."}
+{"id": "s0155", "supported": false, "issue": "Cited facts do not mention clinicians or that Grad-CAM is for checking lung regions specifically."}
+{"id": "s0156", "supported": true, "issue": ""}
+{"id": "s0157", "supported": true, "issue": ""}
+{"id": "s0158", "supported": true, "issue": ""}
+{"id": "s0159", "supported": true, "issue": ""}
+{"id": "s0160", "supported": false, "issue": "Claims the EKF is running in production at a partner company, but cited facts only describe simulated sensors."}
+{"id": "s0161", "supported": true, "issue": ""}
+{"id": "s0162", "supported": false, "issue": "Claims the app became the default system for the whole department, which is not stated in the cited facts."}
+{"id": "s0163", "supported": false, "issue": "Claims the model is now running in production at a partner company, which is not in the cited facts."}
+{"id": "s0164", "supported": true, "issue": ""}
+{"id": "s0165", "supported": false, "issue": "Changes 'uncertain-record share' to 'uncertain customer accounts', altering the noun/unit."}
+{"id": "s0166", "supported": false, "issue": "Adds 'leading a team of engineers through delivery', which is not in the cited facts."}
+{"id": "s0167", "supported": false, "issue": "References 'liver regions' but cited facts only mention CT windowing presets for lung/bone/brain, swapping the domain."}
+{"id": "s0168", "supported": false, "issue": "Changes hardware from Raspberry Pi 5B (cited) to Raspberry Pi 6B."}
+{"id": "s0169", "supported": false, "issue": "Bullet claims 0.9990 macro F0.5 but cited fact states 0.9837."}
+{"id": "s0170", "supported": false, "issue": "Bullet adds 'serving 10,000+ daily users' which is not in cited facts."}
+{"id": "s0171", "supported": false, "issue": "Bullet says '64 beta testers' but cited fact says '64 pytest tests'."}
+{"id": "s0172", "supported": true, "issue": ""}
+{"id": "s0173", "supported": false, "issue": "Bullet claims 'state-of-the-art' and 'C++17/ROS2' and 'GPS-denied settings' which are not in cited facts."}
+{"id": "s0174", "supported": false, "issue": "Bullet adds 'saving 120 hours per month' which is not in cited facts."}
+{"id": "s0175", "supported": false, "issue": "Bullet adds 'now running in production at a partner company' which is not in cited facts."}
+{"id": "s0176", "supported": false, "issue": "Bullet adds 'leading a team of engineers through delivery' which is not in cited facts."}
+{"id": "s0177", "supported": true, "issue": ""}
+{"id": "s0178", "supported": false, "issue": "Bullet adds 'now running in production at a partner company' which is not in cited facts."}
+{"id": "s0179", "supported": false, "issue": "Bullet adds 'serving 10,000+ daily users' and 'cross-fitted LightGBM stacker and query-level gate' which are not in cited facts."}
+{"id": "s0180", "supported": false, "issue": "Bullet claims 'state-of-the-art' which is not in cited facts."}
+{"id": "s0181", "supported": false, "issue": "Bullet claims the orphan simulation was designed 'to reproduce the test set's distractor rate, closing the val\u2013test gap', which is not stated in the cited facts."}
+{"id": "s0182", "supported": false, "issue": "Bullet claims the repair loop saves '120 hours per month', which is not in the cited facts."}
+{"id": "s0183", "supported": false, "issue": "Bullet adds 'Multi-Similarity Loss + hard-negative mining', 'texture fingerprints', and 'leading a team of engineers through delivery', none of which are in the cited facts."}
+{"id": "s0184", "supported": true, "issue": ""}
+{"id": "s0185", "supported": true, "issue": ""}
+{"id": "s0186", "supported": true, "issue": ""}
+{"id": "s0187", "supported": false, "issue": "Bullet claims 'reducing manual effort by 60%', which is not in the cited facts."}
+{"id": "s0188", "supported": true, "issue": ""}
+{"id": "s0189", "supported": false, "issue": "Bullet adds 'cross-fitted LightGBM stacker and query-level gate' and 'deployed to live users after a successful pilot', which are not in the cited facts."}
+{"id": "s0190", "supported": true, "issue": ""}
+{"id": "s0191", "supported": false, "issue": "Bullet says 'brain MRIs' but cited facts state 'chest X-rays (public pneumonia dataset)', swapping the project's domain."}
+{"id": "s0192", "supported": false, "issue": "Bullet claims 'serving 10,000+ daily users', which is not in the cited facts."}
+{"id": "s0193", "supported": false, "issue": "Bullet claims 'cutting infrastructure cost by 35%' which is not stated in the cited facts."}
+{"id": "s0194", "supported": false, "issue": "Bullet claims 'leading a team of engineers through delivery' which is not stated in the cited facts."}
+{"id": "s0195", "supported": true, "issue": ""}
+{"id": "s0196", "supported": false, "issue": "Bullet claims the configuration 'became the default system for the whole department' and describes systematic experiments with documentation, neither of which are in the cited facts."}
+{"id": "s0197", "supported": false, "issue": "Bullet claims 'saving 120 hours per month' which is not stated in the cited facts."}
+{"id": "s0198", "supported": false, "issue": "Bullet claims a 'banking assistant' but the cited facts do not mention banking or any specific application domain."}
+{"id": "s0199", "supported": false, "issue": "Bullet claims 'adopted by the research lab as its standard pipeline' which is not stated in the cited facts."}
+{"id": "s0200", "supported": false, "issue": "Bullet states NMI 0.81 but the cited facts state NMI 0.70."}
+{"id": "s0201", "supported": false, "issue": "Bullet states 'only ~22% of expected keys produced' but the cited facts state '~14-17%'."}
+{"id": "s0202", "supported": false, "issue": "Bullet claims 'adopted by the research lab as its standard pipeline' which is not stated in the cited facts."}
+{"id": "s0203", "supported": false, "issue": "Bullet claims 'multi-table CTEs (YoY growth)' but the cited facts do not mention YoY growth or explicitly multi-table CTEs."}
+{"id": "s0204", "supported": false, "issue": "Bullet claims 'covered by 102 beta testers' but the cited facts state '102 pytest tests'."}
+{"id": "s0205", "supported": true, "issue": ""}
+{"id": "s0206", "supported": true, "issue": ""}
+{"id": "s0207", "supported": false, "issue": "Bullet claims Top-1 accuracy raised to 75.17% but cited facts state 66.45%."}
+{"id": "s0208", "supported": false, "issue": "Bullet changes 'annotated instances' to 'annotated images'."}
+{"id": "s0209", "supported": false, "issue": "Bullet adds 'novel' to describe the what-if simulator, which is not in cited facts."}
+{"id": "s0210", "supported": false, "issue": "Bullet changes 'faces' to 'clients'."}
+{"id": "s0211", "supported": true, "issue": ""}
+{"id": "s0212", "supported": false, "issue": "Bullet adds claims about self-defined research problem, literature survey, working prototype, real-world field data, and 60% manual effort reduction not in cited facts."}
+{"id": "s0213", "supported": true, "issue": ""}
+{"id": "s0214", "supported": false, "issue": "Bullet adds 'messy real-world field imagery', 'novel YOLOv8 retrain' not in cited facts."}
+{"id": "s0215", "supported": true, "issue": ""}
+{"id": "s0216", "supported": true, "issue": ""}
+{"id": "s0217", "supported": false, "issue": "Bullet claims 1,242 stores but cited facts state 1,017 stores."}
+{"id": "s0218", "supported": false, "issue": "Bullet claims serving 10,000+ daily users, which is not mentioned in cited facts."}
+{"id": "s0219", "supported": false, "issue": "Bullet claims Grad-CAM shows 'currency regions' but cited facts only mention embedding similarity and t-SNE without specifying currency domain."}
+{"id": "s0220", "supported": false, "issue": "Bullet narrows median time-to-first-byte to ~556\u2013600 ms while cited facts state ~400\u2013600 ms."}
+{"id": "s0221", "supported": false, "issue": "Bullet says '5,800+ patients' but cited facts say '5,800+ chest X-rays' (images, not unique patients)."}
+{"id": "s0222", "supported": false, "issue": "Bullet claims deployment to live users after a successful pilot, which is not stated in cited facts."}
+{"id": "s0223", "supported": false, "issue": "Bullet attributes result to 'Amazon ML Challenge 2026 leaderboard' but cited facts only mention a public leaderboard without naming the competition."}
+{"id": "s0224", "supported": true, "issue": ""}
+{"id": "s0225", "supported": false, "issue": "Bullet claims 'used by 2,000+ students' which is not mentioned in cited facts."}
+{"id": "s0226", "supported": false, "issue": "Bullet states 4,190+ annotated instances but cited facts say 3,200+; also specifies YOLOv8 retrain not mentioned in facts."}
+{"id": "s0227", "supported": true, "issue": ""}
+{"id": "s0228", "supported": false, "issue": "Bullet adds 'adopted by the research lab as its standard pipeline' which is not in cited facts."}
+{"id": "s0229", "supported": false, "issue": "Bullet claims 'saving 120 hours per month' which is not stated in the cited facts."}
+{"id": "s0230", "supported": false, "issue": "Bullet states '34+ PHI tags' but cited facts say '25+ PHI tags', changing a number."}
+{"id": "s0231", "supported": false, "issue": "Bullet adds 'for self-driving training' which is not mentioned in the cited facts."}
+{"id": "s0232", "supported": false, "issue": "Bullet describes the generated bullet as 'cutting-edge', an inflation not present in the cited facts."}
+{"id": "s0233", "supported": false, "issue": "Bullet claims '62 Hz DVL' but cited facts state DVL at 50 Hz, changing a number."}
+{"id": "s0234", "supported": true, "issue": ""}
+{"id": "s0235", "supported": false, "issue": "Bullet labels the model 'cutting-edge', an inflation not supported by the cited facts."}
+{"id": "s0236", "supported": true, "issue": ""}
+{"id": "s0237", "supported": false, "issue": "Bullet claims the system 'became the default system for the whole department', which is not in the cited facts."}
+{"id": "s0238", "supported": false, "issue": "Bullet states '230ms VAD' but cited facts say '200ms VAD', changing a number."}
+{"id": "s0239", "supported": false, "issue": "Bullet adds 'serving 10,000+ daily users', a production claim not present in the cited facts."}
+{"id": "s0240", "supported": true, "issue": ""}
+{"id": "s0241", "supported": false, "issue": "Bullet claims 'serving 10,000+ daily users' but cited facts mention only edge deployment hardware and latency, no user count."}
+{"id": "s0242", "supported": false, "issue": "Bullet says '762 legal queries' but cited facts state '762 banking queries' \u2014 domain swap."}
+{"id": "s0243", "supported": false, "issue": "Bullet claims 'deployed to live users after a successful pilot' but cited facts only describe thresholds and FastAPI/React stack, no deployment or pilot."}
+{"id": "s0244", "supported": true, "issue": ""}
+{"id": "s0245", "supported": false, "issue": "Bullet claims 'deployed to live users after a successful pilot' but cited facts only describe error tracing results, no deployment or pilot."}
+{"id": "s0246", "supported": false, "issue": "Bullet says '1M+ daily customer accounts' but cited facts say '~1,017,209 daily records' (unit change: records vs customer accounts) and adds 'deployed to live users after a successful pilot' which is not in facts."}
+{"id": "s0247", "supported": false, "issue": "Bullet adds 'ROS2' and 'GPS-denied settings' not present in cited facts (which describe a standalone C++ core with EKF in Eigen3)."}
+{"id": "s0248", "supported": true, "issue": ""}
+{"id": "s0249", "supported": true, "issue": ""}
+{"id": "s0250", "supported": false, "issue": "Bullet claims 'deployed to live users after a successful pilot' but cited facts (same as s0246) only describe dataset and model config, no deployment or pilot."}
+{"id": "s0251", "supported": false, "issue": "Bullet says 'for aircraft' and presents ROS2 as core ('C++17/ROS2 driver framework'), but cited facts describe a pure C++17 core with optional ROS2 wrappers and no mention of aircraft domain."}
+{"id": "s0252", "supported": false, "issue": "Bullet claims 'keeping 121.38% of true pairs' but cited facts state 'retaining 99.89% of reachable true pairs' \u2014 contradictory number."}
+{"id": "s0253", "supported": false, "issue": "Bullet claims <33ms latency but cited fact states <30ms, changing the specific number."}
+{"id": "s0254", "supported": true, "issue": ""}
+{"id": "s0255", "supported": false, "issue": "Bullet adds claims about systematic experiments, short iteration cycles, and documenting dead ends not present in cited facts."}
+{"id": "s0256", "supported": false, "issue": "Bullet omits L40S from Lightning AI GPUs and adds claim about adoption as lab standard pipeline not in cited facts."}
+{"id": "s0257", "supported": false, "issue": "Bullet adds 'cutting-edge' inflation and specifies Multi-Similarity Loss + hard-negative mining not mentioned in cited facts."}
+{"id": "s0258", "supported": false, "issue": "Bullet adds TTS explanation and 60% manual effort reduction not present in cited facts."}
+{"id": "s0259", "supported": true, "issue": ""}
+{"id": "s0260", "supported": false, "issue": "Bullet states 53+ pytest tests but cited facts state 40+ pytest tests, changing the number."}
+{"id": "s0261", "supported": false, "issue": "Bullet adds 'used by 2,000+ students' claim not present in cited facts."}
+{"id": "s0262", "supported": false, "issue": "Bullet changes '762 banking queries' to '762 user sessions', altering the noun/unit."}
+{"id": "s0263", "supported": false, "issue": "Bullet adds diagnosis by object density/class, retrain guidance, and 60% manual effort reduction not in cited facts."}
+{"id": "s0264", "supported": false, "issue": "Bullet adds 'state-of-the-art' inflation not present in cited facts."}
+{"id": "s0265", "supported": false, "issue": "Claims 'clinicians', 'lung regions', and 'serving 10,000+ daily users' which are not in the cited facts."}
+{"id": "s0266", "supported": true, "issue": ""}
+{"id": "s0267", "supported": false, "issue": "Claims 58.61% mAP but cited fact states 48.97% mAP; also claims 'Multi-Similarity Loss + hard-negative mining' not in cited facts."}
+{"id": "s0268", "supported": true, "issue": ""}
+{"id": "s0269", "supported": false, "issue": "Claims 'saving 120 hours per month' which is not in the cited facts."}
+{"id": "s0270", "supported": false, "issue": "Claims 'now running in production at a partner company' which is not in the cited facts."}
+{"id": "s0271", "supported": true, "issue": ""}
+{"id": "s0272", "supported": true, "issue": ""}
+{"id": "s0273", "supported": false, "issue": "Claims 'saving 120 hours per month' which is not in the cited facts."}
+{"id": "s0274", "supported": false, "issue": "Claims 'leading a team of engineers through delivery' which is not in the cited facts."}
+{"id": "s0275", "supported": false, "issue": "Claims 'so numeric answers come from tools rather than LLM generation' and 'adopted by the research lab as its standard pipeline' which are not in the cited facts."}
+{"id": "s0276", "supported": true, "issue": ""}
+{"id": "s0277", "supported": false, "issue": "Bullet claims 'brain MRIs' but cited facts state 'chest X-rays (public pneumonia dataset)' - domain swapped."}
+{"id": "s0278", "supported": true, "issue": ""}
+{"id": "s0279", "supported": false, "issue": "Bullet claims 'Built country-agnostic normalization for names' which is not stated in the cited facts; only the 10.7% statistic is cited."}
+{"id": "s0280", "supported": false, "issue": "Bullet adds 'leading a team of engineers through delivery' which is not in the cited facts."}
+{"id": "s0281", "supported": false, "issue": "Bullet says '624-image training set' but cited facts specify '624-image held-out test set'."}
+{"id": "s0282", "supported": false, "issue": "Bullet mentions 'DuckDB SQL feature engineering' which is not in the cited facts."}
+{"id": "s0283", "supported": false, "issue": "Bullet states '63 GTest tests' but cited facts state '50 GTest unit tests'."}
+{"id": "s0284", "supported": false, "issue": "Bullet adds 'which became the default system for the whole department' which is not in the cited facts."}
+{"id": "s0285", "supported": true, "issue": ""}
+{"id": "s0286", "supported": false, "issue": "Bullet adds 'leading a team of engineers through delivery' which is not in the cited facts."}
+{"id": "s0287", "supported": false, "issue": "Bullet describes Llama-3 as 'novel' which is not in the cited facts and inflates scope."}
+{"id": "s0288", "supported": true, "issue": ""}
+{"id": "s0289", "supported": false, "issue": "Bullet claims TF-IDF threshold 0.75 but cited facts state 0.65."}
+{"id": "s0290", "supported": true, "issue": ""}
+{"id": "s0291", "supported": false, "issue": "Bullet claims numeric answers come from tools rather than LLM generation and used by 2,000+ students; neither claim appears in cited facts."}
+{"id": "s0292", "supported": false, "issue": "Bullet claims cutting infrastructure cost by 35%; not stated in cited facts."}
+{"id": "s0293", "supported": false, "issue": "Bullet claims now running in production at a partner company; not stated in cited facts."}
+{"id": "s0294", "supported": false, "issue": "Bullet claims saving 120 hours per month; not stated in cited facts."}
+{"id": "s0295", "supported": false, "issue": "Bullet claims saving 120 hours per month; not stated in cited facts."}
+{"id": "s0296", "supported": false, "issue": "Bullet claims cutting infrastructure cost by 35%; not stated in cited facts."}
+{"id": "s0297", "supported": true, "issue": ""}
+{"id": "s0298", "supported": false, "issue": "Bullet claims reducing manual effort by 60%; not stated in cited facts."}
+{"id": "s0299", "supported": false, "issue": "Bullet claims Deepgram STT orchestration; cited facts only mention Groq LLM and Sarvam AI TTS."}
+{"id": "s0300", "supported": false, "issue": "Bullet claims 'novel' photo quality scorer; cited facts do not describe it as novel."}
+{"id": "s0301", "supported": true, "issue": ""}
+{"id": "s0302", "supported": false, "issue": "Claims 'saving 120 hours per month' which is not stated in the cited facts."}
+{"id": "s0303", "supported": true, "issue": ""}
+{"id": "s0304", "supported": false, "issue": "Claims 'saving 120 hours per month' and 'texture regions' which are not in the cited facts (facts mention embedding similarity, not texture regions)."}
+{"id": "s0305", "supported": false, "issue": "Claims 'per-country budgets' (facts say per-S1 cap and France ambiguity drop) and 'became the default system for the whole department' which is not in the cited facts."}
+{"id": "s0306", "supported": false, "issue": "Claims 'which became the default system for the whole department' which is not in the cited facts."}
+{"id": "s0307", "supported": true, "issue": ""}
+{"id": "s0308", "supported": true, "issue": ""}
+{"id": "s0309", "supported": false, "issue": "Claims '58 pytest tests' but cited facts state '49 pytest tests'."}
+{"id": "s0310", "supported": false, "issue": "Claims 'held-out test set from another hospital' but cited facts describe patient-level 5-fold CV on NLM Montgomery County data with no mention of another hospital."}
+{"id": "s0311", "supported": true, "issue": ""}
+{"id": "s0312", "supported": true, "issue": ""}
+{"id": "s0313", "supported": false, "issue": "Bullet claims 'brain MRIs' but facts state 'chest X-rays' \u2014 domain and modality mismatch."}
+{"id": "s0314", "supported": false, "issue": "Bullet uses 'cutting-edge' which inflates scope/certainty beyond cited facts."}
+{"id": "s0315", "supported": false, "issue": "Bullet claims 'deployed to live users after a successful pilot' \u2014 not stated in cited facts."}
+{"id": "s0316", "supported": false, "issue": "Bullet claims 'adopted by the research lab as its standard pipeline' \u2014 not stated in cited facts."}
+{"id": "s0317", "supported": true, "issue": ""}
+{"id": "s0318", "supported": true, "issue": ""}
+{"id": "s0319", "supported": false, "issue": "Bullet changes 'records' to 'customer accounts' \u2014 noun substitution not in facts."}
+{"id": "s0320", "supported": false, "issue": "Bullet uses 'cutting-edge' to describe the match \u2014 inflates certainty beyond cited facts."}
+{"id": "s0321", "supported": false, "issue": "Bullet names 'Amazon ML Challenge 2026' \u2014 challenge name not present in cited facts."}
+{"id": "s0322", "supported": true, "issue": ""}
+{"id": "s0323", "supported": true, "issue": ""}
+{"id": "s0324", "supported": false, "issue": "Bullet adds 'Deepgram STT' which is not mentioned in cited facts."}
+{"id": "s0325", "supported": false, "issue": "Bullet claims DuckDB SQL feature engineering, but cited facts do not mention DuckDB."}
+{"id": "s0326", "supported": true, "issue": ""}
+{"id": "s0327", "supported": false, "issue": "Bullet swaps domain to hospital-level forecasting, but cited facts describe Rossmann Store Sales (retail stores); also claims DuckDB not in facts."}
+{"id": "s0328", "supported": false, "issue": "Bullet adds 'now running in production at a partner company' which is not stated in cited facts."}
+{"id": "s0329", "supported": false, "issue": "Bullet adds claims about self-defined research problem, literature survey, real-world field data, and production deployment at a partner company, none of which are in cited facts."}
+{"id": "s0330", "supported": true, "issue": ""}
+{"id": "s0331", "supported": false, "issue": "Bullet specifies Llama-3, but cited facts only mention LoRA fine-tuning via Unsloth on banking Q&A pairs without naming the base model."}
+{"id": "s0332", "supported": false, "issue": "Bullet claims 'cutting infrastructure cost by 35%' which is not in cited facts."}
+{"id": "s0333", "supported": false, "issue": "Bullet misattributes the 6,890 risky merges removal to per-country budgets and per-entity caps, while facts state only France ambiguity drop removed 6,890; also uses inflated term 'cutting-edge'."}
+{"id": "s0334", "supported": false, "issue": "Bullet adds 'for underwater vehicles' domain not present in cited facts; also describes as C++17/ROS2 framework while facts note core has no ROS2 dependency."}
+{"id": "s0335", "supported": false, "issue": "Bullet claims Multi-Similarity Loss + hard-negative mining and 'real counterfeit products' domain, but facts only mention ResNet-18 embeddings on DTD texture dataset (47 classes)."}
+{"id": "s0336", "supported": true, "issue": ""}
+{"id": "s0337", "supported": true, "issue": ""}
+{"id": "s0338", "supported": false, "issue": "Claims 'in production' deployment, but cited facts only describe test documents and training samples, not production use."}
+{"id": "s0339", "supported": false, "issue": "States 77 pytest tests, but cited facts report 64 pytest tests."}
+{"id": "s0340", "supported": false, "issue": "Describes the cost ledger as 'state-of-the-art', while cited facts only call it a 'per-account cost ledger'."}
+{"id": "s0341", "supported": false, "issue": "Adds 'Multi-Similarity Loss + hard-negative mining' and 'currency fingerprints', which are not mentioned in the cited facts."}
+{"id": "s0342", "supported": false, "issue": "Claims the Grad-CAM maps are for clinicians to check lung regions, but cited facts only list Grad-CAM and CT lung presets without stating a clinical audience or purpose."}
+{"id": "s0343", "supported": false, "issue": "Labels the Raspberry Pi 5B + Hailo-8 as a 'novel Linux edge device' and adds 'handling dependency setup and performance profiling', neither of which appear in the cited facts."}
+{"id": "s0344", "supported": false, "issue": "Calls the evaluation harness 'state-of-the-art', an inflation not supported by the cited facts."}
+{"id": "s0345", "supported": false, "issue": "Claims 'serving 10,000+ daily users', a detail absent from the cited facts."}
+{"id": "s0346", "supported": true, "issue": ""}
+{"id": "s0347", "supported": true, "issue": ""}
+{"id": "s0348", "supported": false, "issue": "Describes the EKF as 'cutting-edge', an unsupported superlative not present in the cited facts."}
+{"id": "s0349", "supported": false, "issue": "Bullet claims 6 SQL feature pipelines but cited facts state 5; adds YoY growth detail not in facts."}
+{"id": "s0350", "supported": false, "issue": "Bullet claims 98.8% specificity but cited facts state 91.0% specificity."}
+{"id": "s0351", "supported": false, "issue": "Bullet claims pipeline was adopted by research lab as standard pipeline, which is not stated in cited facts."}
+{"id": "s0352", "supported": false, "issue": "Bullet claims 35% infrastructure cost reduction, which is not mentioned in cited facts."}
+{"id": "s0353", "supported": false, "issue": "Bullet claims serving 10,000+ daily users, which is not mentioned in cited facts."}
+{"id": "s0354", "supported": false, "issue": "Bullet adds claim of serving 10,000+ daily users not supported by cited facts."}
+{"id": "s0355", "supported": false, "issue": "Bullet states 11.7% string-equal matches but cited facts state 10.7%."}
+{"id": "s0356", "supported": false, "issue": "Bullet claims serving 10,000+ daily users, which is not mentioned in cited facts."}
+{"id": "s0357", "supported": true, "issue": ""}
+{"id": "s0358", "supported": false, "issue": "Bullet says 'final leaderboard' but cited facts say 'val folds'; changes the evaluation context."}
+{"id": "s0359", "supported": false, "issue": "Bullet claims deployment to live users after successful pilot, which is not in cited facts."}
+{"id": "s0360", "supported": false, "issue": "Bullet says '624-image training set' but cited facts say '624-image held-out test set'."}
+{"id": "s0361", "supported": false, "issue": "Bullet claims TTS starts speaking before full LLM response arrives, which is not stated in cited facts."}
+{"id": "s0362", "supported": false, "issue": "Bullet says 'medical records' but cited facts describe MIDV-2020 rectified photos across 10 document types, not medical records."}
+{"id": "s0363", "supported": false, "issue": "Bullet names 'Amazon ML Challenge 2026 leaderboard' but cited facts only say 'Public leaderboard' without naming the challenge."}
+{"id": "s0364", "supported": true, "issue": ""}
+{"id": "s0365", "supported": false, "issue": "Bullet describes the FastAPI service as 'state-of-the-art', an inflation not present in cited facts."}
+{"id": "s0366", "supported": true, "issue": ""}
+{"id": "s0367", "supported": false, "issue": "Bullet specifies 'Multi-Similarity Loss + hard-negative mining' but cited facts only mention ResNet-18 backbone and 128-dim embeddings."}
+{"id": "s0368", "supported": false, "issue": "Bullet claims prompts were redesigned around per-document-type key schemas, which is not stated in cited facts."}
+{"id": "s0369", "supported": true, "issue": ""}
+{"id": "s0370", "supported": false, "issue": "Bullet adds 'adopted by the research lab as its standard pipeline', which is not in cited facts."}
+{"id": "s0371", "supported": true, "issue": ""}
+{"id": "s0372", "supported": true, "issue": ""}
+{"id": "s0373", "supported": false, "issue": "Claims 'leading a team of engineers through delivery' which is not in cited facts; also changes 'reachable true pairs' to 'true pairs'."}
+{"id": "s0374", "supported": true, "issue": ""}
+{"id": "s0375", "supported": false, "issue": "Changes removal rate from 25% to 29% and adds 'closing the val\u2013test gap' not stated in facts."}
+{"id": "s0376", "supported": false, "issue": "Adds 'high-rate IMU propagation' and 'for RViz' which are not in cited facts."}
+{"id": "s0377", "supported": false, "issue": "Claims 'cutting infrastructure cost by 35%' which is not in cited facts."}
+{"id": "s0378", "supported": true, "issue": ""}
+{"id": "s0379", "supported": false, "issue": "Claims 'deployed to live users after a successful pilot' which is not in cited facts."}
+{"id": "s0380", "supported": true, "issue": ""}
+{"id": "s0381", "supported": false, "issue": "Adds 'closing the val\u2013test gap' and 'reducing manual effort by 60%' not in cited facts."}
+{"id": "s0382", "supported": false, "issue": "Adds 'for underwater vehicles' domain and 'lifecycle base classes' not stated in facts."}
+{"id": "s0383", "supported": false, "issue": "Changes mAP improvement from 8.4% to 9.8%."}
+{"id": "s0384", "supported": false, "issue": "Claims 'now running in production at a partner company' which is not in cited facts."}
+{"id": "s0385", "supported": false, "issue": "Bullet claims autonomous driving domain but cited facts describe precision agriculture on aerial & field imagery."}
+{"id": "s0386", "supported": false, "issue": "Bullet adds claim that TTS starts speaking before full LLM response arrives, which is not stated in cited facts."}
+{"id": "s0387", "supported": false, "issue": "Bullet states IoU 0.971 but cited facts report IoU 0.951 +/- 0.035."}
+{"id": "s0388", "supported": false, "issue": "Bullet claims serving 10,000+ daily users, but cited facts only describe simulated sensors with no user metrics."}
+{"id": "s0389", "supported": false, "issue": "Bullet claims serving 10,000+ daily users, but cited facts do not mention any user base."}
+{"id": "s0390", "supported": true, "issue": ""}
+{"id": "s0391", "supported": false, "issue": "Bullet claims used by 2,000+ students, but cited facts only mention a standalone C++ core and GTest suite."}
+{"id": "s0392", "supported": false, "issue": "Bullet states uncertain records cut to 5.4% but cited facts report 4.9%."}
+{"id": "s0393", "supported": true, "issue": ""}
+{"id": "s0394", "supported": true, "issue": ""}
+{"id": "s0395", "supported": false, "issue": "Bullet describes the bi-encoder as 'novel', a claim not present in cited facts."}
+{"id": "s0396", "supported": false, "issue": "Bullet states FFmpeg normalization at 22kHz mono but cited facts specify 16kHz mono WAV."}
+{"id": "s0397", "supported": false, "issue": "Bullet claims 207+ banking Q&A pairs but cited facts state 150+ pairs."}
+{"id": "s0398", "supported": false, "issue": "Bullet claims 3,627+ instances but cited facts state 3,200+ annotated instances."}
+{"id": "s0399", "supported": false, "issue": "Bullet claims <35ms latency but cited facts state <30ms latency."}
+{"id": "s0400", "supported": true, "issue": ""}
+{"id": "s0401", "supported": false, "issue": "Bullet claims 17M params but cited facts state 17.3M params."}
+{"id": "s0402", "supported": false, "issue": "Bullet claims saving 120 hours per month but cited facts do not mention any time savings."}
+{"id": "s0403", "supported": false, "issue": "Bullet claims output validation step but cited facts do not mention output validation."}
+{"id": "s0404", "supported": false, "issue": "Bullet claims cleaning messy real-world field imagery and YOLOv8 retrain but cited facts only mention 3,200+ annotated instances and mAP improvement without those details."}
+{"id": "s0405", "supported": true, "issue": ""}
+{"id": "s0406", "supported": false, "issue": "Bullet claims training on 200K medical scans but cited facts state training on CelebA faces dataset (202,599 faces)."}
+{"id": "s0407", "supported": true, "issue": ""}
+{"id": "s0408", "supported": true, "issue": ""}
+{"id": "s0409", "supported": false, "issue": "Bullet claims 'adopted by the research lab as its standard pipeline' which is not stated in the cited facts."}
+{"id": "s0410", "supported": false, "issue": "Bullet claims the framework is 'for underwater vehicles' but the cited facts do not mention this domain."}
+{"id": "s0411", "supported": false, "issue": "Bullet states '5,291 unrecoverable validation matches' but cited facts state '4,507 unrecoverable val matches'."}

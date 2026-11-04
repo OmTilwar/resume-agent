@@ -79,6 +79,316 @@
      "reportable": true
     }
    }
+  },
+  "judge[nemotron-3-ultra-550b-a55b:free | evidence=claims]": {
+   "n_scored": 411,
+   "n_corrupted": 281,
+   "n_clean": 130,
+   "catch_rate": 0.9431,
+   "false_positive_rate": 0.2846,
+   "precision": 0.8775,
+   "f1": 0.9091,
+   "by_kind": {
+    "num_fabricate": {
+     "n": 47,
+     "flagged": 47,
+     "rate": 1.0,
+     "reportable": false
+    },
+    "num_add": {
+     "n": 66,
+     "flagged": 66,
+     "rate": 1.0,
+     "reportable": true
+    },
+    "banned_phrase": {
+     "n": 39,
+     "flagged": 35,
+     "rate": 0.8974,
+     "reportable": false
+    },
+    "pts_percent": {
+     "n": 2,
+     "flagged": 1,
+     "rate": 0.5,
+     "reportable": false
+    },
+    "noun_swap": {
+     "n": 28,
+     "flagged": 22,
+     "rate": 0.7857,
+     "reportable": false
+    },
+    "scope_inflation": {
+     "n": 66,
+     "flagged": 66,
+     "rate": 1.0,
+     "reportable": true
+    },
+    "domain_swap": {
+     "n": 25,
+     "flagged": 20,
+     "rate": 0.8,
+     "reportable": false
+    },
+    "misattribution": {
+     "n": 8,
+     "flagged": 8,
+     "rate": 1.0,
+     "reportable": false
+    },
+    "benign_trim": {
+     "n": 25,
+     "flagged": 4,
+     "rate": 0.16,
+     "reportable": false
+    },
+    "benign_verb": {
+     "n": 39,
+     "flagged": 13,
+     "rate": 0.3333,
+     "reportable": false
+    },
+    "original": {
+     "n": 66,
+     "flagged": 20,
+     "rate": 0.303,
+     "reportable": true
+    }
+   },
+   "coverage": 1.0
+  },
+  "det+judge[nemotron-3-ultra-550b-a55b:free | evidence=claims]": {
+   "n_scored": 411,
+   "n_corrupted": 281,
+   "n_clean": 130,
+   "catch_rate": 0.9644,
+   "false_positive_rate": 0.2846,
+   "precision": 0.8799,
+   "f1": 0.9202,
+   "by_kind": {
+    "num_fabricate": {
+     "n": 47,
+     "flagged": 47,
+     "rate": 1.0,
+     "reportable": false
+    },
+    "num_add": {
+     "n": 66,
+     "flagged": 66,
+     "rate": 1.0,
+     "reportable": true
+    },
+    "banned_phrase": {
+     "n": 39,
+     "flagged": 39,
+     "rate": 1.0,
+     "reportable": false
+    },
+    "pts_percent": {
+     "n": 2,
+     "flagged": 2,
+     "rate": 1.0,
+     "reportable": false
+    },
+    "noun_swap": {
+     "n": 28,
+     "flagged": 22,
+     "rate": 0.7857,
+     "reportable": false
+    },
+    "scope_inflation": {
+     "n": 66,
+     "flagged": 66,
+     "rate": 1.0,
+     "reportable": true
+    },
+    "domain_swap": {
+     "n": 25,
+     "flagged": 21,
+     "rate": 0.84,
+     "reportable": false
+    },
+    "misattribution": {
+     "n": 8,
+     "flagged": 8,
+     "rate": 1.0,
+     "reportable": false
+    },
+    "benign_trim": {
+     "n": 25,
+     "flagged": 4,
+     "rate": 0.16,
+     "reportable": false
+    },
+    "benign_verb": {
+     "n": 39,
+     "flagged": 13,
+     "rate": 0.3333,
+     "reportable": false
+    },
+    "original": {
+     "n": 66,
+     "flagged": 20,
+     "rate": 0.303,
+     "reportable": true
+    }
+   }
+  },
+  "judge[nemotron-3-ultra-550b-a55b:free | evidence=context]": {
+   "n_scored": 336,
+   "n_corrupted": 234,
+   "n_clean": 102,
+   "catch_rate": 0.8932,
+   "false_positive_rate": 0.0196,
+   "precision": 0.9905,
+   "f1": 0.9393,
+   "by_kind": {
+    "num_fabricate": {
+     "n": 34,
+     "flagged": 33,
+     "rate": 0.9706,
+     "reportable": false
+    },
+    "num_add": {
+     "n": 55,
+     "flagged": 55,
+     "rate": 1.0,
+     "reportable": true
+    },
+    "banned_phrase": {
+     "n": 33,
+     "flagged": 15,
+     "rate": 0.4545,
+     "reportable": false
+    },
+    "pts_percent": {
+     "n": 2,
+     "flagged": 1,
+     "rate": 0.5,
+     "reportable": false
+    },
+    "noun_swap": {
+     "n": 26,
+     "flagged": 22,
+     "rate": 0.8462,
+     "reportable": false
+    },
+    "scope_inflation": {
+     "n": 59,
+     "flagged": 59,
+     "rate": 1.0,
+     "reportable": true
+    },
+    "domain_swap": {
+     "n": 19,
+     "flagged": 19,
+     "rate": 1.0,
+     "reportable": false
+    },
+    "misattribution": {
+     "n": 6,
+     "flagged": 5,
+     "rate": 0.8333,
+     "reportable": false
+    },
+    "benign_trim": {
+     "n": 20,
+     "flagged": 0,
+     "rate": 0.0,
+     "reportable": false
+    },
+    "benign_verb": {
+     "n": 31,
+     "flagged": 0,
+     "rate": 0.0,
+     "reportable": false
+    },
+    "original": {
+     "n": 51,
+     "flagged": 2,
+     "rate": 0.0392,
+     "reportable": true
+    }
+   },
+   "coverage": 0.8175
+  },
+  "det+judge[nemotron-3-ultra-550b-a55b:free | evidence=context]": {
+   "n_scored": 336,
+   "n_corrupted": 234,
+   "n_clean": 102,
+   "catch_rate": 0.9786,
+   "false_positive_rate": 0.0196,
+   "precision": 0.9913,
+   "f1": 0.9849,
+   "by_kind": {
+    "num_fabricate": {
+     "n": 34,
+     "flagged": 34,
+     "rate": 1.0,
+     "reportable": false
+    },
+    "num_add": {
+     "n": 55,
+     "flagged": 55,
+     "rate": 1.0,
+     "reportable": true
+    },
+    "banned_phrase": {
+     "n": 33,
+     "flagged": 33,
+     "rate": 1.0,
+     "reportable": false
+    },
+    "pts_percent": {
+     "n": 2,
+     "flagged": 2,
+     "rate": 1.0,
+     "reportable": false
+    },
+    "noun_swap": {
+     "n": 26,
+     "flagged": 22,
+     "rate": 0.8462,
+     "reportable": false
+    },
+    "scope_inflation": {
+     "n": 59,
+     "flagged": 59,
+     "rate": 1.0,
+     "reportable": true
+    },
+    "domain_swap": {
+     "n": 19,
+     "flagged": 19,
+     "rate": 1.0,
+     "reportable": false
+    },
+    "misattribution": {
+     "n": 6,
+     "flagged": 5,
+     "rate": 0.8333,
+     "reportable": false
+    },
+    "benign_trim": {
+     "n": 20,
+     "flagged": 0,
+     "rate": 0.0,
+     "reportable": false
+    },
+    "benign_verb": {
+     "n": 31,
+     "flagged": 0,
+     "rate": 0.0,
+     "reportable": false
+    },
+    "original": {
+     "n": 51,
+     "flagged": 2,
+     "rate": 0.0392,
+     "reportable": true
+    }
+   }
   }
  }
 }
