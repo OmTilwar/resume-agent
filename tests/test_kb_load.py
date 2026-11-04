@@ -6,6 +6,7 @@ def test_loads_with_expected_shape(kb):
     assert len(kb.projects) == 12
     assert {p.id for p in kb.selectable_projects(tiers=(1,))} == {
         "amazon_er", "finsight", "propvox", "medvision", "authnet", "resume_agent"}   # ResumeAgent: Tier 1 since 4 Nov
+    assert kb.get_project("resume_agent").headline == ["97.9"]          # Tier 1 needs a headline (kit §10.3)
     assert len(kb.archetypes) == 22
     assert {g.id for g in kb.experience.groups} == set("ABCDE")
     assert len(kb.retired) == 2

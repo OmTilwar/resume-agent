@@ -128,7 +128,3 @@ def test_tier2_enters_when_the_jd_calls_for_it(monkeypatch):
     assert "voxpipeline" in scored
     assert any("JD asks for it: speaker diarization" in r for r in scored["voxpipeline"].reasons)
 
-
-def test_resume_agent_is_tier1_with_a_headline():
-    p = get_kb().get_project("resume_agent")
-    assert p.tier == 1 and p.headline == ["97.9"]
