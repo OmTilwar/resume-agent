@@ -91,7 +91,10 @@ def _judge(messages):
 
 
 def _fixer(messages):
-    items = _payload(messages)
+    payload = _payload(messages)
+    assert set(payload) == {"sections", "bullets", "target_chars"}
+    assert all(b["section"] in payload["sections"] for b in payload["bullets"])
+    items = payload["bullets"]
     fixes = []
     for i in items:
         if "images" in i["text"]:

@@ -26,6 +26,15 @@ Hard rules:
 """
 
 
+def _json(obj) -> str:
+    """Compact JSON: indentation is whitespace the model is billed for."""
+    return json.dumps(obj, ensure_ascii=False, separators=(",", ":"))
+
+
+LENGTH_HINT = ("Each reference bullet shows its `chars`; they are all a correct length. When you adapt one, stay within "
+               "about 10 characters of its `chars`. A one-line bullet must stay <= 105; a two-line one 180-215.")
+
+
 def _sys(text: str) -> SystemMessage:
     return SystemMessage(content=text)
 
@@ -54,7 +63,7 @@ def project_messages(project_id: str, analysis: JDAnalysis, ctx: Context, kb: Kn
                      n_bullets: int) -> list:
     p = kb.get_project(project_id)
     facts = [{"id": f.id, "claim": f.claim, "values": f.values} for f in kb.allowed_facts(project_id, ctx)]
-    bank = [{"text": b.text, "fact_ids": b.fact_ids, **({"note": b.note} if b.note else {})}
+    bank = [{"text": b.text, "chars": len(b.text), "fact_ids": b.fact_ids, **({"note": b.note} if b.note else {})}
             for b in kb.allowed_bullets(project_id, ctx)]
     titles = [f"{i}: {t.subtitle} | {', '.join(t.stack)}" for i, t in enumerate(p.titles)]
     payload = {
@@ -77,8 +86,8 @@ def project_messages(project_id: str, analysis: JDAnalysis, ctx: Context, kb: Kn
             f"Write exactly {n_bullets} bullets for this project, most JD-relevant first. "
             "The first bullet carries the strongest JD-relevant claim. Pick the best title option and 4-5 stack "
             "items (JD-matching first). You may reword the reference bullets, but every number must come from a "
-            "cited fact. Respect each reference bullet's note (e.g. 'use only as a 4th bullet').\n\n"
-            + json.dumps(payload, ensure_ascii=False, indent=1)
+            "cited fact. Respect each reference bullet's note (e.g. 'use only as a 4th bullet'). " + LENGTH_HINT + "\n\n"
+            + _json(payload)
         )),
     ]
 
@@ -89,7 +98,7 @@ def experience_messages(groups: list[str], analysis: JDAnalysis, kb: KnowledgeBa
         "allowed_titles": exp.titles,
         "facts": [{"id": f.id, "claim": f.claim, "values": f.values} for f in exp.facts],
         "reference_bullets": [
-            {"group": g.id, "text": b.text, "fact_ids": b.fact_ids}
+            {"group": g.id, "text": b.text, "chars": len(b.text), "fact_ids": b.fact_ids}
             for g in exp.groups if g.id in groups for b in g.bullets
         ],
         "never_claim": exp.unconfirmed_claims
@@ -100,19 +109,22 @@ def experience_messages(groups: list[str], analysis: JDAnalysis, kb: KnowledgeBa
              "for a specific job.\n" + WRITING_RULES),
         HumanMessage(content=(
             f"Target role archetype: {analysis.archetype}; JD keywords: {_keywords(analysis)}\n\n"
-            "Write 3 bullets; put the JD's #1 theme first. Choose a title from allowed_titles.\n\n"
-            + json.dumps(payload, ensure_ascii=False, indent=1)
+            "Write 3 bullets; put the JD's #1 theme first. Choose a title from allowed_titles. " + LENGTH_HINT + "\n\n"
+            + _json(payload)
         )),
     ]
 
 
-def fix_messages(items: list[dict]) -> list:
-    """items: {id, text, problems, facts, reference_bullets, project_rules, target_chars}"""
+def fix_messages(payload: dict) -> list:
+    """payload: {"sections": {section: {facts, reference_bullets, project_rules}},
+                 "bullets": [{id, section, text, current_chars, problems}], "target_chars"}.
+    Facts and rules go once per section, not once per bullet (they were ~60% of fixer input)."""
     return [
         _sys("You repair resume bullets that failed review. Fix every listed problem and keep everything that was "
-             "fine. Keep the bullet's meaning and its strongest metric.\n" + WRITING_RULES
+             "fine. Keep the bullet's meaning and its strongest metric. Each bullet may only use the facts of its "
+             "own `section`.\n" + WRITING_RULES
              + "\nReturn one fixed bullet per id, with the fact_ids it uses."),
-        HumanMessage(content=json.dumps(items, ensure_ascii=False, indent=1)),
+        HumanMessage(content=_json(payload)),
     ]
 
 
@@ -131,7 +143,7 @@ def skills_messages(analysis: JDAnalysis, project_ids: list[str], kb: KnowledgeB
         HumanMessage(content=(
             f"JD keywords (ranked): {_keywords(analysis)}\n"
             f"Projects on the page and their stacks: {json.dumps(stacks)}\n\n"
-            f"Inventory: {json.dumps(inventory, ensure_ascii=False)}\n\n"
+            f"Inventory: {_json(inventory)}\n\n"
             f"Courses: {json.dumps(kb.profile.coursework + kb.profile.coursework_shorthand)}"
         )),
     ]

@@ -12,6 +12,7 @@ import sys
 from pathlib import Path
 
 KIT_RESUMES = Path(__file__).resolve().parents[3] / "resumes"   # Resume_Builder/resumes
+CACHE_DIR = Path(__file__).resolve().parents[1] / "cache"         # resume-agent/cache (gitignored)
 
 
 def read_jd(arg: str) -> tuple[str, str]:
@@ -37,6 +38,8 @@ def main(argv: list[str] | None = None) -> int:
     run.add_argument("--slug", help="output name (default: company_role)")
     run.add_argument("--save-to-kit", action="store_true", help="also copy the .tex to Resume_Builder/resumes/")
     run.add_argument("--no-trace", action="store_true", help="don't send this run to LangSmith even if a key is set")
+    run.add_argument("--fresh", action="store_true",
+                     help="re-analyse the JD even if this exact JD was analysed before (default: reuse, saves a call)")
     run.add_argument("-v", "--verbose", action="store_true")
     args = ap.parse_args(argv)
 
@@ -54,6 +57,8 @@ def main(argv: list[str] | None = None) -> int:
         init["slug"] = args.slug
     slug = args.slug or slugify(job.company, job.role)
     config = {"recursion_limit": 80, **tracing.run_config(slug, job.company, job.role)}
+    if not args.fresh:
+        config["configurable"] = {"cache_dir": str(CACHE_DIR)}
     print(f"tracing: {'LangSmith — ' + tracing.project_url() if traced else 'off (add LANGSMITH_API_KEY to .env)'}")
 
     import time

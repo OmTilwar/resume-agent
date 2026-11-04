@@ -110,6 +110,41 @@ def fit_stack(name: str, subtitle: str, wanted: list[str], allowed: list[str], d
     return stack
 
 
+def bank_swap(bullet: FinalBullet, section: str, index: int, keep: list[str], bank, kb: KnowledgeBase,
+              used: set[str] = frozenset()):
+    """Best well-sized verified bullet to stand in for `bullet` (no model call): same facts first,
+    never a near-duplicate of `keep` (the block's other bullets), never a 4th-bullet-only fact in slots 1-3.
+    Returns None when nothing fits."""
+    from .validate import length_issue, near_duplicate
+    cands = [b for b in bank
+             if b.text not in used and b.text not in keep and b.text != bullet.text
+             and not length_issue(b.text, kb, "x")
+             and not any(near_duplicate(b.text, t) for t in keep)
+             and not (index < 3 and kb.cites_last_only(section, b.fact_ids))]
+    if not cands:
+        return None
+    want = set(bullet.fact_ids)
+    return max(cands, key=lambda b: len(want & set(b.fact_ids)))   # ties keep kit (priority) order
+
+
+def snap_lengths(bullets: list[FinalBullet], section: str, bank, kb: KnowledgeBase,
+                 notes: list[str]) -> list[FinalBullet]:
+    """Model-written bullets in the length dead zone (half a 2nd line, or a 3rd line) are swapped for a verified,
+    well-sized kit bullet straight away — the fixer rarely gets character counts right (LangSmith, 4 Nov:
+    10 of 16 first drafts were 120-169 chars and most were still off after 2 fixer rounds)."""
+    from .validate import length_issue
+    out = list(bullets)
+    for i, b in enumerate(out):
+        if b.origin != "llm" or not length_issue(b.text, kb, "x"):
+            continue
+        keep = [x.text for j, x in enumerate(out) if j != i]
+        swap = bank_swap(b, section, i, keep, bank, kb)
+        if swap is not None:
+            out[i] = FinalBullet(text=swap.text, fact_ids=swap.fact_ids, origin="bank")
+            notes.append(f"{section}#{i + 1}: draft was {len(b.text)} chars (off-length) — used a verified kit bullet")
+    return out
+
+
 def _fill_from_bank(kept: list[FinalBullet], bank, n_min: int, n_max: int) -> list[FinalBullet]:
     used = {b.text for b in kept}
     for b in bank:
@@ -130,9 +165,33 @@ def ingest(state: ResumeState, config: RunnableConfig) -> ResumeState:
     return {"slug": slug, "out_dir": str(out_dir)}
 
 
+def _analysis_cache_path(config: RunnableConfig, messages) -> Path | None:
+    """Same JD + same prompt + same analyzer model -> same file. Off unless the caller sets `cache_dir`."""
+    cache_dir = (config or {}).get("configurable", {}).get("cache_dir")
+    if not cache_dir:
+        return None
+    import hashlib
+    import json
+    from .llm import load_config
+    role = load_config()["roles"]["analyzer"]
+    key = json.dumps({"messages": [m.content for m in messages], "model": role["model"],
+                      "fallbacks": role.get("fallbacks", []), "schema": JDAnalysis.model_json_schema()},
+                     sort_keys=True, ensure_ascii=False)
+    return Path(cache_dir) / "analysis" / f"{hashlib.sha256(key.encode('utf-8')).hexdigest()[:16]}.json"
+
+
 def analyze(state: ResumeState, config: RunnableConfig) -> ResumeState:
     kb = get_kb()
-    a: JDAnalysis = _call(config, "analyzer", JDAnalysis, prompts.analyze_messages(state["job"], kb))
+    messages = prompts.analyze_messages(state["job"], kb)
+    cache = _analysis_cache_path(config, messages)
+    if cache is not None and cache.exists():
+        a = JDAnalysis.model_validate_json(cache.read_text(encoding="utf-8"))
+        log.info("analysis: reused %s (same JD, prompt and model)", cache.name)
+    else:
+        a = _call(config, "analyzer", JDAnalysis, messages)
+        if cache is not None:
+            cache.parent.mkdir(parents=True, exist_ok=True)
+            cache.write_text(a.model_dump_json(indent=1), encoding="utf-8")
     if a.archetype not in kb.archetypes:
         log.warning("unknown archetype %r from analyzer; defaulting to ai_generalist", a.archetype)
         a.archetype = "ai_generalist"
@@ -177,7 +236,7 @@ def _write_one_project(pid: str, state: ResumeState, config: RunnableConfig) -> 
             continue
         drafted.append(FinalBullet(text=d.text.strip(), fact_ids=d.fact_ids, origin="llm"))
     bank = [b for b in kb.allowed_bullets(pid, ctx) if not kb.cites_last_only(pid, b.fact_ids)]
-    bullets = _fill_from_bank(drafted[:n], bank, n, n_max)
+    bullets = _fill_from_bank(snap_lengths(drafted[:n], pid, bank, kb, notes), bank, n, n_max)
     idx = draft.title_index if 0 <= draft.title_index < len(p.titles) else 0
     title = p.titles[idx]
     stack = fit_stack(p.name, title.subtitle, draft.stack, p.stack, title.stack)
@@ -217,7 +276,7 @@ def write_experience(state: ResumeState, config: RunnableConfig) -> ResumeState:
     bad = failed + [f"first draft: {x}" for x in bad]
     bank = [b for g in exp.groups if g.id in state["exp_groups"] for b in g.bullets] + \
            [b for g in exp.groups if g.id not in state["exp_groups"] for b in g.bullets]
-    bullets = _fill_from_bank(kept, bank, 3, 4)
+    bullets = _fill_from_bank(snap_lengths(kept, "experience", bank, kb, bad), bank, 3, 4)
     title = draft.title if draft.title in exp.titles else exp.titles[0]
     return {"experience": ExperienceBlock(title=title, bullets=bullets), "violations": bad}
 

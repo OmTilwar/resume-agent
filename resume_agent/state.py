@@ -127,7 +127,8 @@ class ResumeState(TypedDict, total=False):
     issues: list            # list[validate.Issue] still open
     approved: list[str]     # bullet texts the judge accepted (not re-judged)
     fix_round: int
-    layout: object          # layout.Layout from the last compile
+    length_tried: list[str] # bullet ids (slots) the fixer already got one length attempt at
+    layout: object         # layout.Layout from the last compile
     layout_round: int
     layout_action: str      # trim | orphans | fill | done
     trim_level: int

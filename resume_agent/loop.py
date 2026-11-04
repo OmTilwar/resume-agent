@@ -74,30 +74,32 @@ def _vet_one(text: str, fact_ids: list[str], slot: Slot, state: ResumeState, kb:
     return probs
 
 
-def _fix_items(targets: dict[str, list[str]], state: ResumeState, kb: KnowledgeBase) -> list[dict]:
+def _fix_items(targets: dict[str, list[str]], state: ResumeState, kb: KnowledgeBase) -> dict:
     by_id = {s.id: s for s in slots(state, kb)}
-    items = []
+    sections: dict[str, dict] = {}
+    bullets = []
     for tid, problems in targets.items():
         s = by_id[tid]
-        p = kb.projects.get(s.section)
-        items.append({
-            "id": tid,
-            "text": s.bullet.text,
-            "current_chars": visible_len(s.bullet.text),
-            "problems": problems,
-            "facts": [{"id": f.id, "claim": f.claim, "values": f.values} for f in s.facts.values()],
-            "reference_bullets": [b.text for b in _bank(s.section, state, kb)][:4],
-            "project_rules": (p.rules + [f"never say: {', '.join(p.banned_terms)}"] if p and p.banned_terms
-                              else (p.rules if p else [])),
-            "target_chars": "<= 105, or 180-215",
-        })
-    return items
+        if s.section not in sections:
+            p = kb.projects.get(s.section)
+            rules = (p.rules + [f"never say: {', '.join(p.banned_terms)}"] if p and p.banned_terms
+                     else (p.rules if p else []))
+            sections[s.section] = {
+                "facts": [{"id": f.id, "claim": f.claim, "values": f.values} for f in s.facts.values()],
+                "reference_bullets": [b.text for b in _bank(s.section, state, kb)][:4],
+                **({"project_rules": rules} if rules else {}),
+            }
+        bullets.append({"id": tid, "section": s.section, "text": s.bullet.text,
+                        "current_chars": visible_len(s.bullet.text), "problems": problems})
+    return {"sections": sections, "bullets": bullets, "target_chars": "<= 105, or 180-215"}
 
 
 def _apply_fixes(targets: dict[str, list[str]], state: ResumeState, config: RunnableConfig, kb: KnowledgeBase,
-                 notes: list[str]):
+                 notes: list[str], blocks=None):
     """One fixer call for all targets; keep only fixes that pass the deterministic checks."""
-    projects, experience = _copy_blocks(state)
+    projects, experience = blocks or _copy_blocks(state)
+    if not targets:
+        return projects, experience
     by_id = {s.id: s for s in slots(state, kb)}
     try:
         batch: FixBatch = _call(config, "fixer", FixBatch, prompts.fix_messages(_fix_items(targets, state, kb)))
@@ -145,14 +147,45 @@ def route_after_validate(state: ResumeState) -> str:
     return "fallback" if any(i.severity == "hard" for i in issues) else "assemble"
 
 
+LENGTH_RULES = {"half-line", "too-long"}
+
+
 def fix(state: ResumeState, config: RunnableConfig) -> ResumeState:
+    """One fixer call for everything open — except length problems the fixer already had a go at: those get a
+    verified, well-sized kit bullet (no model call), or are accepted if only soft. LangSmith (4 Nov) showed a second
+    fixer attempt at a length almost never lands (153 → 153, 121 → 121) yet cost ~10k input tokens."""
+    from .nodes import bank_swap
     kb = get_kb()
     notes = list(state.get("notes", []))
     targets: dict[str, list[str]] = {}
+    rules: dict[str, set[str]] = {}
     for i in state["issues"]:
         targets.setdefault(i.target, []).append(f"{i.rule}: {i.message}")
-    projects, experience = _apply_fixes(targets, state, config, kb, notes)
-    return {"projects": projects, "experience": experience, "notes": notes,
+        rules.setdefault(i.target, set()).add(i.rule)
+    projects, experience = _copy_blocks(state)
+    by_id = {s.id: s for s in slots(state, kb)}
+    tried = list(state.get("length_tried", []))
+    used = _on_page(state)
+    for tid in list(targets):
+        s = by_id[tid]
+        if not rules[tid] & LENGTH_RULES:
+            continue
+        if tid not in tried:
+            tried.append(tid)                        # first length attempt for this slot: the fixer gets it
+            continue
+        block = experience if s.section == "experience" else next(p for p in projects if p.project_id == s.section)
+        keep = [b.text for j, b in enumerate(block.bullets) if j != s.index]
+        swap = bank_swap(s.bullet, s.section, s.index, keep, _bank(s.section, state, kb), kb, used)
+        if swap is not None:
+            used.add(swap.text)
+            _put(projects, experience, s, FinalBullet(text=swap.text, fact_ids=swap.fact_ids, origin="bank"))
+            notes.append(f"{tid}: length still off after one fix — used a verified kit bullet")
+            del targets[tid]
+        elif rules[tid] <= LENGTH_RULES - {"too-long"}:
+            notes.append(f"{tid}: length still off after one fix and no kit bullet fits — kept as is")
+            del targets[tid]                         # soft only: not worth another paid call
+    projects, experience = _apply_fixes(targets, state, config, kb, notes, (projects, experience))
+    return {"projects": projects, "experience": experience, "notes": notes, "length_tried": tried,
             "fix_round": state.get("fix_round", 0) + 1}
 
 
