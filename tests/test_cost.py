@@ -7,7 +7,7 @@ from resume_agent import prompts
 from resume_agent.graph import build_graph
 from resume_agent.knowledge import Context, get_kb
 from resume_agent.loop import _fix_items, fix
-from resume_agent.nodes import snap_lengths
+from resume_agent.nodes import snap_weak as snap_lengths
 from resume_agent.state import FinalBullet, JobPosting
 from resume_agent.validate import length_issue, slots
 

@@ -112,10 +112,12 @@ def fit_stack(name: str, subtitle: str, wanted: list[str], allowed: list[str], d
 
 def bank_swap(bullet: FinalBullet, section: str, index: int, keep: list[str], bank, kb: KnowledgeBase,
               used: set[str] = frozenset()):
-    """Best well-sized verified bullet to stand in for `bullet` (no model call): same facts first,
+    """Best well-sized verified bullet to stand in for `bullet` (no model call): numbers the section doesn't show yet
+    first, then the same facts,
     never a near-duplicate of `keep` (the block's other bullets), never a 4th-bullet-only fact in slots 1-3.
     Returns None when nothing fits."""
-    from .validate import length_issue, near_duplicate
+    from .knowledge.numbers import extract_numbers
+    from .validate import length_issue, near_duplicate, repeated_numbers
     cands = [b for b in bank
              if b.text not in used and b.text not in keep and b.text != bullet.text
              and not length_issue(b.text, kb, "x")
@@ -124,34 +126,45 @@ def bank_swap(bullet: FinalBullet, section: str, index: int, keep: list[str], ba
     if not cands:
         return None
     want = set(bullet.fact_ids)
-    return max(cands, key=lambda b: len(want & set(b.fact_ids)))   # ties keep kit (priority) order
+    # new metrics first (don't show the section's headline number twice), then the same facts; ties keep kit order
+    return max(cands, key=lambda b: (-len(repeated_numbers(b.text, keep)), bool(extract_numbers(b.text)),
+                                     len(want & set(b.fact_ids))))
 
 
-def snap_lengths(bullets: list[FinalBullet], section: str, bank, kb: KnowledgeBase,
-                 notes: list[str]) -> list[FinalBullet]:
-    """Model-written bullets in the length dead zone (half a 2nd line, or a 3rd line) are swapped for a verified,
-    well-sized kit bullet straight away — the fixer rarely gets character counts right (LangSmith, 4 Nov:
-    10 of 16 first drafts were 120-169 chars and most were still off after 2 fixer rounds)."""
-    from .validate import length_issue
+def snap_weak(bullets: list[FinalBullet], section: str, bank, kb: KnowledgeBase,
+              notes: list[str], only: set[int] | None = None) -> list[FinalBullet]:
+    """Model-written bullets that are off-length, have no number, or repeat a number an earlier bullet of the block
+    already shows are swapped for a verified kit bullet straight away (no model call). The fixer rarely gets these
+    right: LangSmith, 4 Nov — 10 of 16 first drafts were 120-169 chars and most were still off after 2 fixer rounds;
+    the DataCore run shipped "…via a 4-stage pipeline" (repeating bullet 1) and a bullet with no number.
+    `only`: restrict to these positions (e.g. the bullets the fixer just rewrote)."""
+    from .validate import weak_reason
     out = list(bullets)
     for i, b in enumerate(out):
-        if b.origin != "llm" or not length_issue(b.text, kb, "x"):
+        if b.origin != "llm" or (only is not None and i not in only):
+            continue
+        why = weak_reason(b.text, [x.text for x in out[:i]], kb, section)
+        if why is None:
             continue
         keep = [x.text for j, x in enumerate(out) if j != i]
         swap = bank_swap(b, section, i, keep, bank, kb)
         if swap is not None:
             out[i] = FinalBullet(text=swap.text, fact_ids=swap.fact_ids, origin="bank")
-            notes.append(f"{section}#{i + 1}: draft was {len(b.text)} chars (off-length) — used a verified kit bullet")
+            notes.append(f"{section}#{i + 1}: draft {why} — used a verified kit bullet")
     return out
 
 
 def _fill_from_bank(kept: list[FinalBullet], bank, n_min: int, n_max: int) -> list[FinalBullet]:
-    used = {b.text for b in kept}
-    for b in bank:
-        if len(kept) >= n_min:
+    """Top up to n_min from the kit bank, preferring bullets that add metrics the block doesn't show yet."""
+    from .validate import near_duplicate, repeated_numbers
+    kept = list(kept)
+    while len(kept) < n_min:
+        texts = [b.text for b in kept]
+        cands = [b for b in bank if b.text not in texts and not any(near_duplicate(b.text, t) for t in texts)]             or [b for b in bank if b.text not in texts]
+        if not cands:
             break
-        if b.text not in used:
-            kept.append(FinalBullet(text=b.text, fact_ids=b.fact_ids, origin="bank"))
+        b = min(cands, key=lambda b: len(repeated_numbers(b.text, texts)))   # stable: ties keep kit order
+        kept.append(FinalBullet(text=b.text, fact_ids=b.fact_ids, origin="bank"))
     return kept[:n_max]
 
 
@@ -236,7 +249,7 @@ def _write_one_project(pid: str, state: ResumeState, config: RunnableConfig) -> 
             continue
         drafted.append(FinalBullet(text=d.text.strip(), fact_ids=d.fact_ids, origin="llm"))
     bank = [b for b in kb.allowed_bullets(pid, ctx) if not kb.cites_last_only(pid, b.fact_ids)]
-    bullets = _fill_from_bank(snap_lengths(drafted[:n], pid, bank, kb, notes), bank, n, n_max)
+    bullets = _fill_from_bank(snap_weak(drafted[:n], pid, bank, kb, notes), bank, n, n_max)
     idx = draft.title_index if 0 <= draft.title_index < len(p.titles) else 0
     title = p.titles[idx]
     stack = fit_stack(p.name, title.subtitle, draft.stack, p.stack, title.stack)
@@ -276,7 +289,7 @@ def write_experience(state: ResumeState, config: RunnableConfig) -> ResumeState:
     bad = failed + [f"first draft: {x}" for x in bad]
     bank = [b for g in exp.groups if g.id in state["exp_groups"] for b in g.bullets] + \
            [b for g in exp.groups if g.id not in state["exp_groups"] for b in g.bullets]
-    bullets = _fill_from_bank(snap_lengths(kept, "experience", bank, kb, bad), bank, 3, 4)
+    bullets = _fill_from_bank(snap_weak(kept, "experience", bank, kb, bad), bank, 3, 4)
     title = draft.title if draft.title in exp.titles else exp.titles[0]
     return {"experience": ExperienceBlock(title=title, bullets=bullets), "violations": bad}
 
@@ -311,6 +324,41 @@ def _relevance(state: ResumeState, kb: KnowledgeBase):
             return True
         return any(re.search(rf"(?<![a-z0-9]){re.escape(v)}(?![a-z0-9])", e) for v in vocab)
     return relevant
+
+
+_FILLER = {"libraries", "library", "tools", "tooling", "frameworks", "framework", "skills", "core", "stack",
+            "languages", "technologies", "platforms", "methods", "other"}
+
+
+def honest_category(line: SkillLine, kb: KnowledgeBase) -> str:
+    """The model renames categories to mirror the JD; keep its name only if every part of it is backed by an entry
+    on the line. Live run, 4 Nov: 'AI APIs & Model Training' held REST APIs, WebSockets, asyncio, Pydantic — nothing
+    about training. Otherwise fall back to the entries' own inventory category ('Backend & APIs')."""
+    from .selection import _norm, _probes
+    cat_of: dict[str, str] = {}
+    for sk in kb.skills:
+        cat_of.setdefault(sk.display, sk.category)   # TypeScript is listed twice; its first home wins
+    inv = [cat_of.get(e, "") for e in line.entries]
+
+    def backed(part: str) -> bool:
+        words = [w for w in _norm(part).split() if w not in _FILLER]
+        if not words:
+            return True
+        part = " ".join(words)
+        probes = _probes(part)
+        return any(mentions(part, e) or probes & _probes(e.replace("(Familiar)", ""))
+                   or re.search(rf"(?<![a-z0-9]){re.escape(part)}(?![a-z0-9])", _norm(c))
+                   for e, c in zip(line.entries, inv))
+
+    parts = [p for p in re.split(r"\s*(?:&|/|,|\band\b)\s*", line.category) if p.strip()]
+    names_one_entry = len(parts) == 1 and _norm(parts[0]) in {_norm(e) for e in line.entries} and len(line.entries) > 1
+    if parts and all(backed(p) for p in parts) and not names_one_entry:
+        return line.category
+    # most entries' category; ties go to the first entry's (the line leads with its most relevant entry)
+    common = max(dict.fromkeys(c for c in inv if c), key=lambda c: (inv.count(c), -inv.index(c)), default="")
+    if not common:
+        return line.category
+    return common.replace(" / ", " & ") if common.count(" / ") == 1 else common   # "Backend & APIs"; keep "ML / DL / CV"
 
 
 def fit_skills(lines: list[SkillLine], state: ResumeState, kb: KnowledgeBase) -> tuple[list[SkillLine], list[str]]:
@@ -358,8 +406,57 @@ def fit_skills(lines: list[SkillLine], state: ResumeState, kb: KnowledgeBase) ->
             dropped.append(line.entries.pop())
         if dropped:
             notes.append(f"skills: trimmed '{l.category}' to fit ~1.3 lines (dropped {', '.join(reversed(dropped))})")
+        name = honest_category(line, kb)
+        if name != line.category and name not in {o.category for o in out}:
+            notes.append(f"skills: renamed '{line.category}' to '{name}' — its entries don't back the name")
+            line = SkillLine(category=name, entries=line.entries)
+            while skill_line_chars(line) > SKILL_LINE_MAX_CHARS and len(line.entries) > SKILL_MIN_ENTRIES:
+                line.entries.pop()
         out.append(line)
-    return out, notes
+    return _ensure_required(out, state, kb, notes), notes
+
+
+def required_skills(state: ResumeState, kb: KnowledgeBase, limit: int = 3) -> list[str]:
+    """Inventory entries a must-have keyword names outright ("Python" for "Proficiency in Python")."""
+    from .selection import _norm
+    must = [_norm(k.term) for k in state["analysis"].top_keywords if k.importance == "must"]
+    out = []
+    for s in kb.skills:
+        n = _norm(s.display.replace("(Familiar)", ""))
+        if len(n) >= 3 and s.display not in out and any(
+                n == k or re.search(rf"(?<![a-z0-9]){re.escape(n)}(?![a-z0-9])", k) for k in must):
+            out.append(s.display)
+    return out[:limit]
+
+
+def _ensure_required(lines: list[SkillLine], state: ResumeState, kb: KnowledgeBase, notes: list[str]) -> list[SkillLine]:
+    """A required skill the candidate has must be visible in Skills, not only in project headers. DataCore run, 4 Nov:
+    a Front-End line took the slot that held Python, so 'Proficiency in Python required' had no Skills entry."""
+    if not lines:
+        return lines
+    cat_of: dict[str, str] = {}
+    for sk in kb.skills:
+        cat_of.setdefault(sk.display, sk.category)
+    forced = []
+    for e in required_skills(state, kb):
+        if any(e in l.entries for l in lines):
+            continue
+        from .selection import _probes
+        same = [l for l in lines if any(cat_of.get(x) == cat_of.get(e) for x in l.entries)]
+        # else a line about the same thing ("Embeddings" → the line with sentence-transformers), else the roomiest
+        near = [l for l in lines if any(mentions(e, x) or mentions(x.replace("(Familiar)", ""), e)
+                                        for x in [l.category, *l.entries])]
+        line = (same or near or [min(lines, key=skill_line_chars)])[0]
+        # own category: lead the line; elsewhere: right after the line's first entry, so the line keeps its theme
+        line.entries.insert(0 if same else min(1, len(line.entries)), e)
+        forced.append(e)
+        while skill_line_chars(line) > SKILL_LINE_MAX_CHARS and len(line.entries) > SKILL_MIN_ENTRIES:
+            drop = next((x for x in reversed(line.entries) if x not in forced), None)
+            if drop is None:
+                break
+            line.entries.remove(drop)
+        notes.append(f"skills: added required '{e}' to '{line.category}' (the JD asks for it)")
+    return lines
 
 
 def write_skills(state: ResumeState, config: RunnableConfig) -> ResumeState:

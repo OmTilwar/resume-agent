@@ -18,6 +18,7 @@ Hard rules:
 - A change between two percentages is in points: write "60.53% to 66.45% (+5.92 pts)", never "+5.92%".
 - Length: either one line (<= 105 characters) or two full lines (180-215 characters). Nothing in between, nothing longer.
 - Past tense. No first person. One idea per bullet; a semicolon may join one closely related result.
+- Each bullet covers a different result: never repeat a number another bullet of the same section already uses.
 - Banned words/phrases: Responsible for, Worked on, Helped, Involved in, Various, etc., passionate, robust, cutting-edge, world-class, seamless, novel, new algorithm, state-of-the-art, production-grade, analogous to, applicable to, relevant to.
 - Never mention Ragas, LangGraph, satellite imagery, React Native, Flutter.
 - Use the JD's exact wording for skills only where the facts genuinely support it. If the JD wants something the facts don't show, leave it out — do not stretch.
@@ -48,7 +49,12 @@ def analyze_messages(job: JobPosting, kb: KnowledgeBase) -> list:
             "You are a senior technical recruiter who screens ML/AI/SWE intern applications. "
             "Analyse the job description and return structured data.\n"
             "Rules: keywords must use the JD's exact wording; rank by how much the JD stresses them; "
-            "'must' = required/core, 'nice' = preferred/bonus. Return exactly 10 keywords when the JD has that many. "
+            "'must' = anything listed as a requirement or qualification, even when softened ('familiarity with', "
+            "'basic', 'understanding of'); 'nice' = only what the JD calls a plus / preferred / bonus. "
+            "First cover EVERY distinct required skill area (a 'basic front-end skills' line is a keyword too), then "
+            "add others. A list of concepts (e.g. 'neural networks, deep learning, transformers, embeddings') counts as "
+            "at most 2 keywords. Never use generic words ('AI', 'software', 'technology') as keywords. "
+            "Return exactly 10 keywords when the JD has that many. "
             "Pick archetype ids ONLY from this list:\n" + archetypes
         ),
         HumanMessage(content=f"Company: {job.company}\nRole: {job.role}\n\nJob description:\n{job.text}"),

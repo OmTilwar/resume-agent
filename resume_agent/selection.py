@@ -14,8 +14,21 @@ from .knowledge import KnowledgeBase, Project
 from .state import JDAnalysis, ProjectScore
 
 # JD phrasing -> KB tag vocabulary. Extend as new JDs show misses.
+_LLM = ["llm", "langchain", "langgraph", "langsmith", "llm apis", "rag", "prompt engineering", "tool calling", "agents"]
 SYNONYMS: dict[str, list[str]] = {
-    "large language model": ["llm"], "large language models": ["llm"], "llms": ["llm"],
+    # LLM work shows up as these on the page (LangGraph, LLM APIs, …) — a JD asking for "LLMs" is asking for them
+    **{k: _LLM for k in ("large language model", "large language models", "llms", "llm", "language models")},
+    "ai apis": ["llm apis", "openai", "openrouter", "groq", "function calling", "tool calling"],
+    "openai": ["llm apis", "openrouter", "groq"],
+    "front-end": ["frontend", "react", "next.js", "javascript", "typescript", "html/css", "vite", "full-stack"],
+    "front end": ["frontend", "react", "next.js", "javascript", "typescript", "html/css", "vite", "full-stack"],
+    "frontend": ["react", "next.js", "javascript", "typescript", "html/css", "vite", "full-stack"],
+    "competitive programming": ["data structures & algorithms"],
+    # concepts the page shows by name of the architecture, not the concept (DataCore run, 4 Nov)
+    "neural network": ["deep learning", "pytorch", "resnet", "u-net", "cnn", "transformers", "metric learning"],
+    "neural networks": ["deep learning", "pytorch", "resnet", "u-net", "cnn", "transformers", "metric learning"],
+    "embeddings": ["embeddings", "bi-encoder", "sentence-transformers", "dense retrieval", "metric learning",
+                   "fingerprints"],
     "generative ai": ["genai", "generative-ai"], "gen ai": ["genai"], "genai": ["genai"],
     "retrieval augmented generation": ["rag"], "retrieval-augmented generation": ["rag"],
     "computer vision": ["cv", "computer-vision"], "machine learning": ["ml"],
@@ -29,7 +42,7 @@ SYNONYMS: dict[str, list[str]] = {
     "backend": ["fastapi", "rest-api"], "microservices": ["fastapi", "production-api"],
     "speech": ["speech", "voice"], "asr": ["stt"], "text to speech": ["tts"],
     "fine-tuning": ["fine-tuning", "lora"], "fine tuning": ["fine-tuning", "lora"],
-    "embeddings": ["embeddings"], "transformers": ["transformers", "cross-encoder", "bi-encoder"],
+    "transformers": ["transformers", "cross-encoder", "bi-encoder"],
     "statistics": ["statistics", "hypothesis-testing", "t-test", "mann-whitney", "p <"],
     "statistical": ["statistics", "hypothesis-testing", "t-test", "mann-whitney"],
     "a/b testing": ["hypothesis-testing"],

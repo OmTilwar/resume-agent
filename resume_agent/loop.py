@@ -15,8 +15,8 @@ from .knowledge.checks import check_bullet
 from .layout import measure
 from .nodes import _call
 from .state import FinalBullet, FixBatch, ResumeState
-from .validate import (Issue, Slot, deterministic_issues, judge_issues, length_issue, near_duplicate, slots,
-                       visible_len)
+from .validate import (Issue, Slot, deterministic_issues, judge_issues, length_issue, near_duplicate,
+                       repeated_numbers, slots, visible_len)
 
 log = logging.getLogger("resume_agent")
 MAX_FIX = 2
@@ -150,11 +150,17 @@ def route_after_validate(state: ResumeState) -> str:
 LENGTH_RULES = {"half-line", "too-long"}
 
 
+SWAP_NOW = {"no-number", "repeat-number"}   # the kit bank fixes these better than a rewrite does
+
+
 def fix(state: ResumeState, config: RunnableConfig) -> ResumeState:
-    """One fixer call for everything open — except length problems the fixer already had a go at: those get a
-    verified, well-sized kit bullet (no model call), or are accepted if only soft. LangSmith (4 Nov) showed a second
-    fixer attempt at a length almost never lands (153 → 153, 121 → 121) yet cost ~10k input tokens."""
-    from .nodes import bank_swap
+    """Repair open issues, spending a model call only where it can help:
+    - no number / a repeated number on a model bullet → a verified kit bullet right away (no call);
+    - a length problem gets ONE fixer attempt per slot, then a kit bullet (or accepted, if only soft) —
+      LangSmith (4 Nov): a second attempt almost never landed (153 → 153, 121 → 121) yet cost ~10k input tokens;
+    - everything else → one fixer call; a rewrite that comes back off-length, number-less or repeating a number
+      is swapped for a kit bullet too, so a weak bullet can't slip in during the last round (DataCore run, 4 Nov)."""
+    from .nodes import bank_swap, snap_weak
     kb = get_kb()
     notes = list(state.get("notes", []))
     targets: dict[str, list[str]] = {}
@@ -166,25 +172,43 @@ def fix(state: ResumeState, config: RunnableConfig) -> ResumeState:
     by_id = {s.id: s for s in slots(state, kb)}
     tried = list(state.get("length_tried", []))
     used = _on_page(state)
+
+    def block_of(s: Slot):
+        return experience if s.section == "experience" else next(p for p in projects if p.project_id == s.section)
+
+    def swap_in(s: Slot, why: str) -> bool:
+        keep = [b.text for j, b in enumerate(block_of(s).bullets) if j != s.index]
+        swap = bank_swap(s.bullet, s.section, s.index, keep, _bank(s.section, state, kb), kb, used)
+        if swap is None:
+            return False
+        used.add(swap.text)
+        _put(projects, experience, s, FinalBullet(text=swap.text, fact_ids=swap.fact_ids, origin="bank"))
+        notes.append(f"{s.id}: {why} — used a verified kit bullet")
+        return True
+
     for tid in list(targets):
         s = by_id[tid]
+        if s.bullet.origin == "llm" and rules[tid] & SWAP_NOW:
+            if swap_in(s, " / ".join(sorted(rules[tid] & SWAP_NOW))):
+                del targets[tid]
+            continue
         if not rules[tid] & LENGTH_RULES:
             continue
         if tid not in tried:
             tried.append(tid)                        # first length attempt for this slot: the fixer gets it
             continue
-        block = experience if s.section == "experience" else next(p for p in projects if p.project_id == s.section)
-        keep = [b.text for j, b in enumerate(block.bullets) if j != s.index]
-        swap = bank_swap(s.bullet, s.section, s.index, keep, _bank(s.section, state, kb), kb, used)
-        if swap is not None:
-            used.add(swap.text)
-            _put(projects, experience, s, FinalBullet(text=swap.text, fact_ids=swap.fact_ids, origin="bank"))
-            notes.append(f"{tid}: length still off after one fix — used a verified kit bullet")
+        if swap_in(s, "length still off after one fix"):
             del targets[tid]
         elif rules[tid] <= LENGTH_RULES - {"too-long"}:
             notes.append(f"{tid}: length still off after one fix and no kit bullet fits — kept as is")
             del targets[tid]                         # soft only: not worth another paid call
+
     projects, experience = _apply_fixes(targets, state, config, kb, notes, (projects, experience))
+    # a rewrite that is still weak gives way to a kit bullet now — there may be no round left to catch it
+    for section in {by_id[t].section for t in targets}:
+        block = experience if section == "experience" else next(p for p in projects if p.project_id == section)
+        rewritten = {by_id[t].index for t in targets if by_id[t].section == section}
+        block.bullets = snap_weak(block.bullets, section, _bank(section, state, kb), kb, notes, only=rewritten)
     return {"projects": projects, "experience": experience, "notes": notes, "length_tried": tried,
             "fix_round": state.get("fix_round", 0) + 1}
 
@@ -204,7 +228,8 @@ def fallback(state: ResumeState, config: RunnableConfig) -> ResumeState:
         others = [t for t in others if t != s.bullet.text]
         bank = [b for b in _bank(s.section, state, kb) if b.text not in used and _fresh(b.text, others)
                 and not (s.index < 3 and kb.cites_last_only(s.section, b.fact_ids))]
-        bank.sort(key=lambda b: bool(length_issue(b.text, kb, tid)))   # well-sized first
+        # well-sized first, then bullets that don't repeat a metric the section already shows
+        bank.sort(key=lambda b: (bool(length_issue(b.text, kb, tid)), len(repeated_numbers(b.text, others))))
         if bank:
             b = bank[0]
             used.add(b.text)
@@ -345,6 +370,7 @@ def layout_fix(state: ResumeState, config: RunnableConfig) -> ResumeState:
             cands = [b for b in kb.allowed_bullets(p.project_id, _ctx(state))
                      if b.text not in used and not length_issue(b.text, kb, "x")
                      and _fresh(b.text, [x.text for x in p.bullets])]
+            cands.sort(key=lambda b: len(repeated_numbers(b.text, [x.text for x in p.bullets])))
             if cands:
                 p.bullets.append(FinalBullet(text=cands[0].text, fact_ids=cands[0].fact_ids, origin="bank"))
                 notes.append(f"layout: filled blank space with a 4th {p.name} bullet")

@@ -86,6 +86,25 @@ def near_duplicate(a: str, b: str, threshold: float = 0.35) -> bool:
     return len(wa & wb) / len(wa | wb) >= threshold
 
 
+def repeated_numbers(text: str, others: list[str]) -> set[str]:
+    """Numbers in `text` that another bullet of the section already shows. A section that repeats its headline
+    metric ("+8.4% mAP" in three experience bullets — live run, 4 Nov) reads as padding."""
+    seen = set().union(*(extract_numbers(t) for t in others)) if others else set()
+    return extract_numbers(text) & seen
+
+
+def weak_reason(text: str, others: list[str], kb: KnowledgeBase, section: str) -> str | None:
+    """Why a model-written bullet should give way to a verified kit bullet (None = it's fine)."""
+    if length_issue(text, kb, "x"):
+        return f"{visible_len(text)} chars (off-length)"
+    if section != "vio" and not extract_numbers(text):
+        return "no number"
+    rep = repeated_numbers(text, others)
+    if rep:
+        return f"repeats {', '.join(sorted(rep))} from another bullet"
+    return None
+
+
 def first_verb(text: str) -> str:
     return (text.strip().split(" ", 1)[0] if text.strip() else "").strip(",;:")
 
@@ -113,6 +132,12 @@ def deterministic_issues(state: ResumeState, kb: KnowledgeBase) -> list[Issue]:
             issues.append(Issue(target=s.id, rule="no-number", severity="soft",
                                 message="every bullet needs at least one number from its facts (kit §10.1)"))
 
+    for j, s in enumerate(ss):
+        earlier = [p.bullet.text for p in ss[:j] if p.section == s.section]
+        rep = repeated_numbers(s.bullet.text, earlier) if s.bullet.origin == "llm" else set()
+        if rep:   # kit bullets may share a headline number (they were approved together); model ones may not
+            issues.append(Issue(target=s.id, rule="repeat-number", severity="soft",
+                                message=f"repeats {', '.join(sorted(rep))} from an earlier bullet — cover a different result"))
     for j, s in enumerate(ss):
         for prev in ss[:j]:
             if prev.section == s.section and near_duplicate(prev.bullet.text, s.bullet.text):
