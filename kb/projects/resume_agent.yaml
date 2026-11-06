@@ -24,7 +24,7 @@ facts:
   - {id: ra_repair, claim: "Repair loop: up to 2 fix rounds, then fallback to verified bank bullets", values: ["2"], status: verified}
   - {id: ra_layout, claim: "Layout loop measures the compiled PDF with pypdf (page count, blank lines, orphan lines) and applies page-budget trim/fill rules, undoing fills that overflow", values: [], status: verified}
   - {id: ra_models, claim: "5 model roles (analyzer, writer, fixer, judge, fast) routed through OpenRouter: a low-cost model for the writing roles, a free benchmark-validated judge, automatic fallbacks; Pydantic structured outputs", values: ["5"], status: verified}
-  - {id: ra_tests, claim: "169 pytest tests incl. an offline end-to-end graph run with a fake LLM injecting fabricated and drifted bullets", values: ["169"], status: verified}
+  - {id: ra_tests, claim: "172 pytest tests incl. an offline end-to-end graph run with a fake LLM injecting fabricated and drifted bullets", values: ["172"], status: verified}
   - {id: ra_quality, claim: "Quality control in code, not prompts: off-length, number-less or repeated-number drafts swapped for a verified kit bullet without a model call; one fixer attempt per length problem; each Tier 1 project's headline result guaranteed on the page", values: [], status: verified}
   - {id: ra_skills, claim: "Skills fitted in code: lines ranked by the JD, category names backed by their entries, required skills always shown, lines too wide for ~1.3 printed lines dropped first", values: ["1.3"], status: verified}
   - {id: ra_cache, claim: "JD analysis cached per JD text + prompt + model; re-running the same JD skips that call", values: [], status: verified}
@@ -52,7 +52,7 @@ bullets:
     text: "Added an LLM-as-judge faithfulness check and a repair loop (2 rounds, then fallback to verified bullets), so wording drift such as \"images\" for \"annotated instances\" is caught and fixed automatically."
     fact_ids: [ra_judge, ra_repair]
   - id: ra_b4
-    text: "Routed 5 model roles (analyzer, writer, fixer, judge, fast) through OpenRouter with automatic fallbacks and Pydantic structured outputs; covered by 169 pytest tests with a fake-LLM end-to-end run."
+    text: "Routed 5 model roles (analyzer, writer, fixer, judge, fast) through OpenRouter with automatic fallbacks and Pydantic structured outputs; covered by 172 pytest tests with a fake-LLM end-to-end run."
     fact_ids: [ra_models, ra_tests]
   - id: ra_b5
     text: "Measured the compiled PDF with pypdf (page count, blank lines, orphan lines) and applied page-budget trim/fill rules in a layout loop that undoes any fill that overflows the page."

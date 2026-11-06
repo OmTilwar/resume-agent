@@ -50,8 +50,8 @@ def check_phrases(text: str, where: str, kb: KnowledgeBase, project: Project | N
         if claim.lower() in low:
             v.append(Violation("unconfirmed-claim", where, f"uses unconfirmed claim {claim!r} (kit §5)"))
     if project is not None:
-        for t in project.banned_terms:
-            if t.lower() in low:
+        for t in project.banned_terms:   # whole words: banning "intern" must not hit "internal"
+            if re.search(rf"(?<![A-Za-z]){re.escape(t.lower())}(?![A-Za-z])", low):
                 v.append(Violation("project-banned-term", where, f"{project.id} must never say {t!r}"))
         first = body.strip().split(" ", 1)[0] if body.strip() else ""
         if first in project.banned_verbs:

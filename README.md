@@ -42,6 +42,13 @@ Any model bullet that fails a truth check is replaced by a verified bank bullet 
 The JD analysis is cached in `cache/` (gitignored), keyed by the JD text, prompt and analyzer model, so re-running
 the same JD skips that call. Pass `--fresh` to re-analyse.
 
+## Work experience
+
+Freelance work lives in `kb/work/` (kit §5A, Design Stencil). A work entry is written, checked and repaired like a
+project (same truth guards, judge and fallback), but it is never scored as one: it goes first under **Experience**,
+with no GitHub link. It is included when the JD type has bullet groups for it (`work_groups` in
+`kb/archetypes.yaml`, the kit §9 "G" column); the page then holds 3 projects and the Research Intern entry 2 bullets.
+
 ## Cost
 
 About 1 cent per resume before the 4 Nov cuts. LangSmith traces showed the fixer used ~65% of paid tokens, mostly

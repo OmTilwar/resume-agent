@@ -25,4 +25,4 @@ def test_every_kit_github_url_is_in_kb(kb):
     kit = KIT.read_text(encoding="utf-8")
     sec7 = kit[kit.index("## 7. Projects"): kit.index("## 8. Achievements")]
     urls = set(re.findall(r"\*\*GitHub:\*\*\s*(\S+)", sec7))
-    assert urls == {p.github for p in kb.projects.values()}
+    assert urls == {p.github for p in kb.selectable_projects()}

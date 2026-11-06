@@ -8,7 +8,8 @@ from resume_agent.knowledge import get_kb
 from resume_agent.latex import escape_and_highlight
 from resume_agent.state import JobPosting
 
-from .fakes import FABRICATED, fake_factory
+from .conftest import HAS_DESIGN_STENCIL, needs_design_stencil
+from .fakes import FABRICATED, LLM_JD_ANALYSIS, fake_factory
 
 
 @pytest.fixture(scope="module")
@@ -22,8 +23,21 @@ def final(tmp_path_factory):
 def test_selects_llm_projects_in_order(final):
     assert final["selected"][0] == "finsight"
     assert set(final["selected"]) >= {"finsight", "propvox"}
-    assert len(final["selected"]) == 4
+    # an LLM JD puts Design Stencil first, so 3 projects (kit §2.1.2); without the private entry, 4
+    assert len(final["selected"]) == (3 if HAS_DESIGN_STENCIL else 4)
     assert "id_vlm" not in final["selected"]
+
+
+@needs_design_stencil
+def test_llm_jd_puts_the_work_entry_first(final):
+    assert final["work_ids"] == ["design_stencil"] and final["work_groups"][0] == "G1"
+    ds = final["projects"][0]
+    assert ds.kind == "work" and ds.subtitle == "Freelance AI Engineer" and ds.github == ""
+    assert len(final["experience"].bullets) == 2  # the Research Intern entry gives way to 2 bullets
+    tex = final["tex"]
+    assert tex.index("Freelance AI Engineer") < tex.index("Research Intern") < tex.index("section*{Projects}")
+    assert "Design Stencil -- Remote" in tex
+    assert "github.com/OmTilwar/navaa" not in tex.lower() and "\\href{}" not in tex   # private repo: no link
 
 
 def test_fabricated_bullet_never_reaches_page(final):
@@ -88,3 +102,16 @@ def test_coverage_uses_synonyms(final):
     cov = final["report"].keyword_coverage
     assert cov["vector databases"], "Pinecone vector search should count"
     assert any("FinSight" in h for h in cov["LLMs"])
+
+
+@needs_design_stencil
+def test_work_entry_prompt_lists_the_jd_types_groups_first(kb):
+    import json
+    from resume_agent import prompts
+    from resume_agent.knowledge import Context
+    msgs = prompts.project_messages("design_stencil", LLM_JD_ANALYSIS, Context(), kb, 3, ["G2", "G1"])
+    assert "work-experience entry" in msgs[0].content
+    text = msgs[-1].content
+    sent = [b["text"] for b in json.loads(text[text.index("{"):])["reference_bullets"]]
+    group = {b.text: b.group for b in kb.get_project("design_stencil").bullets}
+    assert [group[t] for t in sent[:2]] == ["G2", "G2"] and group[sent[2]] == "G1"

@@ -39,7 +39,7 @@ def load_kb(kb_dir: Path | str = DEFAULT_KB_DIR) -> KnowledgeBase:
     kb_dir = Path(kb_dir)
     meta = _read(kb_dir / "meta.yaml")
     projects: dict[str, Project] = {}
-    for f in sorted((kb_dir / "projects").glob("*.yaml")):
+    for f in sorted((kb_dir / "projects").glob("*.yaml")) + sorted((kb_dir / "work").glob("*.yaml")):
         p = Project.model_validate(_read(f))
         if p.id in projects:
             raise KBError(f"duplicate project id {p.id!r}")

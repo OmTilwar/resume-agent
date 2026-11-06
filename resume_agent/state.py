@@ -80,10 +80,14 @@ class FinalBullet(BaseModel):
 class ProjectBlock(BaseModel):
     project_id: str
     name: str
-    subtitle: str
+    subtitle: str          # work entries: the job title
     stack: list[str]
     github: str
     bullets: list[FinalBullet]
+    kind: str = "project"  # "work" = an Experience entry (kit §5A): rendered under Experience, no GitHub icon
+    org: str = ""
+    location: str = ""
+    dates: str = ""
 
 
 class ExperienceBlock(BaseModel):
@@ -127,6 +131,8 @@ class ResumeState(TypedDict, total=False):
     issues: list            # list[validate.Issue] still open
     approved: list[str]     # bullet texts the judge accepted (not re-judged)
     fix_round: int
+    work_ids: list[str]     # work entries on the page (kit §5A), in page order
+    work_groups: list[str]  # their bullet groups that lead for this JD (kit §9 'G' column)
     length_tried: list[str] # bullet ids (slots) the fixer already got one length attempt at
     layout: object         # layout.Layout from the last compile
     layout_round: int

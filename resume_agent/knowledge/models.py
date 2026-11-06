@@ -7,7 +7,7 @@ retired projects, Familiar-only skills).
 from __future__ import annotations
 
 from enum import Enum
-from typing import Optional
+from typing import Literal, Optional
 
 from pydantic import BaseModel, Field, field_validator
 
@@ -57,6 +57,7 @@ class Bullet(BaseModel):
     text: str
     fact_ids: list[str]
     note: Optional[str] = None
+    group: Optional[str] = None     # work entries: G1..G4 (kit §5A)
 
 
 class Title(BaseModel):
@@ -71,6 +72,7 @@ class InterviewQA(BaseModel):
 
 class Project(BaseModel):
     id: str
+    kind: Literal["project", "work"] = "project"   # work = an Experience entry (kit §5A), never scored
     name: str
     tier: int                     # 1 default pool, 2 role-specific
     section: str                  # kit section, e.g. "7.1"
@@ -78,6 +80,9 @@ class Project(BaseModel):
     stack: list[str]
     one_liner: str
     context: Optional[str] = None   # kit's Problem/Pipeline prose — evidence for the judge
+    org: str = ""                    # work entries only
+    location: str = ""
+    dates: str = ""
     tags: list[str]
     rules: list[str] = Field(default_factory=list)
     forbidden_title_terms: list[str] = Field(default_factory=list)
@@ -191,6 +196,7 @@ class Archetype(BaseModel):
     # Ordered; an inner list means "one of these" (e.g. MedVision or AuthNet).
     projects: list[str | list[str]]
     exp_groups: list[str]
+    work_groups: list[str] = Field(default_factory=list)   # kit §9 'G' column: work entries go first
     note: Optional[str] = None
 
     def flat_projects(self) -> list[str]:
@@ -227,7 +233,10 @@ class KnowledgeBase(BaseModel):
     # ---- query helpers (used by graph nodes later) -------------------------
 
     def selectable_projects(self, tiers: tuple[int, ...] = (1, 2)) -> list[Project]:
-        return [p for p in self.projects.values() if p.tier in tiers]
+        return [p for p in self.projects.values() if p.tier in tiers and p.kind == "project"]
+
+    def work_entries(self) -> list[Project]:
+        return [p for p in self.projects.values() if p.kind == "work"]
 
     def get_project(self, project_id: str) -> Project:
         if any(r.id == project_id for r in self.retired):

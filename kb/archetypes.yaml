@@ -1,18 +1,29 @@
 # Kit §9 — Project selection by JD type. Inner lists = "one of these".
 # amazon_er belongs on almost every ML/AI resume; drop only for pure frontend,
 # robotics or analytics roles where 4 better-fitting projects exist.
+# work_groups = the kit §9 "G" column: Design Stencil (kit §5A) goes first under Experience with these
+# bullet groups, and the page then holds 3 projects (kit §2.1.2).
+- id: conversational_voice_ai
+  name: "Conversational / Voice AI"
+  signals: [conversational ai, voice ai, chatbot, virtual assistant, voice agent, stt, tts, speech-to-text, text-to-speech, avatars, role-play, whatsapp]
+  emphasize: "Live product, voice pipeline latency, LLM evaluation"
+  projects: [propvox, finsight, resume_agent, amazon_er]
+  exp_groups: [C]
+  work_groups: [G1, G2, G3]
 - id: llm_genai_agents
   name: "LLM / GenAI / Agents"
   signals: [llm, genai, generative ai, agents, agentic, rag, tool-calling, function-calling, prompt engineering, langchain, langgraph, llm evaluation, guardrails]
   emphasize: "Retrieval benchmark, tool-calling, agent orchestration"
   projects: [finsight, propvox, amazon_er, [resume_agent, medvision, authnet]]
   exp_groups: [C, B]
+  work_groups: [G1, G3]
 - id: ai_generalist
   name: "AI generalist / Startup (many hats)"
   signals: [startup, generalist, many hats, fast-paced, end-to-end, ship, 0 to 1]
   emphasize: "Speed, breadth, shipped products"
   projects: [amazon_er, finsight, propvox, medvision]
   exp_groups: [B, C]
+  work_groups: [G1, G4]
 - id: ai_automation_ops
   name: "AI Automation / Ops"
   signals: [automation, workflow automation, ops, reliability, n8n, zapier, retries]
@@ -91,18 +102,21 @@
   emphasize: "Endpoints, latency, tests, retries, Docker"
   projects: [propvox, medvision, finsight, authnet]
   exp_groups: [E]
+  work_groups: [G4]
 - id: fullstack_product
   name: "Full-Stack / Product Engineer"
   signals: [full-stack, fullstack, product engineer, react, next.js, frontend, ui]
   emphasize: "Shipped UI + API"
   projects: [propvox, finsight, medvision, authnet]
   exp_groups: [E]
+  work_groups: [G1, G4]
 - id: speech_audio
   name: "Speech / Audio"
   signals: [speech, audio, voice, asr, tts, stt, diarization]
   emphasize: "Diarization, real-time voice"
   projects: [propvox, voxpipeline, amazon_er, finsight]
   exp_groups: [B, E]
+  work_groups: [G2]
 - id: sre_devops
   name: "SRE / DevOps / Infra"
   signals: [sre, devops, infrastructure, kubernetes, ci/cd, observability, cloud]

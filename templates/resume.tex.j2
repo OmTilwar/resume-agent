@@ -54,6 +54,18 @@
 
 \section*{Experience}
 
+((* for w in (work | default([])) *))
+\textbf{(( w.title )),} (( w.org )) -- (( w.location )) \hfill (( w.dates )) \\
+\vspace{-5pt}
+\begin{itemize}
+((* for b in w.bullets *))
+  \item (( b ))
+((* endfor *))
+\end{itemize}
+
+\vspace{-5pt}
+
+((* endfor *))
 \textbf{(( experience.title )),} {(( experience.org ))} -- (( experience.location )) \hfill (( experience.dates )) \\
 \vspace{-5pt}
 \begin{itemize}

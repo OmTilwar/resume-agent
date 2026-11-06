@@ -66,11 +66,16 @@ def _keywords(analysis: JDAnalysis) -> str:
 
 
 def project_messages(project_id: str, analysis: JDAnalysis, ctx: Context, kb: KnowledgeBase,
-                     n_bullets: int) -> list:
+                     n_bullets: int, group_order: list[str] | None = None) -> list:
     p = kb.get_project(project_id)
+    work = p.kind == "work"
+    bullets = kb.allowed_bullets(project_id, ctx)
+    if work:   # the JD type's bullet groups first (kit §9 "G" column)
+        order = {g: i for i, g in enumerate(group_order or [])}
+        bullets = sorted(bullets, key=lambda b: order.get(b.group, len(order)))
     facts = [{"id": f.id, "claim": f.claim, "values": f.values} for f in kb.allowed_facts(project_id, ctx)]
     bank = [{"text": b.text, "chars": len(b.text), "fact_ids": b.fact_ids, **({"note": b.note} if b.note else {})}
-            for b in kb.allowed_bullets(project_id, ctx)]
+            for b in bullets]
     titles = [f"{i}: {t.subtitle} | {', '.join(t.stack)}" for i, t in enumerate(p.titles)]
     payload = {
         "project": p.name,
@@ -84,7 +89,10 @@ def project_messages(project_id: str, analysis: JDAnalysis, ctx: Context, kb: Kn
         "reference_bullets": bank,
     }
     return [
-        _sys("You are a senior technical resume writer. Rewrite one project's bullets for a specific job.\n"
+        _sys(("You are a senior technical resume writer. Rewrite one work-experience entry's bullets for a specific "
+              "job; it goes under Experience and its reference bullets are listed most JD-relevant first.\n"
+              if work else
+              "You are a senior technical resume writer. Rewrite one project's bullets for a specific job.\n")
              + WRITING_RULES),
         HumanMessage(content=(
             f"Target role archetype: {analysis.archetype}; domain: {analysis.domain}.\n"

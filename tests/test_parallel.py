@@ -39,7 +39,7 @@ def test_writers_run_in_parallel(tmp_path):
     writer_time_if_sequential = 6 * SLEEP
     assert elapsed < writer_time_if_sequential + 3.0      # generous: compile + layout loop also take time
     # order preserved and nothing duplicated by the parallel merge
-    assert [p.project_id for p in final["projects"]] == final["selected"]
+    assert [p.project_id for p in final["projects"]] == final["work_ids"] + final["selected"]   # work entry first
     drafts = [v for v in final["violations"] if v.startswith("first draft")]
     assert len(drafts) == len(set(drafts)), "violations duplicated by the parallel merge"
 

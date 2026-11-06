@@ -251,7 +251,14 @@ def select(state: ResumeState, config: RunnableConfig) -> ResumeState:
         kb.archetypes[a.archetype].exp_groups
         + (kb.archetypes[a.secondary_archetype].exp_groups if a.secondary_archetype else [])
     ))
-    return {"scores": scores, "selected": select_projects(scores, kb, analysis=a), "exp_groups": groups}
+    # kit §3/§9: a work entry goes first when the JD type's row has a "G" column; the page then holds 3 projects
+    work_groups = list(dict.fromkeys(
+        kb.archetypes[a.archetype].work_groups
+        + (kb.archetypes[a.secondary_archetype].work_groups if a.secondary_archetype else [])))
+    work_ids = [w.id for w in kb.work_entries()] if work_groups else []
+    k = 3 if work_ids else 4
+    return {"scores": scores, "selected": select_projects(scores, kb, k=k, analysis=a), "exp_groups": groups,
+            "work_ids": work_ids, "work_groups": work_groups}
 
 
 def _write_one_project(pid: str, state: ResumeState, config: RunnableConfig) -> tuple[ProjectBlock, list[str]]:
@@ -262,7 +269,8 @@ def _write_one_project(pid: str, state: ResumeState, config: RunnableConfig) -> 
     notes: list[str] = []
     try:
         draft: ProjectDraft = _call(config, "writer", ProjectDraft,
-                                    prompts.project_messages(pid, state["analysis"], ctx, kb, n))
+                                    prompts.project_messages(pid, state["analysis"], ctx, kb, n,
+                                                             state.get("work_groups")))
     except RuntimeError as e:   # one failed call must not sink the run: fall back to verified bullets
         log.warning("writer failed for %s; using bank bullets: %s", pid, e)
         draft = ProjectDraft(title_index=0, stack=[], bullets=[])
@@ -278,13 +286,20 @@ def _write_one_project(pid: str, state: ResumeState, config: RunnableConfig) -> 
             continue
         drafted.append(FinalBullet(text=d.text.strip(), fact_ids=d.fact_ids, origin="llm"))
     bank = [b for b in kb.allowed_bullets(pid, ctx) if not kb.cites_last_only(pid, b.fact_ids)]
+    if p.kind == "work":   # the JD type's groups lead (kit §9 "G" column), in that order
+        order = {g: i for i, g in enumerate(state.get("work_groups") or [])}
+        bank.sort(key=lambda b: order.get(b.group, len(order)))
     bullets = _fill_from_bank(snap_weak(drafted[:n], pid, bank, kb, notes), bank, n, n_max)
     bullets = ensure_headline(bullets, p, bank, notes)
     idx = draft.title_index if 0 <= draft.title_index < len(p.titles) else 0
     title = p.titles[idx]
     stack = fit_stack(p.name, title.subtitle, draft.stack, p.stack, title.stack)
-    block = ProjectBlock(project_id=pid, name=p.name, subtitle=title.subtitle, stack=stack,
-                         github=p.github, bullets=bullets)
+    if p.kind == "work":
+        block = ProjectBlock(project_id=pid, name=p.name, subtitle=title.subtitle, stack=[], github="",
+                             bullets=bullets, kind="work", org=p.org, location=p.location, dates=p.dates)
+    else:
+        block = ProjectBlock(project_id=pid, name=p.name, subtitle=title.subtitle, stack=stack,
+                             github=p.github, bullets=bullets)
     return block, notes + [f"first draft: {x}" for x in bad]
 
 
@@ -296,7 +311,7 @@ def write_projects(state: ResumeState, config: RunnableConfig) -> ResumeState:
     """The 4 project calls are independent: run them concurrently (capped for rate limits).
     ContextThreadPoolExecutor carries tracing context into the worker threads."""
     from langchain_core.runnables.config import ContextThreadPoolExecutor
-    pids = state["selected"]
+    pids = list(state.get("work_ids") or []) + list(state["selected"])   # work entries first, like the page
     with ContextThreadPoolExecutor(max_workers=max(1, min(max_concurrency(config), len(pids)))) as pool:
         results = list(pool.map(lambda pid: _write_one_project(pid, state, config), pids))   # keeps rank order
     return {"projects": [b for b, _ in results], "violations": [v for _, vs in results for v in vs]}
@@ -315,11 +330,12 @@ def write_experience(state: ResumeState, config: RunnableConfig) -> ResumeState:
         failed.append(f"experience: writer model failed — used verified kit bullets ({e})")
     facts = {f.id: f for f in exp.facts}
     _, bad = _vet(draft.bullets, "experience", facts, ctx, kb)
-    kept = [FinalBullet(text=d.text.strip(), fact_ids=d.fact_ids, origin="llm") for d in draft.bullets[:3]]
+    n = 2 if state.get("work_ids") else 3     # kit §2.1.2/§11: with a work entry above it, 2 bullets
+    kept = [FinalBullet(text=d.text.strip(), fact_ids=d.fact_ids, origin="llm") for d in draft.bullets[:n]]
     bad = failed + [f"first draft: {x}" for x in bad]
     bank = [b for g in exp.groups if g.id in state["exp_groups"] for b in g.bullets] + \
            [b for g in exp.groups if g.id not in state["exp_groups"] for b in g.bullets]
-    bullets = _fill_from_bank(snap_weak(kept, "experience", bank, kb, bad), bank, 3, 4)
+    bullets = _fill_from_bank(snap_weak(kept, "experience", bank, kb, bad), bank, n, n)
     title = draft.title if draft.title in exp.titles else exp.titles[0]
     return {"experience": ExperienceBlock(title=title, bullets=bullets), "violations": bad}
 
@@ -608,9 +624,12 @@ def assemble(state: ResumeState, config: RunnableConfig) -> ResumeState:
         experience=dict(title=escape(exp.title), org=kb.experience.org, location=kb.experience.location,
                         dates=kb.experience.dates,
                         bullets=[escape_and_highlight(b.text) for b in exp.bullets]),
+        work=[dict(title=escape(w.subtitle), org=escape(w.org), location=escape(w.location), dates=w.dates,
+                   bullets=[escape_and_highlight(b.text) for b in w.bullets])
+              for w in state["projects"] if w.kind == "work"],
         projects=[dict(name=escape(p.name), subtitle=escape(p.subtitle), stack=[escape(s) for s in p.stack],
                        github=p.github, bullets=[escape_and_highlight(b.text) for b in p.bullets])
-                  for p in state["projects"]],
+                  for p in state["projects"] if p.kind != "work"],
         achievements=achievements,
     )
     path = Path(state["out_dir"]) / f"{state['slug']}.tex"
@@ -673,6 +692,8 @@ def render_report(state: ResumeState, rep: Report) -> str:
              "## Projects chosen",
              *[f"- **{s.project_id}** — score {s.score}: {'; '.join(s.reasons)}"
                for s in state["scores"] if s.project_id in state["selected"]],
+             *([f"- Work experience first: {', '.join(state['work_ids'])} (groups {', '.join(state.get('work_groups') or [])})"]
+               if state.get("work_ids") else []),
              f"- Experience groups: {', '.join(state['exp_groups'])}", "",
              "## Keyword coverage",
              *[f"- {k}: {', '.join(v) if v else '—'}" for k, v in rep.keyword_coverage.items()], "",

@@ -168,7 +168,9 @@ def test_relevant_entries_kept_first(kb):
 def test_trim_skips_levels_that_change_nothing(final):
     """No 4th bullets, <=4 skills lines, <=2 achievements shown -> go straight to the Experience cut."""
     projects = [p.model_copy(update={"bullets": p.bullets[:3]}) for p in final["projects"]]
-    st = {**final, "projects": projects, "skills": final["skills"][:4], "max_achievements": 2,
+    exp = final["experience"]
+    exp3 = exp.model_copy(update={"bullets": (exp.bullets * 3)[:3]})    # 3 bullets, so the Experience cut can apply
+    st = {**final, "projects": projects, "experience": exp3, "skills": final["skills"][:4], "max_achievements": 2,
           "layout_action": "trim", "trim_level": 0, "last_fill": None, "layout_round": 1,
           "layout": Layout(pages=2, free_lines=0, orphans=[])}
     upd = layout_fix(st, {})

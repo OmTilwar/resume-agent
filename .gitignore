@@ -11,3 +11,6 @@ out/
 *.pdf
 .venv/
 cache/
+
+# Private client facts (kit §5A): kept local, never in the public repo. See kb/work/README.md.
+kb/work/*.yaml
